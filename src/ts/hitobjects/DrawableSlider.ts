@@ -87,7 +87,7 @@ export class DrawableSlider extends DrawableCircle {
         );
 
         // TODO: synchronize slider ticks with tickset from replay data
-        for (const tick of this.drawableNestedHitObjects.slice(1)) {
+        for (const tick of this.drawableNestedHitObjects) {
             if (!(tick.object instanceof SliderTick)) {
                 continue;
             }
