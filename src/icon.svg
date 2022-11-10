@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg width="848" height="1272" viewBox="-424 -4 848 1272"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+    <style>
+        mask { fill: #fff; stroke: #fff; stroke-width: 8px; }
+        g { fill: #000; stroke: #000; stroke-width: 8px; }
+    </style>
+    <defs>
+        <mask id="tongue-mask"><path d="M27 10c-30 130 116 130 86 0" stroke="#000"/></mask>
+        <mask id="body-mask"><polygon points="-210,0 -280,410 280,410 210,0"/></mask>
+        <mask id="foot-mask"><polygon points="-200,0 -200,-300 200,-300 200,0"/></mask>
+        <mask id="footline-mask" maskUnits="userSpaceOnUse"><ellipse cx="0" cy="-100" rx="95" ry="120"/></mask>
+    </defs>
+    <g id="ear" transform="translate(0, 263)">
+        <path d="M-420 0c0-350 160-350 350 0" fill="#d50c0f"/>
+        <path d="M-420 0c0-350 160-350 290 0"/>
+    </g>
+    <use xlink:href="#ear" transform="scale(-1, 1)"/>
+    <g id="body" transform="translate(0, 854)">
+        <polygon points="-210,0 -280,410 280,410 210,0" fill="#d50c0f"/>
+        <g id="hand" mask="url(#body-mask)">
+            <line x1="-272" x2="-140" y1="0" y2="140" stroke-width="89"/>
+            <circle cx="-140" cy="140" r="40"/>
+            <line x1="272" x2="140" y1="0" y2="140" stroke-width="89"/>
+            <circle cx="140" cy="140" r="40"/>
+        </g>
+        <g id="foot" transform="translate(-231, 410)">
+            <ellipse cx="0" cy="-100" rx="95" ry="120" fill="#d50c0f" mask="url(#foot-mask)"/>
+            <line x1="-60" x2="60" y1="0" y2="0" mask="url(#footline-mask)"/>
+            <circle id="toenail" cx="-55" cy="-140" r="15"/>
+            <use xlink:href="#toenail" transform="translate(30, -40)"/>
+            <use xlink:href="#toenail" transform="translate(75, -40)"/>
+            <use xlink:href="#toenail" transform="translate(110, 0)"/>
+            <ellipse cx="0" cy="-70" rx="55" ry="45"/>
+        </g>
+        <use xlink:href="#foot" transform="scale(-1, 1)"/>
+    </g>
+    <g id="face" transform="translate(0, 264)">
+        <rect width="840" height="590" fill="#d50c0f" transform="translate(-420, 0)"/>
+        <g id="eye" transform="translate(-210, 310)">
+            <circle r="120" fill="#fff"/>
+            <circle r="95"/>
+        </g>
+        <use xlink:href="#eye" transform="translate(420, 0)"/>
+        <g id="mouth" transform="translate(-70, 390)">
+            <path d="M27 10c-30 130 116 130 86 0" fill="#feb6b6"/>
+            <path d="M27 110c0-70 86-70 86 0" fill="#b91f6e" mask="url(#tongue-mask)"/>
+            <path d="M0 0q30 40 70 10M70 10q40 30 70-10" fill="#d50c0f"/>
+            <circle cx="70" r="8"/>
+        </g>
+        <g id="beard" transform="translate(-412, 440)">
+            <path id="beardD" d="M0 0q50-12 80-6"/>
+            <use xlink:href="#beardD" transform="rotate(-10) translate(0, 41)"/>
+            <use xlink:href="#beardD" transform="rotate(-20) translate(-10, 82)"/>
+        </g>
+        <use xlink:href="#beard" transform="scale(-1,1)"/>
+    </g>
+</svg>
