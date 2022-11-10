@@ -72,7 +72,6 @@ export * from "./beatmap/hitobjects/PlaceableHitObject";
 export * from "./utils/Playfield";
 export * from "./utils/Precision";
 export * from "./utils/RGBColor";
-export * from "./constants/RankedStatus";
 export * from "./constants/SampleBank";
 export * from "./beatmap/hitobjects/SampleBankInfo";
 export * from "./beatmap/timings/SampleControlPoint";
