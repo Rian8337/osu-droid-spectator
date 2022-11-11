@@ -1,26 +1,23 @@
+import { SpectatorEvent } from "./SpectatorEvent";
+
 /**
- * Represents spectator object hit data to be sent to the spectator client.
+ * Emitted when an object was hit or missed.
  */
-export interface SpectatorObjectData {
+export interface SpectatorObjectDataEvent extends SpectatorEvent {
     /**
      * The score of the player after the object was hit.
      */
-    currentScore: number;
+    readonly currentScore: number;
 
     /**
      * The combo of the player after the object was hit.
      */
-    currentCombo: number;
+    readonly currentCombo: number;
 
     /**
      * The accuracy of the player after the object was hit, from 0 to 1.
      */
-    currentAccuracy: number;
-
-    /**
-     * The amount of seconds that have passed throughout the player's gameplay.
-     */
-    secPassed: number;
+    readonly currentAccuracy: number;
 
     /**
      * For circles, this is the offset at which the circle was hit.
@@ -38,17 +35,17 @@ export interface SpectatorObjectData {
      * - `HitResult.meh`: 1
      * - `HitResult.miss`: 0
      */
-    accuracy: number;
+    readonly accuracy: number;
 
     /**
      * The tickset of the hitobject.
      *
      * This is used to determine whether or not a slider event (tick, repeat, and end) is hit based on the order they appear.
      */
-    tickset: boolean[];
+    readonly tickset: boolean[];
 
     /**
      * The bitwise hit result of the hitobject.
      */
-    result: number;
+    readonly result: number;
 }

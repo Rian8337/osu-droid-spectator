@@ -1,4 +1,4 @@
-import { MovementType } from "../../enums/MovementType";
+import { MovementType } from "./MovementType";
 import { SpectatorCursorPosition } from "./SpectatorCursorPosition";
 
 /**

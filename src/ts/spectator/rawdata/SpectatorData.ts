@@ -36,4 +36,9 @@ export interface SpectatorData {
      * The current accuracy of the player.
      */
     readonly currentAccuracy: number;
+
+    /**
+     * The amount of seconds that has passed for the player.
+     */
+    readonly secPassed: number;
 }
