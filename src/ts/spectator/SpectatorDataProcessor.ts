@@ -4,8 +4,15 @@ import {
     IModApplicableToDroid,
     Mod,
     ModUtil,
+    Slider,
+    SliderTick,
     Vector2,
 } from "../osu-base";
+import { SpectatorAccuracyEvent } from "./events/SpectatorAccuracyEvent";
+import { SpectatorComboEvent } from "./events/SpectatorComboEvent";
+import { SpectatorCursorEvent } from "./events/SpectatorCursorEvent";
+import { SpectatorObjectDataEvent } from "./events/SpectatorObjectDataEvent";
+import { SpectatorScoreEvent } from "./events/SpectatorScoreEvent";
 import { HitResult } from "./rawdata/HitResult";
 import { PlayerInfo } from "./rawdata/PlayerInfo";
 import { SpectatorData } from "./rawdata/SpectatorData";
@@ -122,20 +129,22 @@ export class SpectatorDataProcessor {
             return false;
         }
 
-        manager.events.score.add({
-            time: data.secPassed * 1000,
-            score: data.currentScore,
-        });
+        const { events } = manager;
 
-        manager.events.accuracy.add({
-            time: data.secPassed * 1000,
-            accuracy: data.currentAccuracy,
-        });
+        events.score.add(
+            new SpectatorScoreEvent(data.secPassed * 1000, data.currentScore)
+        );
 
-        manager.events.combo.add({
-            time: data.secPassed * 1000,
-            combo: data.currentCombo,
-        });
+        events.accuracy.add(
+            new SpectatorAccuracyEvent(
+                data.secPassed * 1000,
+                data.currentAccuracy
+            )
+        );
+
+        events.combo.add(
+            new SpectatorComboEvent(data.secPassed * 1000, data.currentCombo)
+        );
 
         for (const objectData of data.hitObjectData) {
             const object = this.beatmap.hitObjects.objects[objectData.index];
@@ -152,30 +161,102 @@ export class SpectatorDataProcessor {
                 }
             }
 
-            manager.events.objectData.add({
-                time: time,
-                index: objectData.index,
-                accuracy: objectData.accuracy,
-                result: objectData.result,
-                tickset: objectData.tickset,
-                currentAccuracy: objectData.currentAccuracy,
-                currentCombo: objectData.currentCombo,
-                currentScore: objectData.currentScore,
-            });
+            if (object instanceof Slider) {
+                // Infer combo and score from hit accuracy and tickset.
+                let score = 0;
+                let combo = 0;
+                const prevObject =
+                    this.beatmap.hitObjects.objects[objectData.index - 1];
+
+                if (prevObject) {
+                    score =
+                        events.score.eventAt(prevObject.endTime)?.score ?? 0;
+                    combo =
+                        events.combo.eventAt(prevObject.endTime)?.combo ?? 0;
+                }
+
+                // Check for slider head break.
+                if (objectData.accuracy !== manager.maxHitWindow + 13) {
+                    score += 30 * manager.scoreMultiplier;
+                    ++combo;
+                } else {
+                    combo = 0;
+                }
+
+                events.combo.add(
+                    new SpectatorComboEvent(object.startTime, combo)
+                );
+                events.score.add(
+                    new SpectatorScoreEvent(object.startTime, combo)
+                );
+
+                // We don't need to include slider end since that's already accounted below.
+                for (let i = 1; i < object.nestedHitObjects.length - 1; ++i) {
+                    const nestedObject = object.nestedHitObjects[i];
+                    const tickset = objectData.tickset[i - 1];
+
+                    if (tickset) {
+                        ++combo;
+
+                        if (nestedObject instanceof SliderTick) {
+                            score += 10 * manager.scoreMultiplier;
+                        } else {
+                            // This must be a slider repeat.
+                            score += 30 * manager.scoreMultiplier;
+                        }
+                    } else {
+                        combo = 0;
+                    }
+
+                    events.combo.add(
+                        new SpectatorComboEvent(nestedObject.startTime, combo)
+                    );
+                    events.score.add(
+                        new SpectatorScoreEvent(nestedObject.startTime, score)
+                    );
+                }
+            }
+
+            events.accuracy.add(
+                new SpectatorAccuracyEvent(
+                    object.endTime,
+                    objectData.currentAccuracy
+                )
+            );
+
+            events.combo.add(
+                new SpectatorComboEvent(object.endTime, objectData.currentCombo)
+            );
+
+            events.score.add(
+                new SpectatorScoreEvent(object.endTime, objectData.currentScore)
+            );
+
+            events.objectData.add(
+                new SpectatorObjectDataEvent(
+                    time,
+                    objectData.index,
+                    objectData.accuracy,
+                    objectData.tickset,
+                    objectData.result
+                )
+            );
         }
 
         for (let i = 0; i < data.cursorMovement.length; ++i) {
             const cursorMovement = data.cursorMovement[i];
 
             for (const cursorData of cursorMovement) {
-                manager.events.cursor[i].add({
-                    time: cursorData.time,
-                    position: new Vector2(
-                        cursorData.position.x,
-                        cursorData.position.y
-                    ),
-                    id: cursorData.id,
-                });
+                events.cursor[i].add(
+                    new SpectatorCursorEvent(
+                        cursorData.time,
+                        new Vector2(
+                            cursorData.position.x,
+                            cursorData.position.y
+                        ),
+                        cursorData.id
+                    )
+                );
             }
         }
 

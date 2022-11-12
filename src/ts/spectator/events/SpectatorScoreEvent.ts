@@ -1,13 +1,21 @@
 import { SpectatorEvent } from "./SpectatorEvent";
 
 /**
- * Emitted whenever the player's spectator data gets sent.
- *
- * This is only used for syncing purposes.
+ * Emitted whenever the player's score changes.
  */
-export interface SpectatorScoreEvent extends SpectatorEvent {
+export class SpectatorScoreEvent extends SpectatorEvent {
     /**
      * The score of the player.
      */
     readonly score: number;
+
+    constructor(time: number, score: number) {
+        super(time);
+
+        this.score = score;
+    }
+
+    override isRedundant(existing: SpectatorScoreEvent): boolean {
+        return this.score === existing.score;
+    }
 }

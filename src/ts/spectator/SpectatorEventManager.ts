@@ -41,8 +41,51 @@ export class SpectatorEventManager<T extends SpectatorEvent> {
      */
     add(...events: T[]): void {
         for (const event of events) {
+            let existing = this.eventAt(event.time);
+
+            if (existing && event.isRedundant(existing)) {
+                continue;
+            }
+
+            // Remove the existing event if the new event overrides it at the same time.
+            while (existing?.time === event.time) {
+                if (!this.remove(existing)) {
+                    break;
+                }
+
+                existing = this.eventAt(event.time);
+            }
+
             this._events.splice(this.findInsertionIndex(event.time), 0, event);
         }
+    }
+
+    /**
+     * Removes an event.
+     *
+     * This method will remove the earliest event in the array that is equal to the given event.
+     *
+     * @param event The event to remove.
+     * @returns Whether the event was removed.
+     */
+    remove(event: T): boolean {
+        for (let i = 0; i < this._events.length; ++i) {
+            if (this._events[i].time > event.time) {
+                break;
+            }
+
+            // isRedundant doesn't check for time equality, so we need to specify it separately.
+            if (
+                this._events[i].time === event.time &&
+                this._events[i].isRedundant(event)
+            ) {
+                this._events.splice(i, 1);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

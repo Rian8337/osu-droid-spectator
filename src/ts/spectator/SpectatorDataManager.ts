@@ -38,9 +38,14 @@ export class SpectatorDataManager {
     readonly events: SpectatorEventManagers;
 
     /**
-     * The maximum hit windowm of this player.
+     * The maximum hit window of this player.
      */
     readonly maxHitWindow: number;
+
+    /**
+     * The score multiplier of this player.
+     */
+    readonly scoreMultiplier: number;
 
     /**
      * The time at which the earliest event occurs for this player.
@@ -117,6 +122,11 @@ export class SpectatorDataManager {
                 ),
             }).calculate({ mode: Modes.droid }).od!
         ).hitWindowFor50(mods.some((m) => m instanceof ModPrecise));
+
+        this.scoreMultiplier = mods.reduce(
+            (a, m) => a * m.droidScoreMultiplier,
+            1
+        );
 
         for (let i = 0; i < 10; ++i) {
             this.events.cursor.push(new SpectatorEventManager());
