@@ -132,21 +132,6 @@ export class SpectatorDataProcessor {
 
         const { events } = manager;
 
-        events.score.add(
-            new SpectatorScoreEvent(data.secPassed * 1000, data.currentScore)
-        );
-
-        events.accuracy.add(
-            new SpectatorAccuracyEvent(
-                data.secPassed * 1000,
-                data.currentAccuracy
-            )
-        );
-
-        events.combo.add(
-            new SpectatorComboEvent(data.secPassed * 1000, data.currentCombo)
-        );
-
         for (const objectData of data.hitObjectData) {
             const object = this.beatmap.hitObjects.objects[objectData.index];
             let time = object.endTime;
@@ -244,6 +229,21 @@ export class SpectatorDataProcessor {
             );
         }
 
+        events.score.add(
+            new SpectatorScoreEvent(data.secPassed * 1000, data.currentScore)
+        );
+
+        events.accuracy.add(
+            new SpectatorAccuracyEvent(
+                data.secPassed * 1000,
+                data.currentAccuracy
+            )
+        );
+
+        events.combo.add(
+            new SpectatorComboEvent(data.secPassed * 1000, data.currentCombo)
+        );
+
         for (let i = 0; i < data.cursorMovement.length; ++i) {
             const cursorMovement = data.cursorMovement[i];
 
@@ -261,6 +261,7 @@ export class SpectatorDataProcessor {
             }
         }
 
+        console.log("Processing done!");
         return true;
     }
 }
