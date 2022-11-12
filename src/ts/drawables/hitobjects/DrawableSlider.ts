@@ -147,12 +147,7 @@ export class DrawableSlider extends DrawableCircle {
                 );
             }
         } else {
-            this.drawHitResult(
-                ctx,
-                time,
-                this.object.endTime,
-                HitResult.miss
-            );
+            this.drawHitResult(ctx, time, this.object.endTime, HitResult.miss);
         }
     }
 

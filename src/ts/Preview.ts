@@ -39,11 +39,6 @@ export class Preview {
      */
     scoreCounter!: DrawableScoreCounter;
 
-    /**
-     * The date at which this preview was last loaded.
-     */
-    loadedAt: Date = new Date();
-
     private readonly container: HTMLElement;
     private readonly screen: HTMLCanvasElement;
     private readonly background: HTMLImageElement;
@@ -114,7 +109,6 @@ export class Preview {
         onFail?: (preview: Preview, e: Error) => unknown
     ): void {
         try {
-            this.loadedAt = new Date();
             this.beatmap = beatmap;
             this.specDataManager = specDataManager;
             this.background.src = backgroundBlob;

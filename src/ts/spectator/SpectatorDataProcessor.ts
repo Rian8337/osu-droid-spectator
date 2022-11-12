@@ -76,7 +76,7 @@ export class SpectatorDataProcessor {
     /**
      * Determines whether spectator data is available for all players at the given time.
      *
-     * @param time The time, in milliseconds since epoch.
+     * @param time The time.
      * @returns Whether spectator data is available for all players at the given time.
      */
     isAvailableAt(time: number): boolean {
@@ -130,7 +130,6 @@ export class SpectatorDataProcessor {
             return false;
         }
 
-        manager.latestDataReceiveTime = Date.now();
         const { events } = manager;
 
         for (const objectData of data.hitObjectData) {
@@ -259,6 +258,7 @@ export class SpectatorDataProcessor {
             }
         }
 
+        manager.latestDataTime += data.secPassed * 1000;
         return true;
     }
 }

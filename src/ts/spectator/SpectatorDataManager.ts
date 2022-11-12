@@ -48,9 +48,11 @@ export class SpectatorDataManager {
     readonly scoreMultiplier: number;
 
     /**
-     * The time at which the latest data was received, in milliseconds since epoch time.
+     * The duration at which the preview can use this manager to play.
+     *
+     * This is used to sync multiple players in the preview.
      */
-    latestDataReceiveTime: number = Date.now();
+    latestDataTime = 0;
 
     /**
      * The time at which the earliest event occurs for this player.
@@ -141,11 +143,11 @@ export class SpectatorDataManager {
     /**
      * Determines whether spectator data is available for this player at the given time.
      *
-     * @param time The time, in milliseconds since epoch.
+     * @param time The time.
      * @returns Whether spectator data is available for this player at the given time.
      */
     isAvailableAt(time: number): boolean {
-        return time <= this.latestDataReceiveTime;
+        return time <= this.latestDataTime;
     }
 
     /**

@@ -269,16 +269,10 @@ $(audio)
         $("#play").removeClass("e");
         preview.beatmap.refresh();
         requestAnimationFrame(function foo() {
-            if (specDataProcessor) {
-                const lookupTime =
-                    preview.loadedAt.getTime() + audio.currentTime * 1000;
-
-                if (specDataProcessor.isAvailableAt(lookupTime)) {
-                    if (!audio.ended) {
-                        audio.play();
-                    }
-                } else {
-                    audio.pause();
+            const currentTime = audio.currentTime * 1000;
+            if (specDataProcessor?.isAvailableAt(currentTime)) {
+                if (!audio.ended) {
+                    audio.play();
                 }
             } else {
                 audio.pause();
