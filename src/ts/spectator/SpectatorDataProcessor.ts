@@ -123,6 +123,7 @@ export class SpectatorDataProcessor {
      * @returns Whether the data addition was successful.
      */
     processData(uid: number, data: SpectatorData): boolean {
+        console.log("Received data from uid", uid);
         const manager = this.managers.get(uid);
 
         if (!manager) {
@@ -219,17 +220,17 @@ export class SpectatorDataProcessor {
 
             events.accuracy.add(
                 new SpectatorAccuracyEvent(
-                    object.endTime,
+                    time,
                     objectData.currentAccuracy
                 )
             );
 
             events.combo.add(
-                new SpectatorComboEvent(object.endTime, objectData.currentCombo)
+                new SpectatorComboEvent(time, objectData.currentCombo)
             );
 
             events.score.add(
-                new SpectatorScoreEvent(object.endTime, objectData.currentScore)
+                new SpectatorScoreEvent(time, objectData.currentScore)
             );
 
             events.objectData.add(
