@@ -259,11 +259,6 @@ export class SpectatorDataProcessor {
             }
         }
 
-        console.log("Processing done!");
-        console.log(
-            "Latest data receive date is",
-            manager.latestDataReceiveTime
-        );
         return true;
     }
 }
