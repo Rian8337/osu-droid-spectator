@@ -258,7 +258,7 @@ export class SpectatorDataProcessor {
             }
         }
 
-        manager.latestDataTime += data.secPassed * 1000;
+        manager.latestDataTime = data.secPassed * 1000;
         return true;
     }
 }
