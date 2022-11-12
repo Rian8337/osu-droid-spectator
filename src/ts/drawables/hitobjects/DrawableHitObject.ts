@@ -1,6 +1,6 @@
-import { HitObject, MapStats, Modes, RGBColor } from "../osu-base";
-import { SpectatorObjectDataEvent } from "../spectator/events/SpectatorObjectDataEvent";
-import { HitResult } from "../spectator/rawdata/HitResult";
+import { HitObject, MapStats, Modes, RGBColor } from "../../osu-base";
+import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
+import { HitResult } from "../../spectator/rawdata/HitResult";
 
 /**
  * Represents a hitobject that can be drawn.

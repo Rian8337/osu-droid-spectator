@@ -48,6 +48,11 @@ export class SpectatorDataManager {
     readonly scoreMultiplier: number;
 
     /**
+     * The time at which the latest data was received, in milliseconds since epoch time.
+     */
+    latestDataReceiveTime: number = Date.now();
+
+    /**
      * The time at which the earliest event occurs for this player.
      *
      * Returns `null` if there are no events yet.
@@ -136,18 +141,11 @@ export class SpectatorDataManager {
     /**
      * Determines whether spectator data is available for this player at the given time.
      *
-     * @param time The time.
+     * @param time The time, in milliseconds since epoch.
      * @returns Whether spectator data is available for this player at the given time.
      */
     isAvailableAt(time: number): boolean {
-        // We only need to check for accuracy, combo, and score to ensure good consistency since these
-        // data are submitted every time the game performs a request to the server. Any data outside of
-        // this cannot be relied upon for this purpose, especially cursor movements.
-        return (
-            this.events.accuracy.isAvailableAt(time) &&
-            this.events.combo.isAvailableAt(time) &&
-            this.events.score.isAvailableAt(time)
-        );
+        return time <= this.latestDataReceiveTime;
     }
 
     /**

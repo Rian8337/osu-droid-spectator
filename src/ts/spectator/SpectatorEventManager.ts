@@ -135,22 +135,8 @@ export class SpectatorEventManager<T extends SpectatorEvent> {
             }
         }
 
-        // l will be the first datum with time > this.data[l].time, but we want the one before it
+        // l will be the first event with time > this._events[l].time, but we want the one before it
         return this._events[l - 1];
-    }
-
-    /**
-     * Determines whether this manager has an event within the given time.
-     *
-     * @param time The time.
-     * @returns Whether this manager has an event within the given time.
-     */
-    isAvailableAt(time: number): boolean {
-        if (this._events.length === 0) {
-            return false;
-        }
-
-        return this._events.at(-1)!.time >= time;
     }
 
     /**

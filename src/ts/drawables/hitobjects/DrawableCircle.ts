@@ -1,6 +1,6 @@
-import { MathUtils, Modes, Vector2 } from "../osu-base";
-import { SpectatorObjectDataEvent } from "../spectator/events/SpectatorObjectDataEvent";
-import { HitResult } from "../spectator/rawdata/HitResult";
+import { MathUtils, Modes, Vector2 } from "../../osu-base";
+import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
+import { HitResult } from "../../spectator/rawdata/HitResult";
 import { DrawableHitObject } from "./DrawableHitObject";
 
 /**

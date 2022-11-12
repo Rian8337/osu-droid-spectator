@@ -270,12 +270,8 @@ $(audio)
         preview.beatmap.refresh();
         requestAnimationFrame(function foo() {
             if (specDataProcessor) {
-                // Look up 10 seconds ahead as the game client submits spectator data to the server
-                // every 5 seconds. This gives a room of breathing for both the client and server to
-                // process spectator data. However, increasing this value too high will cause a bad
-                // user experience.
                 const lookupTime =
-                    Math.min(audio.currentTime + 10, audio.duration) * 1000;
+                    preview.loadedAt.getTime() + audio.currentTime * 1000;
 
                 if (specDataProcessor.isAvailableAt(lookupTime)) {
                     if (!audio.ended) {

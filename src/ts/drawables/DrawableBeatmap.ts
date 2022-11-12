@@ -8,11 +8,12 @@ import {
     RGBColor,
     Slider,
     Spinner,
+    Vector2,
 } from "../osu-base";
-import { DrawableCircle } from "./DrawableCircle";
-import { DrawableHitObject } from "./DrawableHitObject";
-import { DrawableSlider } from "./DrawableSlider";
-import { DrawableSpinner } from "./DrawableSpinner";
+import { DrawableCircle } from "./hitobjects/DrawableCircle";
+import { DrawableHitObject } from "./hitobjects/DrawableHitObject";
+import { DrawableSlider } from "./hitobjects/DrawableSlider";
+import { DrawableSpinner } from "./hitobjects/DrawableSpinner";
 import { SpectatorDataManager } from "../spectator/SpectatorDataManager";
 import { HitResult } from "../spectator/rawdata/HitResult";
 
@@ -22,6 +23,16 @@ import { HitResult } from "../spectator/rawdata/HitResult";
 export class DrawableBeatmap {
     static readonly width = window.screen.width;
     static readonly height = window.screen.height;
+
+    /**
+     * The coordinate of the playfield at (0, 0) with respect to the window size.
+     */
+    static get zeroCoordinate(): Vector2 {
+        return new Vector2(
+            (this.width - Playfield.baseSize.x) / 2,
+            (this.height - Playfield.baseSize.y) / 2
+        );
+    }
 
     /**
      * The underlying beatmap.
@@ -95,10 +106,8 @@ export class DrawableBeatmap {
         }
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.translate(
-            (DrawableBeatmap.width - Playfield.baseSize.x) / 2,
-            (DrawableBeatmap.height - Playfield.baseSize.y) / 2
-        );
+        const zeroCoordinate = DrawableBeatmap.zeroCoordinate;
+        ctx.translate(zeroCoordinate.x, zeroCoordinate.y);
     }
 
     /**

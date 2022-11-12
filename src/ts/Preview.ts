@@ -1,6 +1,9 @@
 import { DrawableBeatmap } from "./drawables/DrawableBeatmap";
+import { DrawableComboCounter } from "./drawables/counters/DrawableComboCounter";
 import { DrawableCursor } from "./drawables/DrawableCursor";
 import { SpectatorDataManager } from "./spectator/SpectatorDataManager";
+import { DrawableScoreCounter } from "./drawables/counters/DrawableScoreCounter";
+import { DrawableAccuracyCounter } from "./drawables/counters/DrawableAccuracyCounter";
 
 /**
  * Represents a beatmap preview.
@@ -20,6 +23,26 @@ export class Preview {
      * The drawable cursors responsible for this preview.
      */
     drawableCursors: DrawableCursor[] = [];
+
+    /**
+     * The accuracy counter responsible for this preview.
+     */
+    accuracyCounter!: DrawableAccuracyCounter;
+
+    /**
+     * The combo counter responsible for this preview.
+     */
+    comboCounter!: DrawableComboCounter;
+
+    /**
+     * The score counter responsible for this preview.
+     */
+    scoreCounter!: DrawableScoreCounter;
+
+    /**
+     * The date at which this preview was last loaded.
+     */
+    loadedAt: Date = new Date();
 
     private readonly container: HTMLElement;
     private readonly screen: HTMLCanvasElement;
@@ -91,6 +114,7 @@ export class Preview {
         onFail?: (preview: Preview, e: Error) => unknown
     ): void {
         try {
+            this.loadedAt = new Date();
             this.beatmap = beatmap;
             this.specDataManager = specDataManager;
             this.background.src = backgroundBlob;
@@ -99,9 +123,19 @@ export class Preview {
 
             this.drawableCursors.length = 0;
 
-            for (const manager of this.specDataManager.events.cursor) {
+            for (const manager of specDataManager.events.cursor) {
                 this.drawableCursors.push(new DrawableCursor(manager));
             }
+
+            this.accuracyCounter = new DrawableAccuracyCounter(
+                specDataManager.events.accuracy
+            );
+            this.comboCounter = new DrawableComboCounter(
+                specDataManager.events.combo
+            );
+            this.scoreCounter = new DrawableScoreCounter(
+                specDataManager.events.score
+            );
 
             this.beatmap.update(this.ctx);
             this.at(0);
@@ -127,6 +161,9 @@ export class Preview {
         this.ctx.clearRect(0, 0, DrawableBeatmap.width, DrawableBeatmap.height);
         this.ctx.restore();
         this.beatmap.draw(this.ctx, time, this.specDataManager);
+        this.accuracyCounter.draw(this.ctx, time);
+        this.comboCounter.draw(this.ctx, time);
+        this.scoreCounter.draw(this.ctx, time);
 
         for (const drawableCursor of this.drawableCursors) {
             drawableCursor.draw(this.ctx, time);
