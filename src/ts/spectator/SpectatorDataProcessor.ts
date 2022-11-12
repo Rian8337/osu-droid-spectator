@@ -174,7 +174,7 @@ export class SpectatorDataProcessor {
                     new SpectatorComboEvent(object.startTime, combo)
                 );
                 events.score.add(
-                    new SpectatorScoreEvent(object.startTime, combo)
+                    new SpectatorScoreEvent(object.startTime, score)
                 );
 
                 // We don't need to include slider end since that's already accounted below.
