@@ -3,7 +3,7 @@ import { ChimuAPIResponse } from "./ChimuAPIResponse";
 import { Preview } from "./Preview";
 import { SpectatorDataProcessor } from "./spectator/SpectatorDataProcessor";
 import { FayeClientManager } from "./spectator/FayeClientManager";
-import { DrawableBeatmap } from "./DrawableBeatmap";
+import { DrawableBeatmap } from "./drawables/DrawableBeatmap";
 import { BeatmapDecoder } from "./osu-base";
 
 const preview = new Preview($("#container")[0]);

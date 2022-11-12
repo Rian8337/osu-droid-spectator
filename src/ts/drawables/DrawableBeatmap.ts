@@ -8,13 +8,13 @@ import {
     RGBColor,
     Slider,
     Spinner,
-} from "./osu-base";
-import { DrawableCircle } from "./hitobjects/DrawableCircle";
-import { DrawableHitObject } from "./hitobjects/DrawableHitObject";
-import { DrawableSlider } from "./hitobjects/DrawableSlider";
-import { DrawableSpinner } from "./hitobjects/DrawableSpinner";
-import { SpectatorDataManager } from "./spectator/SpectatorDataManager";
-import { HitResult } from "./spectator/rawdata/HitResult";
+} from "../osu-base";
+import { DrawableCircle } from "./DrawableCircle";
+import { DrawableHitObject } from "./DrawableHitObject";
+import { DrawableSlider } from "./DrawableSlider";
+import { DrawableSpinner } from "./DrawableSpinner";
+import { SpectatorDataManager } from "../spectator/SpectatorDataManager";
+import { HitResult } from "../spectator/rawdata/HitResult";
 
 /**
  * Represents a beatmap that can be used to draw objects.

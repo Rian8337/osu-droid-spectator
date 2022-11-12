@@ -1,5 +1,5 @@
 import { MathUtils, Modes, Slider, SliderTick } from "../osu-base";
-import { DrawableBeatmap } from "../DrawableBeatmap";
+import { DrawableBeatmap } from "./DrawableBeatmap";
 import { DrawableCircle } from "./DrawableCircle";
 import { DrawableHitObject } from "./DrawableHitObject";
 import { SpectatorObjectDataEvent } from "../spectator/events/SpectatorObjectDataEvent";

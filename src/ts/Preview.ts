@@ -1,5 +1,5 @@
-import { DrawableBeatmap } from "./DrawableBeatmap";
-import { DrawableCursor } from "./DrawableCursor";
+import { DrawableBeatmap } from "./drawables/DrawableBeatmap";
+import { DrawableCursor } from "./drawables/DrawableCursor";
 import { SpectatorDataManager } from "./spectator/SpectatorDataManager";
 
 /**

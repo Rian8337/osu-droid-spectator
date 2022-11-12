@@ -1,6 +1,6 @@
-import { SpectatorCursorEvent } from "./spectator/events/SpectatorCursorEvent";
-import { MovementType } from "./spectator/rawdata/MovementType";
-import { SpectatorEventManager } from "./spectator/SpectatorEventManager";
+import { SpectatorCursorEvent } from "../spectator/events/SpectatorCursorEvent";
+import { MovementType } from "../spectator/rawdata/MovementType";
+import { SpectatorEventManager } from "../spectator/SpectatorEventManager";
 
 /**
  * Represents a cursor that can be drawn.
