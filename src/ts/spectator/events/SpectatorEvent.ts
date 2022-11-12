@@ -3,7 +3,7 @@
  */
 export interface SpectatorEvent {
     /**
-     * The time at which the event occurred.
+     * The time at which the event occurred, in milliseconds.
      */
     readonly time: number;
 }

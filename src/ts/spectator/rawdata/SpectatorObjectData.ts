@@ -1,3 +1,5 @@
+import { HitResult } from "./HitResult";
+
 /**
  * Represents spectator object hit data to be sent to the spectator client.
  */
@@ -5,25 +7,25 @@ export interface SpectatorObjectData {
     /**
      * The score of the player after the object was hit.
      */
-    currentScore: number;
+    readonly currentScore: number;
 
     /**
      * The combo of the player after the object was hit.
      */
-    currentCombo: number;
+    readonly currentCombo: number;
 
     /**
      * The accuracy of the player after the object was hit, from 0 to 1.
      */
-    currentAccuracy: number;
+    readonly currentAccuracy: number;
 
     /**
      * The index of this object in the beatmap.
      */
-    index: number;
+    readonly index: number;
 
     /**
-     * For circles, this is the offset at which the circle was hit.
+     * For circles, this is the offset at which the circle was hit. If the hit accuracy is 10000, it means the circle was tapped too late ([game source code](https://github.com/osudroid/osu-droid/blob/6306c68e3ffaf671eac794bf45cc95c0f3313a82/src/ru/nsu/ccfit/zuev/osu/game/HitCircle.java#L298-L306)).
      *
      * For sliders, this is the offset at which the slider head was hit. For
      * sliderbreaks, the accuracy would be `(hit window 50)ms + 13ms` ([game source code](https://github.com/osudroid/osu-droid/blob/6306c68e3ffaf671eac794bf45cc95c0f3313a82/src/ru/nsu/ccfit/zuev/osu/game/Slider.java#L821)).
@@ -38,17 +40,17 @@ export interface SpectatorObjectData {
      * - `HitResult.meh`: 1
      * - `HitResult.miss`: 0
      */
-    accuracy: number;
+    readonly accuracy: number;
 
     /**
      * The tickset of the hitobject.
      *
      * This is used to determine whether or not a slider event (tick, repeat, and end) is hit based on the order they appear.
      */
-    tickset: boolean[];
+    readonly tickset: boolean[];
 
     /**
      * The bitwise hit result of the hitobject.
      */
-    result: number;
+    readonly result: HitResult;
 }

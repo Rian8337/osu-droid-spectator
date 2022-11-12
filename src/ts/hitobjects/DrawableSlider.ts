@@ -2,24 +2,32 @@ import { MathUtils, Modes, Slider, SliderTick } from "../osu-base";
 import { DrawableBeatmap } from "../DrawableBeatmap";
 import { DrawableCircle } from "./DrawableCircle";
 import { DrawableHitObject } from "./DrawableHitObject";
+import { SpectatorObjectDataEvent } from "../spectator/events/SpectatorObjectDataEvent";
+import { HitResult } from "../spectator/rawdata/HitResult";
 
 /**
  * Represents a slider that can be drawn.
  */
 export class DrawableSlider extends DrawableCircle {
-    private static readonly opacity = 0.66;
+    private static readonly opacity = 0.5;
     private static readonly reverseArrow = String.fromCharCode(10132);
 
     /**
      * Nested hit objects of this slider to draw.
+     *
+     * This only consists of slider ticks within one span.
      */
     readonly drawableNestedHitObjects: DrawableHitObject[] = [];
 
     constructor(object: Slider) {
         super(object);
 
-        // TODO: optimize this. Only one span should only need to be converted.
         for (const nestedObject of object.nestedHitObjects.slice(1)) {
+            // Only convert one span. We can revert the order when needed.
+            if (!(nestedObject instanceof SliderTick)) {
+                break;
+            }
+
             const drawableNestedObject =
                 DrawableBeatmap.convertHitObjectToDrawable(nestedObject);
 
@@ -31,16 +39,24 @@ export class DrawableSlider extends DrawableCircle {
         }
     }
 
-    override draw(ctx: CanvasRenderingContext2D, time: number): void {
+    override draw(
+        ctx: CanvasRenderingContext2D,
+        time: number,
+        hitData: SpectatorObjectDataEvent | null
+    ): void {
         // Allow TypeScript to type narrow.
         if (!(this.object instanceof Slider)) {
             return;
         }
 
+        if (hitData) {
+            this.isHit = time >= hitData.time;
+        }
+
         const dt = this.object.startTime - time;
         let opacity = 1;
 
-        if (dt >= 0) {
+        if (dt >= 0 && !this.isHit) {
             opacity = (this.approachTime - dt) / this.fadeInTime;
         } else {
             opacity = 1 - (time - this.object.endTime) / this.fadeOutTime;
@@ -85,32 +101,51 @@ export class DrawableSlider extends DrawableCircle {
             0,
             Math.floor(-dt / this.object.spanDuration)
         );
+        const nestedObjects = this.drawableNestedHitObjects.slice();
 
-        // TODO: synchronize slider ticks with tickset from replay data
-        for (const tick of this.drawableNestedHitObjects) {
+        if (spanIndex % 2 !== 0) {
+            nestedObjects.reverse();
+        }
+
+        for (let i = 0; i < nestedObjects.length; ++i) {
+            const tick = nestedObjects[i];
+
             if (!(tick.object instanceof SliderTick)) {
                 continue;
             }
 
-            if (spanIndex > tick.object.spanIndex) {
-                continue;
-            }
+            const tickTime =
+                tick.object.startTime + this.object.spanDuration * spanIndex;
 
-            if (spanIndex < tick.object.spanIndex) {
-                break;
-            }
+            if (time >= tickTime && hitData) {
+                const tickset =
+                    hitData.tickset[spanIndex * nestedObjects.length + i];
 
-            if (time > tick.object.startTime) {
-                continue;
+                if (!tickset) {
+                    this.drawSliderTick(ctx, tick);
+                }
+            } else {
+                this.drawSliderTick(ctx, tick);
             }
-
-            this.drawSliderTick(ctx, tick);
         }
 
         if (dt >= 0) {
             this.drawApproach(ctx, dt);
         } else if (time < this.object.endTime) {
             this.drawFollowCircle(ctx, repeat);
+        }
+
+        if (this.isHit) {
+            if (hitData) {
+                this.drawHitResult(ctx, time, hitData.time, hitData.result);
+            } else {
+                this.drawHitResult(
+                    ctx,
+                    time,
+                    this.object.endTime,
+                    HitResult.miss
+                );
+            }
         }
     }
 
@@ -208,6 +243,7 @@ export class DrawableSlider extends DrawableCircle {
             .getStackedPosition(Modes.droid)
             .add(this.object.path.positionAt(progress));
 
+        ctx.save();
         ctx.beginPath();
         ctx.arc(
             drawPosition.x,
@@ -220,5 +256,6 @@ export class DrawableSlider extends DrawableCircle {
         ctx.strokeStyle = "#fff";
         ctx.lineWidth = this.circleBorder;
         ctx.stroke();
+        ctx.restore();
     }
 }

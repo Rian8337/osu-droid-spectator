@@ -7,7 +7,7 @@ export class SpectatorEventManager<T extends SpectatorEvent> {
     /**
      * The events associated with this manager.
      */
-    private readonly _events: T[] = [];
+    protected readonly _events: T[] = [];
 
     /**
      * The events associated with this manager.
@@ -23,6 +23,15 @@ export class SpectatorEventManager<T extends SpectatorEvent> {
      */
     get earliestEventTime(): number | null {
         return this._events[0]?.time ?? null;
+    }
+
+    /**
+     * The time at which the latest event of this type occurs for the player.
+     *
+     * Returns `null` if there are no events yet.
+     */
+    get latestEventTime(): number | null {
+        return this._events.at(-1)?.time ?? null;
     }
 
     /**
@@ -44,6 +53,13 @@ export class SpectatorEventManager<T extends SpectatorEvent> {
      */
     removeAt(index: number): T {
         return this._events.splice(index, 1)[0];
+    }
+
+    /**
+     * Clears the events of this manager.
+     */
+    clear(): void {
+        this._events.length = 0;
     }
 
     /**
@@ -81,11 +97,25 @@ export class SpectatorEventManager<T extends SpectatorEvent> {
     }
 
     /**
+     * Determines whether this manager has an event within the given time.
+     *
+     * @param time The time.
+     * @returns Whether this manager has an event within the given time.
+     */
+    isAvailableAt(time: number): boolean {
+        if (this._events.length === 0) {
+            return false;
+        }
+
+        return this._events.at(-1)!.time >= time;
+    }
+
+    /**
      * Finds the insertion index of an event in a given time.
      *
      * @param time The start time of the event.
      */
-    private findInsertionIndex(time: number): number {
+    protected findInsertionIndex(time: number): number {
         if (this._events.length === 0 || time < this._events[0].time) {
             return 0;
         }

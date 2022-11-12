@@ -1,5 +1,6 @@
-import { BeatmapDecoder } from "./osu-base";
 import { DrawableBeatmap } from "./DrawableBeatmap";
+import { DrawableCursor } from "./DrawableCursor";
+import { SpectatorDataManager } from "./spectator/SpectatorDataManager";
 
 /**
  * Represents a beatmap preview.
@@ -9,6 +10,16 @@ export class Preview {
      * The beatmap being previewed.
      */
     beatmap!: DrawableBeatmap;
+
+    /**
+     * The spectator data manager responsible for this preview.
+     */
+    specDataManager!: SpectatorDataManager;
+
+    /**
+     * The drawable cursors responsible for this preview.
+     */
+    drawableCursors: DrawableCursor[] = [];
 
     private readonly container: HTMLElement;
     private readonly screen: HTMLCanvasElement;
@@ -52,10 +63,10 @@ export class Preview {
             );
 
             // background dim
-            ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+            ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
             ctx.fillRect(0, 0, this.screen.width, this.screen.height);
 
-            this.container.style.backgroundImage = `url(${this.background.src})`;
+            this.container.style.backgroundImage = `url(${canvas.toDataURL()})`;
         });
 
         this.background.addEventListener("error", () => {
@@ -67,23 +78,31 @@ export class Preview {
      * Loads this preview and prepares the beatmap.
      *
      * @param backgroundBlob The background blob.
-     * @param osuFile The .osu file to load.
+     * @param beatmap The beatmap to load.
+     * @param specDataManager The spectator data processor of this preview.
      * @param onSuccess The function to be called when the operation succeeds.
      * @param onFail The function to be called when the operation fails.
      */
     load(
         backgroundBlob: string,
-        osuFile: string,
+        beatmap: DrawableBeatmap,
+        specDataManager: SpectatorDataManager,
         onSuccess?: (preview: Preview) => unknown,
         onFail?: (preview: Preview, e: Error) => unknown
     ): void {
         try {
-            this.beatmap = new DrawableBeatmap(
-                new BeatmapDecoder().decode(osuFile).result
-            );
+            this.beatmap = beatmap;
+            this.specDataManager = specDataManager;
             this.background.src = backgroundBlob;
             this.ctx.restore();
             this.ctx.save();
+
+            this.drawableCursors.length = 0;
+
+            for (const manager of this.specDataManager.events.cursor) {
+                this.drawableCursors.push(new DrawableCursor(manager));
+            }
+
             this.beatmap.update(this.ctx);
             this.at(0);
 
@@ -98,7 +117,7 @@ export class Preview {
     }
 
     /**
-     * Draws the beatmap at a given time.
+     * Draws the preview at a given time.
      *
      * @param time The time.
      */
@@ -107,6 +126,10 @@ export class Preview {
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.clearRect(0, 0, DrawableBeatmap.width, DrawableBeatmap.height);
         this.ctx.restore();
-        this.beatmap.draw(this.ctx, time);
+        this.beatmap.draw(this.ctx, time, this.specDataManager);
+
+        for (const drawableCursor of this.drawableCursors) {
+            drawableCursor.draw(this.ctx, time);
+        }
     }
 }

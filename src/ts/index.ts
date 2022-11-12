@@ -1,14 +1,15 @@
-import {
-    BlobReader,
-    BlobWriter,
-    TextWriter,
-    ZipReader,
-} from "./zip-js/index.js";
+import { BlobReader, BlobWriter, TextWriter, ZipReader } from "./zip-js/index";
 import { ChimuAPIResponse } from "./ChimuAPIResponse";
 import { Preview } from "./Preview";
+import { SpectatorDataProcessor } from "./spectator/SpectatorDataProcessor";
+import { FayeClientManager } from "./spectator/FayeClientManager";
+import { DrawableBeatmap } from "./DrawableBeatmap";
+import { BeatmapDecoder } from "./osu-base";
 
 const preview = new Preview($("#container")[0]);
 const audio = new Audio();
+let specDataProcessor: SpectatorDataProcessor | undefined;
+let clientManager: FayeClientManager | undefined;
 
 $(window)
     .on("hashchange", () => {
@@ -207,11 +208,32 @@ $(window)
             await reader.close();
 
             if (backgroundBlob && osuFile) {
+                const beatmap = new DrawableBeatmap(
+                    new BeatmapDecoder().decode(osuFile).result
+                );
+
+                specDataProcessor = new SpectatorDataProcessor(
+                    beatmap.beatmap,
+                    [
+                        {
+                            uid: 51076,
+                            username: "Rian8337",
+                            mods: "",
+                        },
+                    ]
+                );
+
                 preview.load(
                     backgroundBlob,
-                    osuFile,
-                    (preview) => {
+                    beatmap,
+                    specDataProcessor.managers.get(51076)!,
+                    async (preview) => {
                         audio.src = audioBlob;
+                        clientManager = new FayeClientManager(
+                            specDataProcessor!
+                        );
+                        await clientManager.beginSubscriptions();
+
                         const { metadata } = preview.beatmap.beatmap;
                         $("#title a")
                             .prop("href", `//osu.ppy.sh/b/${beatmapId}`)
@@ -243,18 +265,34 @@ $(document.body).on("mousemove", function () {
 });
 
 $(audio)
-    .on("pause", () => {
-        $(document.body).trigger("mousemove");
-        $("#play").addClass("e");
-    })
     .on("play", () => {
         $("#play").removeClass("e");
         preview.beatmap.refresh();
         requestAnimationFrame(function foo() {
-            preview.at(audio.currentTime * 1000);
-            if (!audio.paused) {
-                requestAnimationFrame(foo);
+            if (specDataProcessor) {
+                // Look up 10 seconds ahead as the game client submits spectator data to the server
+                // every 5 seconds. This gives a room of breathing for both the client and server to
+                // process spectator data. However, increasing this value too high will cause a bad
+                // user experience.
+                const lookupTime =
+                    Math.min(audio.currentTime + 10, audio.duration) * 1000;
+
+                if (specDataProcessor.isAvailableAt(lookupTime)) {
+                    if (!audio.ended) {
+                        audio.play();
+                    }
+                } else {
+                    audio.pause();
+                }
+            } else {
+                audio.pause();
             }
+
+            if (!audio.paused) {
+                preview.at(audio.currentTime * 1000);
+            }
+
+            requestAnimationFrame(foo);
         });
     })
     .on("durationchange", function () {
@@ -267,7 +305,20 @@ $(audio)
     });
 
 (<JQuery<HTMLInputElement>>$("#progress")).on("change", function () {
-    audio.currentTime = parseInt(this.value);
+    const value = parseInt(this.value);
+
+    if (specDataProcessor) {
+        // Don't forward too far if spectator data is not available yet.
+        // Cap at latest event time.
+        const { latestEventTime } = specDataProcessor;
+
+        if (latestEventTime !== null && value < latestEventTime) {
+            this.value = (latestEventTime / 1000).toString();
+            return;
+        }
+    }
+
+    audio.currentTime = value;
     $(audio).trigger("play");
 });
 

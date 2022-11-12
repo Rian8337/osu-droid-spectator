@@ -6,7 +6,7 @@ import { SpectatorCursorPosition } from "./SpectatorCursorPosition";
  */
 export interface SpectatorCursorData {
     /**
-     * The time of this occurrence.
+     * The time of this occurrence, in milliseconds.
      */
     time: number;
 

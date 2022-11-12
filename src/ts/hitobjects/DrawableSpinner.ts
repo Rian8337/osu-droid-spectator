@@ -1,20 +1,28 @@
 import { MathUtils, Playfield } from "../osu-base";
-import { DrawableCircle } from "./DrawableCircle";
+import { SpectatorObjectDataEvent } from "../spectator/events/SpectatorObjectDataEvent";
+import { HitResult } from "../spectator/rawdata/HitResult";
+import { DrawableHitObject } from "./DrawableHitObject";
 
 /**
  * Represents a spinner that can be drawn.
  */
-export class DrawableSpinner extends DrawableCircle {
+export class DrawableSpinner extends DrawableHitObject {
     override readonly fadeInTime = 500;
 
     private static readonly radius = Playfield.baseSize.y / 2;
     private static readonly borderWidth = this.radius / 20;
 
-    override draw(ctx: CanvasRenderingContext2D, time: number): void {
+    override draw(
+        ctx: CanvasRenderingContext2D,
+        time: number,
+        hitData: SpectatorObjectDataEvent | null
+    ): void {
+        this.isHit = time >= this.object.endTime;
+
         const dt = this.object.startTime - time;
         let opacity = 1;
 
-        if (dt >= 0) {
+        if (dt >= 0 && !this.isHit) {
             opacity = (this.approachTime - dt) / this.fadeInTime;
         } else if (time > this.object.endTime) {
             opacity = 1 - (time - this.object.endTime) / this.fadeOutTime;
@@ -48,6 +56,7 @@ export class DrawableSpinner extends DrawableCircle {
         if (dt < 0 && time <= this.object.endTime) {
             const scale = 1 + dt / this.object.duration;
 
+            ctx.save();
             ctx.beginPath();
             ctx.arc(
                 this.object.position.x,
@@ -61,6 +70,20 @@ export class DrawableSpinner extends DrawableCircle {
             ctx.strokeStyle = "#fff";
             ctx.lineWidth = (DrawableSpinner.borderWidth / 2) * scale;
             ctx.stroke();
+            ctx.restore();
+        }
+
+        if (this.isHit) {
+            if (hitData) {
+                this.drawHitResult(ctx, time, hitData.time, hitData.result);
+            } else {
+                this.drawHitResult(
+                    ctx,
+                    time,
+                    this.object.endTime,
+                    HitResult.miss
+                );
+            }
         }
     }
 }

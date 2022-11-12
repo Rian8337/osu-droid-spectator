@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "compile-ts": "node src/bundler.js",
+    "compile-ts": "dts-gen -m faye -o -f node_modules/faye/src/faye_node.d.ts && node src/bundler.js",
     "format-code": "npx prettier -w --loglevel=silent \"src/ts/**\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,12 +21,14 @@
     "@typescript-eslint/parser": "^5.42.1",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
+    "dts-gen": "^0.6.1",
     "eslint": "^8.27.0",
     "prettier": "^2.7.1",
     "tsify": "^5.0.4",
     "typescript": "^4.8.4"
   },
   "dependencies": {
+    "faye": "^1.4.0",
     "lodash.clonedeep": "^4.5.0"
   },
   "eslintConfig": {

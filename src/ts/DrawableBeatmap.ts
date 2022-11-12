@@ -1,5 +1,6 @@
 import {
     Beatmap,
+    Circle,
     HitObject,
     MapStats,
     Modes,
@@ -12,6 +13,8 @@ import { DrawableCircle } from "./hitobjects/DrawableCircle";
 import { DrawableHitObject } from "./hitobjects/DrawableHitObject";
 import { DrawableSlider } from "./hitobjects/DrawableSlider";
 import { DrawableSpinner } from "./hitobjects/DrawableSpinner";
+import { SpectatorDataManager } from "./spectator/SpectatorDataManager";
+import { HitResult } from "./spectator/rawdata/HitResult";
 
 /**
  * Represents a beatmap that can be used to draw objects.
@@ -111,15 +114,41 @@ export class DrawableBeatmap {
      *
      * @param ctx The canvas context.
      * @param time The time to draw, in milliseconds.
+     * @param manager The spectator data manager.
      */
-    draw(ctx: CanvasRenderingContext2D, time: number): void {
+    draw(
+        ctx: CanvasRenderingContext2D,
+        time: number,
+        manager: SpectatorDataManager
+    ): void {
         time = this.beatmap.getOffsetTime(time);
 
         while (this.objectDrawIndexes.first < this.drawableHitObjects.length) {
             const object =
                 this.drawableHitObjects[this.objectDrawIndexes.first];
+            let timeThreshold =
+                object.object.endTime +
+                DrawableHitObject.hitResultFadeOutStartTime +
+                DrawableHitObject.hitResultFadeOutTime;
 
-            if (time <= object.object.endTime + object.fadeOutTime) {
+            if (object.object instanceof Circle) {
+                const objectData = manager.events.objectData.eventAt(
+                    this.objectDrawIndexes.first
+                );
+
+                if (objectData) {
+                    if (
+                        objectData.result !== HitResult.miss ||
+                        objectData.accuracy !== 1e4
+                    ) {
+                        timeThreshold += objectData.accuracy;
+                    } else {
+                        timeThreshold += manager.maxHitWindow;
+                    }
+                }
+            }
+
+            if (time <= timeThreshold) {
                 break;
             }
 
@@ -142,12 +171,28 @@ export class DrawableBeatmap {
             --i
         ) {
             const object = this.drawableHitObjects[i];
+            const hitData = manager.events.objectData.eventAt(i);
+            let timeThreshold =
+                object.object.endTime +
+                DrawableHitObject.hitResultFadeOutStartTime +
+                DrawableHitObject.hitResultFadeOutTime;
 
-            if (time > object.object.endTime + object.fadeOutTime) {
+            if (object.object instanceof Circle && hitData) {
+                if (
+                    hitData.result !== HitResult.miss ||
+                    hitData.accuracy !== 1e4
+                ) {
+                    timeThreshold += hitData.accuracy;
+                } else {
+                    timeThreshold += manager.maxHitWindow;
+                }
+            }
+
+            if (time > timeThreshold) {
                 break;
             }
 
-            object.draw(ctx, time);
+            object.draw(ctx, time, hitData, manager.maxHitWindow);
         }
     }
 
