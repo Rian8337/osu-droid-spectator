@@ -7,8 +7,14 @@ import { SpectatorEventManager } from "./SpectatorEventManager";
 export class SpectatorObjectDataEventManager extends SpectatorEventManager<SpectatorObjectDataEvent> {
     override add(...events: SpectatorObjectDataEvent[]): void {
         for (const event of events) {
-            this._events.splice(event.index, 0, event);
+            this._events[event.index] = event;
         }
+    }
+
+    constructor(objectCount: number) {
+        super();
+
+        this._events = new Array(objectCount);
     }
 
     /**
@@ -17,7 +23,7 @@ export class SpectatorObjectDataEventManager extends SpectatorEventManager<Spect
      * @param index The index of the event.
      * @returns The object data event, `null` if none found.
      */
-    eventAt(index: number): SpectatorObjectDataEvent | null {
+    override eventAt(index: number): SpectatorObjectDataEvent | null {
         return this._events[index] ?? null;
     }
 }

@@ -7,8 +7,8 @@ import { DrawableCounter } from "./DrawableCounter";
  * Represents a combo counter.
  */
 export class DrawableComboCounter extends DrawableCounter<SpectatorComboEvent> {
-    static readonly paddingX = 5;
-    static readonly paddingY = 95;
+    private static readonly paddingX = 5;
+    private static readonly paddingY = 30;
 
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
         const combo = this.manager.eventAt(time)?.combo ?? 0;

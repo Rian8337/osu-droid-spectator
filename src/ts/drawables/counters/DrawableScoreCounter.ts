@@ -8,7 +8,7 @@ import { DrawableCounter } from "./DrawableCounter";
  */
 export class DrawableScoreCounter extends DrawableCounter<SpectatorScoreEvent> {
     static readonly paddingX = 5;
-    static readonly paddingY = 100;
+    static readonly paddingY = 35;
 
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
         const score = this.manager.eventAt(time)?.score ?? 0;

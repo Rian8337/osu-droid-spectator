@@ -1,4 +1,13 @@
-import { HitObject, MapStats, Modes, RGBColor } from "../../osu-base";
+import {
+    HitObject,
+    IModApplicableToDroid,
+    MapStats,
+    Mod,
+    Modes,
+    ObjectTypes,
+    RGBColor,
+    Vector2,
+} from "../../osu-base";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/rawdata/HitResult";
 
@@ -16,14 +25,19 @@ export abstract class DrawableHitObject {
     readonly object: HitObject;
 
     /**
-     * The duration at which the object fades in.
+     * The mods applied to this object.
      */
-    readonly fadeInTime: number = 400;
+    readonly mods: (Mod & IModApplicableToDroid)[];
 
     /**
-     * The duration at which the object fades out.
+     * The duration at which the object fades in, in milliseconds.
      */
-    readonly fadeOutTime: number = 150;
+    protected abstract get fadeInTime(): number;
+
+    /**
+     * The duration at which the object fades out, in milliseconds.
+     */
+    protected abstract get fadeOutTime(): number;
 
     /**
      * The combo of the object.
@@ -37,21 +51,58 @@ export abstract class DrawableHitObject {
 
     /**
      * The approach time of the object.
+     *
+     * This value is unaffected by speed-changing modifications.
      */
     approachTime = MapStats.arToMS(5);
+
+    /**
+     * The scale of the object.
+     *
+     * This is used to get radius.
+     */
+    scale = 0;
+
+    /**
+     * The radius of the object with mods applied.
+     */
+    get radius(): number {
+        return (
+            (this.object.getRadius(Modes.droid) / this.object.droidScale) *
+            this.scale
+        );
+    }
+
+    /**
+     * The stacked position of the object with mods applied.
+     */
+    get stackedPosition(): Vector2 {
+        return this.reevaluateStackedPosition(
+            this.object.getStackedPosition(Modes.droid)
+        );
+    }
+
+    /**
+     * The stacked end position of the object with mods applied.
+     */
+    get stackedEndPosition(): Vector2 {
+        return this.reevaluateStackedPosition(
+            this.object.getStackedEndPosition(Modes.droid)
+        );
+    }
 
     /**
      * The thickness of the object's border.
      */
     protected get circleBorder(): number {
-        return this.object.getRadius(Modes.droid) / 8;
+        return this.radius / 8;
     }
 
     /**
      * The shadow blur of the object.
      */
     protected get shadowBlur(): number {
-        return this.object.getRadius(Modes.droid) / 16;
+        return this.radius / 16;
     }
 
     /**
@@ -66,8 +117,9 @@ export abstract class DrawableHitObject {
      */
     isHit = false;
 
-    constructor(object: HitObject) {
+    constructor(object: HitObject, mods: (Mod & IModApplicableToDroid)[]) {
         this.object = object;
+        this.mods = mods;
     }
 
     /**
@@ -87,16 +139,18 @@ export abstract class DrawableHitObject {
     ): void;
 
     /**
-     * Drwas the hit result of this object at a given time.
+     * Draws the hit result of this object at a given time.
      *
      * @param ctx The canvas context.
      * @param time The time.
+     * @param position The position to draw the hit result on.
      * @param hitTime The time at which the object was hit.
      * @param hitResult The hit result of the object.
      */
     protected drawHitResult(
         ctx: CanvasRenderingContext2D,
         time: number,
+        position: Vector2,
         hitTime: number,
         hitResult: HitResult
     ): void {
@@ -127,7 +181,6 @@ export abstract class DrawableHitObject {
         ctx.globalAlpha = opacity;
         ctx.shadowBlur = this.shadowBlur;
 
-        const position = this.object.getStackedEndPosition(Modes.droid);
         let text = "";
 
         // Colors are taken from osu!lazer (https://github.com/ppy/osu/blob/daae560ff731bdf49970a5bc6588c0861fac760f/osu.Game/Graphics/OsuColour.cs#L105-L131)
@@ -153,5 +206,23 @@ export abstract class DrawableHitObject {
         ctx.translate(position.x, position.y);
         ctx.fillText(text, 0, 0);
         ctx.restore();
+    }
+
+    /**
+     * Reevaluates the stacked position of the specified position.
+     *
+     * @param position The position to reevaluate.
+     * @returns The stacked position.
+     */
+    private reevaluateStackedPosition(position: Vector2): Vector2 {
+        if (this.object.type & ObjectTypes.spinner) {
+            return position;
+        }
+
+        const coordinate = this.object.stackHeight * -6.4 * this.scale;
+
+        return position
+            .subtract(this.object.getStackOffset(Modes.droid))
+            .add(new Vector2(coordinate, coordinate));
     }
 }

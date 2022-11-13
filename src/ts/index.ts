@@ -3,13 +3,74 @@ import { ChimuAPIResponse } from "./ChimuAPIResponse";
 import { Preview } from "./Preview";
 import { SpectatorDataProcessor } from "./spectator/SpectatorDataProcessor";
 import { FayeClientManager } from "./spectator/FayeClientManager";
-import { DrawableBeatmap } from "./drawables/DrawableBeatmap";
-import { BeatmapDecoder } from "./osu-base";
+import { Anchor, BeatmapDecoder } from "./osu-base";
 
-const preview = new Preview($("#container")[0]);
+const container = $("#container")[0];
+// TODO: this is test data, will be removed soon after proper room ID subscription is ready
+const playerInfo1 = {
+    uid: 51076,
+    username: "Rian8337",
+    mods: "",
+};
+const playerInfo2 = {
+    ...playerInfo1,
+    uid: 51077,
+    mods: "HD",
+};
+const playerInfo3 = {
+    ...playerInfo1,
+    uid: 51078,
+    mods: "HR",
+};
+const playerInfo4 = {
+    ...playerInfo1,
+    uid: 51079,
+    mods: "HDHR",
+};
+const playerInfos = [playerInfo1, playerInfo2, playerInfo3, playerInfo4];
+const previews: Preview[] = [];
+previews.push(new Preview(container, Anchor.topLeft));
+previews.push(new Preview(container, Anchor.topCenter));
+previews.push(new Preview(container, Anchor.centerLeft));
+previews.push(new Preview(container, Anchor.center));
+
 const audio = new Audio();
 let specDataProcessor: SpectatorDataProcessor | undefined;
 let clientManager: FayeClientManager | undefined;
+
+const background = new Image();
+background.setAttribute("crossOrigin", "anonymous");
+
+background.addEventListener("load", () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext("2d")!;
+
+    // background-size: cover height
+    const sWidth = background.height * (window.innerWidth / window.innerHeight);
+    ctx.drawImage(
+        background,
+        (background.width - sWidth) / 2,
+        0,
+        sWidth,
+        background.height,
+        0,
+        0,
+        window.innerWidth,
+        window.innerHeight
+    );
+
+    // background dim
+    ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+    container.style.backgroundImage = `url(${canvas.toDataURL()})`;
+});
+
+background.addEventListener("error", () => {
+    container.style.backgroundImage = "none";
+});
 
 $(window)
     .on("hashchange", () => {
@@ -208,42 +269,44 @@ $(window)
             await reader.close();
 
             if (backgroundBlob && osuFile) {
-                const beatmap = new DrawableBeatmap(
-                    new BeatmapDecoder().decode(osuFile).result
-                );
+                const beatmap = new BeatmapDecoder().decode(osuFile).result;
 
-                specDataProcessor = new SpectatorDataProcessor(
-                    beatmap.beatmap,
-                    [
-                        {
-                            uid: 51076,
-                            username: "Rian8337",
-                            mods: "",
+                specDataProcessor = new SpectatorDataProcessor(beatmap, [
+                    playerInfo1,
+                    playerInfo2,
+                    playerInfo3,
+                    playerInfo4,
+                ]);
+
+                let firstLoad = false;
+
+                for (let i = 0; i < playerInfos.length; ++i) {
+                    previews[i].load(
+                        beatmap,
+                        specDataProcessor.managers.get(playerInfos[i].uid)!,
+                        () => {
+                            if (firstLoad) {
+                                return;
+                            }
+
+                            firstLoad = true;
+                            background.src = backgroundBlob;
+                            audio.src = audioBlob;
+
+                            const { metadata } = beatmap;
+                            $("#title a")
+                                .prop("href", `//osu.ppy.sh/b/${beatmapId}`)
+                                .text(
+                                    `${metadata.artist} - ${metadata.title} (${metadata.creator}) [${metadata.version}]`
+                                );
+                            $("#play").addClass("e");
                         },
-                    ]
-                );
+                        (_, e) => alert(e)
+                    );
+                }
 
-                preview.load(
-                    backgroundBlob,
-                    beatmap,
-                    specDataProcessor.managers.get(51076)!,
-                    async (preview) => {
-                        audio.src = audioBlob;
-                        clientManager = new FayeClientManager(
-                            specDataProcessor!
-                        );
-                        await clientManager.beginSubscriptions();
-
-                        const { metadata } = preview.beatmap.beatmap;
-                        $("#title a")
-                            .prop("href", `//osu.ppy.sh/b/${beatmapId}`)
-                            .text(
-                                `${metadata.artist} - ${metadata.title} (${metadata.creator}) [${metadata.version}]`
-                            );
-                        $("#play").addClass("e");
-                    },
-                    (_, e) => alert(e)
-                );
+                clientManager = new FayeClientManager(specDataProcessor!);
+                await clientManager.beginSubscriptions();
             } else {
                 $("#title a").text("An error has occurred, sorry!");
             }
@@ -257,9 +320,7 @@ $(document.body).on("mousemove", function () {
     self.addClass("h").data(
         "h",
         setTimeout(() => {
-            if (!audio.paused) {
-                self.removeClass("h");
-            }
+            self.removeClass("h");
         }, 3000)
     );
 });
@@ -267,19 +328,22 @@ $(document.body).on("mousemove", function () {
 $(audio)
     .on("play", () => {
         $("#play").removeClass("e");
-        preview.beatmap.refresh();
+        for (const preview of previews) {
+            preview.beatmap.refresh();
+        }
+
         requestAnimationFrame(function foo() {
             const currentTime = audio.currentTime * 1000;
-            if (specDataProcessor?.isAvailableAt(currentTime)) {
-                if (!audio.ended) {
-                    audio.play();
-                }
-            } else {
+            if (specDataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
+                audio.play();
+            } else if (!audio.ended) {
                 audio.pause();
             }
 
             if (!audio.paused) {
-                preview.at(audio.currentTime * 1000);
+                for (const preview of previews) {
+                    preview.at(audio.currentTime * 1000);
+                }
             }
 
             requestAnimationFrame(foo);

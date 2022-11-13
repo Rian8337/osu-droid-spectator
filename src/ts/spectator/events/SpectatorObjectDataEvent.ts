@@ -7,30 +7,26 @@ import { SpectatorEvent } from "./SpectatorEvent";
  */
 export class SpectatorObjectDataEvent
     extends SpectatorEvent
-    implements
-        Omit<
-            SpectatorObjectData,
-            "currentScore" | "currentCombo" | "currentAccuracy"
-        >
+    implements SpectatorObjectData
 {
     readonly index: number;
+    readonly currentScore: number;
+    readonly currentCombo: number;
+    readonly currentAccuracy: number;
     readonly accuracy: number;
     readonly tickset: boolean[];
     readonly result: HitResult;
 
-    constructor(
-        time: number,
-        index: number,
-        accuracy: number,
-        tickset: boolean[],
-        result: HitResult
-    ) {
+    constructor(time: number, objectData: SpectatorObjectData) {
         super(time);
 
-        this.index = index;
-        this.accuracy = accuracy;
-        this.tickset = tickset;
-        this.result = result;
+        this.index = objectData.index;
+        this.accuracy = objectData.accuracy;
+        this.tickset = objectData.tickset;
+        this.result = objectData.result;
+        this.currentAccuracy = objectData.currentAccuracy;
+        this.currentCombo = objectData.currentCombo;
+        this.currentScore = objectData.currentScore;
     }
 
     override isRedundant(existing: SpectatorObjectDataEvent): boolean {

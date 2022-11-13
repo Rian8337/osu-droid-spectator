@@ -1,4 +1,4 @@
-import { MathUtils, Playfield } from "../../osu-base";
+import { MathUtils, ModHidden, Playfield } from "../../osu-base";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/rawdata/HitResult";
 import { DrawableHitObject } from "./DrawableHitObject";
@@ -7,7 +7,8 @@ import { DrawableHitObject } from "./DrawableHitObject";
  * Represents a spinner that can be drawn.
  */
 export class DrawableSpinner extends DrawableHitObject {
-    override readonly fadeInTime = 500;
+    protected override readonly fadeInTime = 500;
+    protected override readonly fadeOutTime = 150;
 
     private static readonly radius = Playfield.baseSize.y / 2;
     private static readonly borderWidth = this.radius / 20;
@@ -53,7 +54,12 @@ export class DrawableSpinner extends DrawableHitObject {
         ctx.restore();
 
         // Approach
-        if (dt < 0 && time <= this.object.endTime) {
+        // Only draw approach circle if HD is not used.
+        if (
+            dt < 0 &&
+            time <= this.object.endTime &&
+            !this.mods.some((m) => m instanceof ModHidden)
+        ) {
             const scale = 1 + dt / this.object.duration;
 
             ctx.save();
@@ -73,17 +79,34 @@ export class DrawableSpinner extends DrawableHitObject {
             ctx.restore();
         }
 
+        const endPosition = this.object.position;
+
         if (this.isHit) {
             if (hitData) {
-                this.drawHitResult(ctx, time, hitData.time, hitData.result);
+                this.drawHitResult(
+                    ctx,
+                    time,
+                    endPosition,
+                    hitData.time,
+                    hitData.result
+                );
             } else {
                 this.drawHitResult(
                     ctx,
                     time,
+                    endPosition,
                     this.object.endTime,
                     HitResult.miss
                 );
             }
+        } else {
+            this.drawHitResult(
+                ctx,
+                time,
+                endPosition,
+                this.object.endTime,
+                HitResult.miss
+            );
         }
     }
 }

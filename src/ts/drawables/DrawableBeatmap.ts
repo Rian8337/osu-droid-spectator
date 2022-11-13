@@ -2,8 +2,11 @@ import {
     Beatmap,
     Circle,
     HitObject,
+    IModApplicableToDroid,
     MapStats,
+    Mod,
     Modes,
+    ModUtil,
     Playfield,
     RGBColor,
     Slider,
@@ -21,16 +24,13 @@ import { HitResult } from "../spectator/rawdata/HitResult";
  * Represents a beatmap that can be used to draw objects.
  */
 export class DrawableBeatmap {
-    static readonly width = window.screen.width;
-    static readonly height = window.screen.height;
-
     /**
      * The coordinate of the playfield at (0, 0) with respect to the window size.
      */
     static get zeroCoordinate(): Vector2 {
         return new Vector2(
-            (this.width - Playfield.baseSize.x) / 2,
-            (this.height - Playfield.baseSize.y) / 2
+            (window.innerWidth - Playfield.baseSize.x) / 2,
+            (window.innerHeight - Playfield.baseSize.y) / 2
         );
     }
 
@@ -44,7 +44,9 @@ export class DrawableBeatmap {
      */
     readonly drawableHitObjects: DrawableHitObject[] = [];
 
+    private readonly objectScale: number;
     private readonly approachTime: number;
+
     private get comboColors(): RGBColor[] {
         const comboColors = this.beatmap.colors.combo;
 
@@ -69,26 +71,42 @@ export class DrawableBeatmap {
      * Converts a hitobject into drawable hitobject.
      *
      * @param object The object to convert.
+     * @param mods The mods being used by the player.
      */
-    static convertHitObjectToDrawable(object: HitObject): DrawableHitObject {
+    static convertHitObjectToDrawable(
+        object: HitObject,
+        mods: (Mod & IModApplicableToDroid)[]
+    ): DrawableHitObject {
         if (object instanceof Slider) {
-            return new DrawableSlider(object);
+            return new DrawableSlider(object, mods);
         } else if (object instanceof Spinner) {
-            return new DrawableSpinner(object);
+            return new DrawableSpinner(object, mods);
         } else {
-            return new DrawableCircle(object);
+            return new DrawableCircle(object, mods);
         }
     }
 
-    constructor(beatmap: Beatmap) {
+    constructor(beatmap: Beatmap, mods: (Mod & IModApplicableToDroid)[]) {
         this.beatmap = beatmap;
 
         if (this.beatmap.hitObjects.objects.length === 0) {
             throw new Error("This beatmap does not have any hitobjects.");
         }
 
-        this.approachTime = MapStats.arToMS(this.beatmap.difficulty.ar!);
-        this.convertHitObjects();
+        const stats = new MapStats({
+            cs: beatmap.difficulty.cs,
+            ar: beatmap.difficulty.ar,
+            mods: mods.filter(
+                (v) =>
+                    !ModUtil.speedChangingMods.find(
+                        (m) => m.acronym === v.acronym
+                    )
+            ),
+        }).calculate({ mode: Modes.droid });
+
+        this.objectScale = (1 - (0.7 * (stats.cs! - 5)) / 5) / 2;
+        this.approachTime = MapStats.arToMS(stats.ar!);
+        this.convertHitObjects(mods);
     }
 
     update(ctx: CanvasRenderingContext2D): void {
@@ -98,9 +116,7 @@ export class DrawableBeatmap {
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `${this.beatmap.hitObjects.objects[0].getRadius(
-                Modes.droid
-            )}px "Comic Sans MS", cursive, sans-serif`;
+            ctx.font = `${this.drawableHitObjects[0].radius}px "Comic Sans MS", cursive, sans-serif`;
         } catch (e) {
             // Ignore error
         }
@@ -208,14 +224,16 @@ export class DrawableBeatmap {
     /**
      * Converts hitobjects to drawable hitobjects.
      */
-    private convertHitObjects(): void {
+    private convertHitObjects(mods: (Mod & IModApplicableToDroid)[]): void {
         let combo = 1;
         let comboIndex = -1;
         let setComboIndex = true;
 
         for (const object of this.beatmap.hitObjects.objects) {
-            const drawableObject =
-                DrawableBeatmap.convertHitObjectToDrawable(object);
+            const drawableObject = DrawableBeatmap.convertHitObjectToDrawable(
+                object,
+                mods
+            );
 
             // Set combo and color.
             if (drawableObject.object instanceof Spinner) {
@@ -228,6 +246,7 @@ export class DrawableBeatmap {
                 setComboIndex = false;
             }
 
+            drawableObject.scale = this.objectScale;
             drawableObject.approachTime = this.approachTime;
             drawableObject.combo = combo++;
             drawableObject.color = this.comboColors[comboIndex];

@@ -222,11 +222,20 @@ export class MapStats {
                 // from the bitwise enum of mods to prevent double
                 // calculation.
                 if (this.cs !== undefined) {
-                    // Assume 681 is height.
-                    const assumedHeight: number = 681;
+                    // https://github.com/osudroid/osu-droid/blob/6306c68e3ffaf671eac794bf45cc95c0f3313a82/src/ru/nsu/ccfit/zuev/osu/Config.java#L258-L272
+                    const width = Math.max(
+                        window.innerWidth,
+                        window.innerHeight
+                    );
+                    const height = Math.min(
+                        window.innerWidth,
+                        window.innerHeight
+                    );
+
+                    const resHeight = (1280 * height) / width;
 
                     let scale: number =
-                        ((assumedHeight / 480) * (54.42 - this.cs * 4.48) * 2) /
+                        ((resHeight / 480) * (54.42 - this.cs * 4.48) * 2) /
                             128 +
                         (0.5 * (11 - 5.2450170716245195)) / 5;
 
@@ -240,11 +249,11 @@ export class MapStats {
                         scale += 0.125;
                     }
                     if (this.mods.some((m) => m instanceof ModSmallCircle)) {
-                        scale -= ((assumedHeight / 480) * (4 * 4.48) * 2) / 128;
+                        scale -= ((resHeight / 480) * (4 * 4.48) * 2) / 128;
                     }
                     const radius: number =
                         (64 * Math.max(1e-3, scale)) /
-                        ((assumedHeight * 0.85) / 384);
+                        ((resHeight * 0.85) / 384);
                     this.cs = Math.min(5 + ((1 - radius / 32) * 5) / 0.7, 10);
                 }
 

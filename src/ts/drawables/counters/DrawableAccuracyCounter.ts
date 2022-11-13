@@ -9,7 +9,7 @@ import { DrawableScoreCounter } from "./DrawableScoreCounter";
  */
 export class DrawableAccuracyCounter extends DrawableCounter<SpectatorAccuracyEvent> {
     private static readonly paddingX = DrawableScoreCounter.paddingX;
-    private static readonly paddingY = DrawableScoreCounter.paddingY * 1.5 + 10;
+    private static readonly paddingY = DrawableScoreCounter.paddingY * 2 + 10;
 
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
         const accuracy = this.manager.eventAt(time)?.accuracy ?? 1;

@@ -7,7 +7,7 @@ export class SpectatorEventManager<T extends SpectatorEvent> {
     /**
      * The events associated with this manager.
      */
-    protected readonly _events: T[] = [];
+    protected _events: T[] = [];
 
     /**
      * The events associated with this manager.

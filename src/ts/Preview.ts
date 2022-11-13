@@ -5,6 +5,8 @@ import { SpectatorDataManager } from "./spectator/SpectatorDataManager";
 import { DrawableScoreCounter } from "./drawables/counters/DrawableScoreCounter";
 import { DrawableAccuracyCounter } from "./drawables/counters/DrawableAccuracyCounter";
 import { DrawablePlayerInfo } from "./drawables/DrawablePlayerInfo";
+import { PreviewAnchor } from "./PreviewAnchor";
+import { Anchor, Beatmap } from "./osu-base";
 
 /**
  * Represents a beatmap preview.
@@ -47,88 +49,49 @@ export class Preview {
 
     private readonly container: HTMLElement;
     private readonly screen: HTMLCanvasElement;
-    private readonly background: HTMLImageElement;
     private get ctx(): CanvasRenderingContext2D {
         return this.screen.getContext("2d")!;
     }
 
-    constructor(dest: HTMLElement) {
+    constructor(dest: HTMLElement, anchor: PreviewAnchor) {
         this.container = dest;
 
         this.screen = document.createElement("canvas");
-        this.screen.width = DrawableBeatmap.width;
-        this.screen.height = DrawableBeatmap.height;
+        this.applyCanvasPosition(this.screen, anchor);
         this.container.appendChild(this.screen);
-
-        this.background = new Image();
-        this.background.setAttribute("crossOrigin", "anonymous");
-
-        this.background.addEventListener("load", () => {
-            const canvas = document.createElement("canvas");
-            canvas.id = "bgcanvas";
-            canvas.width = this.screen.width;
-            canvas.height = this.screen.height;
-            const ctx = canvas.getContext("2d")!;
-
-            // background-size: cover height
-            const sWidth =
-                this.background.height *
-                (this.screen.width / this.screen.height);
-            ctx.drawImage(
-                this.background,
-                (this.background.width - sWidth) / 2,
-                0,
-                sWidth,
-                this.background.height,
-                0,
-                0,
-                this.screen.width,
-                this.screen.height
-            );
-
-            // background dim
-            ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-            ctx.fillRect(0, 0, this.screen.width, this.screen.height);
-
-            this.container.style.backgroundImage = `url(${canvas.toDataURL()})`;
-        });
-
-        this.background.addEventListener("error", () => {
-            this.container.style.backgroundImage = "none";
-        });
     }
 
     /**
      * Loads this preview and prepares the beatmap.
      *
-     * @param backgroundBlob The background blob.
      * @param beatmap The beatmap to load.
      * @param specDataManager The spectator data processor of this preview.
      * @param onSuccess The function to be called when the operation succeeds.
      * @param onFail The function to be called when the operation fails.
      */
     load(
-        backgroundBlob: string,
-        beatmap: DrawableBeatmap,
+        beatmap: Beatmap,
         specDataManager: SpectatorDataManager,
         onSuccess?: (preview: Preview) => unknown,
         onFail?: (preview: Preview, e: Error) => unknown
     ): void {
         try {
-            this.beatmap = beatmap;
+            this.beatmap = new DrawableBeatmap(beatmap, specDataManager.mods);
             this.specDataManager = specDataManager;
             this.playerInfo = new DrawablePlayerInfo(
                 specDataManager.uid,
-                specDataManager.username
+                specDataManager.username,
+                specDataManager.mods
             );
-            this.background.src = backgroundBlob;
             this.ctx.restore();
             this.ctx.save();
 
             this.drawableCursors.length = 0;
 
             for (const manager of specDataManager.events.cursor) {
-                this.drawableCursors.push(new DrawableCursor(manager));
+                this.drawableCursors.push(
+                    new DrawableCursor(manager, specDataManager.mods)
+                );
             }
 
             this.accuracyCounter = new DrawableAccuracyCounter(
@@ -162,7 +125,7 @@ export class Preview {
     at(time: number): void {
         this.ctx.save();
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-        this.ctx.clearRect(0, 0, DrawableBeatmap.width, DrawableBeatmap.height);
+        this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         this.ctx.restore();
         this.beatmap.draw(this.ctx, time, this.specDataManager);
         this.playerInfo.draw(this.ctx);
@@ -172,6 +135,38 @@ export class Preview {
 
         for (const drawableCursor of this.drawableCursors) {
             drawableCursor.draw(this.ctx, time);
+        }
+    }
+
+    private applyCanvasPosition(
+        canvas: HTMLCanvasElement,
+        anchor: PreviewAnchor
+    ): void {
+        canvas.width = window.innerWidth / 2;
+        canvas.height = window.innerHeight / 2;
+
+        const ctx = canvas.getContext("2d")!;
+        ctx.scale(0.5, 0.5);
+
+        if (anchor === Anchor.topLeft) {
+            return;
+        }
+
+        canvas.style.position = "absolute";
+
+        switch (anchor) {
+            case Anchor.topCenter:
+                canvas.style.left = `${window.innerWidth / 2}px`;
+                canvas.style.top = "0px";
+                break;
+            case Anchor.centerLeft:
+                canvas.style.left = "0px";
+                canvas.style.top = `${window.innerHeight / 2}px`;
+                break;
+            case Anchor.center:
+                canvas.style.left = `${window.innerWidth / 2}px`;
+                canvas.style.top = `${window.innerHeight / 2}px`;
+                break;
         }
     }
 }

@@ -1,25 +1,30 @@
+import { IModApplicableToDroid, Mod } from "../osu-base";
+import { PlayerInfo } from "../spectator/rawdata/PlayerInfo";
 import { DrawableBeatmap } from "./DrawableBeatmap";
 
 /**
  * Represents player information to be drawn.
  */
-export class DrawablePlayerInfo {
+export class DrawablePlayerInfo implements Omit<PlayerInfo, "mods"> {
     private static readonly paddingX = 5;
-    private static readonly paddingY = 90;
+    private static readonly paddingY = 35;
 
-    /**
-     * The uid of the player.
-     */
     readonly uid: number;
-
-    /**
-     * The username of the player.
-     */
     readonly username: string;
 
-    constructor(uid: number, username: string) {
+    /**
+     * The mods that they used to play.
+     */
+    readonly mods: (Mod & IModApplicableToDroid)[];
+
+    constructor(
+        uid: number,
+        username: string,
+        mods: (Mod & IModApplicableToDroid)[]
+    ) {
         this.uid = uid;
         this.username = username;
+        this.mods = mods;
     }
 
     /**
@@ -44,7 +49,11 @@ export class DrawablePlayerInfo {
         ctx.textAlign = "left";
         ctx.fillStyle = "#fff";
         ctx.fillText(
-            `${this.username} (${this.uid})`,
+            `${this.username} (${this.uid})${
+                this.mods.length > 0
+                    ? ` [+${this.mods.reduce((a, m) => a + m.acronym, "")}]`
+                    : ""
+            }`,
             DrawablePlayerInfo.paddingX - zeroCoordinate.x,
             DrawablePlayerInfo.paddingY - zeroCoordinate.y
         );

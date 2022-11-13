@@ -151,19 +151,22 @@ export class SpectatorDataProcessor {
                 // Infer combo and score from hit accuracy and tickset.
                 let score = 0;
                 let combo = 0;
-                const prevObject =
-                    this.beatmap.hitObjects.objects[objectData.index - 1];
 
-                if (prevObject) {
-                    score =
-                        events.score.eventAt(prevObject.endTime)?.score ?? 0;
-                    combo =
-                        events.combo.eventAt(prevObject.endTime)?.combo ?? 0;
+                if (objectData.index > 0) {
+                    const event = events.objectData.eventAt(
+                        objectData.index - 1
+                    );
+
+                    score = event?.currentScore ?? 0;
+                    combo = event?.currentCombo ?? 0;
                 }
 
                 // Check for slider head break.
-                if (objectData.accuracy !== manager.maxHitWindow + 13) {
-                    score += 30 * manager.scoreMultiplier;
+                if (
+                    objectData.result !== HitResult.miss &&
+                    objectData.accuracy !== manager.maxHitWindow + 13
+                ) {
+                    score += Math.floor(30 * manager.scoreMultiplier);
                     ++combo;
                 } else {
                     combo = 0;
@@ -185,10 +188,10 @@ export class SpectatorDataProcessor {
                         ++combo;
 
                         if (nestedObject instanceof SliderTick) {
-                            score += 10 * manager.scoreMultiplier;
+                            score += Math.floor(10 * manager.scoreMultiplier);
                         } else {
                             // This must be a slider repeat.
-                            score += 30 * manager.scoreMultiplier;
+                            score += Math.floor(30 * manager.scoreMultiplier);
                         }
                     } else {
                         combo = 0;
@@ -216,13 +219,7 @@ export class SpectatorDataProcessor {
             );
 
             events.objectData.add(
-                new SpectatorObjectDataEvent(
-                    time,
-                    objectData.index,
-                    objectData.accuracy,
-                    objectData.tickset,
-                    objectData.result
-                )
+                new SpectatorObjectDataEvent(time, objectData)
             );
         }
 

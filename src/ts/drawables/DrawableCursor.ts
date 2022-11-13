@@ -1,3 +1,10 @@
+import {
+    IModApplicableToDroid,
+    Mod,
+    ModHardRock,
+    Playfield,
+    Vector2,
+} from "../osu-base";
 import { SpectatorCursorEvent } from "../spectator/events/SpectatorCursorEvent";
 import { MovementType } from "../spectator/rawdata/MovementType";
 import { SpectatorEventManager } from "../spectator/SpectatorEventManager";
@@ -11,8 +18,14 @@ export class DrawableCursor {
      */
     readonly manager: SpectatorEventManager<SpectatorCursorEvent>;
 
-    constructor(manager: SpectatorEventManager<SpectatorCursorEvent>) {
+    private readonly isHardRock: boolean;
+
+    constructor(
+        manager: SpectatorEventManager<SpectatorCursorEvent>,
+        mods: (Mod & IModApplicableToDroid)[]
+    ) {
         this.manager = manager;
+        this.isHardRock = mods.some((m) => m instanceof ModHardRock);
     }
 
     /**
@@ -31,13 +44,22 @@ export class DrawableCursor {
         ctx.save();
         ctx.globalAlpha = 1;
 
+        let { position } = cursor;
+
+        if (this.isHardRock) {
+            position = new Vector2(
+                position.x,
+                Playfield.baseSize.y - position.y
+            );
+        }
+
         const radius = 15;
         const gradient = ctx.createRadialGradient(
-            cursor.position.x,
-            cursor.position.y,
+            position.x,
+            position.y,
             0,
-            cursor.position.x,
-            cursor.position.y,
+            position.x,
+            position.y,
             radius
         );
 
@@ -46,13 +68,7 @@ export class DrawableCursor {
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.arc(
-            cursor.position.x,
-            cursor.position.y,
-            radius,
-            -Math.PI,
-            Math.PI
-        );
+        ctx.arc(position.x, position.y, radius, -Math.PI, Math.PI);
         ctx.fill();
         ctx.closePath();
         ctx.restore();
