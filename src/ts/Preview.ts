@@ -4,6 +4,7 @@ import { DrawableCursor } from "./drawables/DrawableCursor";
 import { SpectatorDataManager } from "./spectator/SpectatorDataManager";
 import { DrawableScoreCounter } from "./drawables/counters/DrawableScoreCounter";
 import { DrawableAccuracyCounter } from "./drawables/counters/DrawableAccuracyCounter";
+import { DrawablePlayerInfo } from "./drawables/DrawablePlayerInfo";
 
 /**
  * Represents a beatmap preview.
@@ -13,6 +14,11 @@ export class Preview {
      * The beatmap being previewed.
      */
     beatmap!: DrawableBeatmap;
+
+    /**
+     * The player information being displayed.
+     */
+    playerInfo!: DrawablePlayerInfo;
 
     /**
      * The spectator data manager responsible for this preview.
@@ -111,6 +117,10 @@ export class Preview {
         try {
             this.beatmap = beatmap;
             this.specDataManager = specDataManager;
+            this.playerInfo = new DrawablePlayerInfo(
+                specDataManager.uid,
+                specDataManager.username
+            );
             this.background.src = backgroundBlob;
             this.ctx.restore();
             this.ctx.save();
@@ -155,6 +165,7 @@ export class Preview {
         this.ctx.clearRect(0, 0, DrawableBeatmap.width, DrawableBeatmap.height);
         this.ctx.restore();
         this.beatmap.draw(this.ctx, time, this.specDataManager);
+        this.playerInfo.draw(this.ctx);
         this.accuracyCounter.draw(this.ctx, time);
         this.comboCounter.draw(this.ctx, time);
         this.scoreCounter.draw(this.ctx, time);
