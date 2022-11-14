@@ -73,7 +73,7 @@ background.addEventListener("error", () => {
 });
 
 $(window)
-    .on("hashchange", () => {
+    .on("hashchange", async () => {
         $(audio).trigger("pause");
         $("#play").removeClass("e");
 
@@ -86,43 +86,75 @@ $(window)
         let audioBlob = "";
         let osuFile = "";
 
-        (async function () {
-            const apiResponse = await fetch(
-                `https://api.chimu.moe/v1/map/${beatmapId}`
-            );
-            const data: ChimuAPIResponse = await apiResponse.json();
+        const apiResponse = await fetch(
+            `https://api.chimu.moe/v1/map/${beatmapId}`
+        );
+        const data: ChimuAPIResponse = await apiResponse.json();
 
-            const { OsuFile: osuFileName, DownloadPath } = data;
+        const { OsuFile: osuFileName, DownloadPath } = data;
 
-            const downloadResponse = await fetch(
-                `https://chimu.moe/${DownloadPath}`
-            );
+        const downloadResponse = await fetch(
+            `https://chimu.moe/${DownloadPath}`
+        );
 
-            if (
-                downloadResponse.status >= 400 &&
-                downloadResponse.status < 200
-            ) {
-                $("#title a").text("Beatmap not found in mirror, sorry!");
-                return;
+        if (
+            downloadResponse.status >= 400 &&
+            downloadResponse.status < 200
+        ) {
+            $("#title a").text("Beatmap not found in mirror, sorry!");
+            return;
+        }
+
+        const blob = await downloadResponse.blob();
+        const reader = new ZipReader(new BlobReader(blob));
+
+        const entries = await reader.getEntries();
+        if (entries.length > 0) {
+            // For performance sake, get background and audio here.
+            let found = false;
+
+            for (const entry of entries) {
+                if (entry.filename !== osuFileName) {
+                    continue;
+                }
+
+                found = true;
+                osuFile = await entry.getData(new TextWriter());
+
+                const backgroundMatch = osuFile.match(/(?<=0,0,").+(?=")/);
+                if (backgroundMatch) {
+                    backgroundFilename = backgroundMatch[0];
+                }
+
+                const audioMatch = osuFile.match(
+                    /(?<=AudioFilename: ).+(?=)/
+                );
+                if (audioMatch) {
+                    audioFilename = audioMatch[0];
+                }
+
+                break;
             }
 
-            const blob = await downloadResponse.blob();
-            const reader = new ZipReader(new BlobReader(blob));
-
-            const entries = await reader.getEntries();
-            if (entries.length > 0) {
-                // For performance sake, get background and audio here.
-                let found = false;
-
+            if (!found) {
+                // If not found, try cleaning the file name.
                 for (const entry of entries) {
-                    if (entry.filename !== osuFileName) {
+                    const cleanedFilename1 = entry.filename.replace(
+                        /[^a-zA-Z]/g,
+                        ""
+                    );
+                    const cleanedFilename2 = osuFileName.replace(
+                        /[^a-zA-Z]/g,
+                        ""
+                    );
+
+                    if (cleanedFilename1 !== cleanedFilename2) {
                         continue;
                     }
 
-                    found = true;
                     osuFile = await entry.getData(new TextWriter());
-
-                    const backgroundMatch = osuFile.match(/(?<=0,0,").+(?=")/);
+                    const backgroundMatch =
+                        osuFile.match(/(?<=0,0,").+(?=")/);
                     if (backgroundMatch) {
                         backgroundFilename = backgroundMatch[0];
                     }
@@ -136,52 +168,45 @@ $(window)
 
                     break;
                 }
+            }
 
-                if (!found) {
-                    // If not found, try cleaning the file name.
-                    for (const entry of entries) {
-                        const cleanedFilename1 = entry.filename.replace(
-                            /[^a-zA-Z]/g,
-                            ""
-                        );
-                        const cleanedFilename2 = osuFileName.replace(
-                            /[^a-zA-Z]/g,
-                            ""
-                        );
+            // Make background blob.
+            if (backgroundFilename) {
+                let found = false;
 
-                        if (cleanedFilename1 !== cleanedFilename2) {
-                            continue;
-                        }
-
-                        osuFile = await entry.getData(new TextWriter());
-                        const backgroundMatch =
-                            osuFile.match(/(?<=0,0,").+(?=")/);
-                        if (backgroundMatch) {
-                            backgroundFilename = backgroundMatch[0];
-                        }
-
-                        const audioMatch = osuFile.match(
-                            /(?<=AudioFilename: ).+(?=)/
-                        );
-                        if (audioMatch) {
-                            audioFilename = audioMatch[0];
-                        }
-
-                        break;
+                for (const entry of entries) {
+                    if (entry.filename !== backgroundFilename) {
+                        continue;
                     }
+
+                    found = true;
+                    const extension = backgroundFilename.split(".").pop()!;
+                    backgroundBlob = URL.createObjectURL(
+                        await entry.getData(
+                            new BlobWriter(`image/${extension}`)
+                        )
+                    );
+
+                    break;
                 }
 
-                // Make background blob.
-                if (backgroundFilename) {
-                    let found = false;
-
+                if (!found) {
+                    // If not found, try cleaning file name first.
                     for (const entry of entries) {
-                        if (entry.filename !== backgroundFilename) {
+                        if (
+                            entry.filename
+                                .replace(fileNameCleanerRegex, "")
+                                .toLowerCase() !==
+                            backgroundFilename
+                                .replace(fileNameCleanerRegex, "")
+                                .toLowerCase()
+                        ) {
                             continue;
                         }
 
-                        found = true;
-                        const extension = backgroundFilename.split(".").pop()!;
+                        const extension = backgroundFilename
+                            .split(".")
+                            .pop()!;
                         backgroundBlob = URL.createObjectURL(
                             await entry.getData(
                                 new BlobWriter(`image/${extension}`)
@@ -190,47 +215,45 @@ $(window)
 
                         break;
                     }
+                }
+            }
 
-                    if (!found) {
-                        // If not found, try cleaning file name first.
-                        for (const entry of entries) {
-                            if (
-                                entry.filename
-                                    .replace(fileNameCleanerRegex, "")
-                                    .toLowerCase() !==
-                                backgroundFilename
-                                    .replace(fileNameCleanerRegex, "")
-                                    .toLowerCase()
-                            ) {
-                                continue;
-                            }
+            // Make audio blob.
+            if (audioFilename) {
+                let found = false;
 
-                            const extension = backgroundFilename
-                                .split(".")
-                                .pop()!;
-                            backgroundBlob = URL.createObjectURL(
-                                await entry.getData(
-                                    new BlobWriter(`image/${extension}`)
-                                )
-                            );
-
-                            break;
-                        }
+                for (const entry of entries) {
+                    if (entry.filename !== audioFilename) {
+                        continue;
                     }
+
+                    found = true;
+                    const extension = audioFilename.split(".").pop()!;
+                    audioBlob = URL.createObjectURL(
+                        await entry.getData(
+                            new BlobWriter(`audio/${extension}`)
+                        )
+                    );
+
+                    break;
                 }
 
-                // Make audio blob.
-                if (audioFilename) {
-                    let found = false;
-
+                if (!found) {
+                    // If not found, try cleaning file name first.
                     for (const entry of entries) {
-                        if (entry.filename !== audioFilename) {
+                        if (
+                            entry.filename
+                                .replace(fileNameCleanerRegex, "")
+                                .toLowerCase() !==
+                            audioFilename
+                                .replace(fileNameCleanerRegex, "")
+                                .toLowerCase()
+                        ) {
                             continue;
                         }
 
-                        found = true;
                         const extension = audioFilename.split(".").pop()!;
-                        audioBlob = URL.createObjectURL(
+                        audioFilename = URL.createObjectURL(
                             await entry.getData(
                                 new BlobWriter(`audio/${extension}`)
                             )
@@ -238,79 +261,54 @@ $(window)
 
                         break;
                     }
+                }
+            }
+        }
 
-                    if (!found) {
-                        // If not found, try cleaning file name first.
-                        for (const entry of entries) {
-                            if (
-                                entry.filename
-                                    .replace(fileNameCleanerRegex, "")
-                                    .toLowerCase() !==
-                                audioFilename
-                                    .replace(fileNameCleanerRegex, "")
-                                    .toLowerCase()
-                            ) {
-                                continue;
-                            }
+        await reader.close();
 
-                            const extension = audioFilename.split(".").pop()!;
-                            audioFilename = URL.createObjectURL(
-                                await entry.getData(
-                                    new BlobWriter(`audio/${extension}`)
-                                )
-                            );
+        if (backgroundBlob && osuFile) {
+            const beatmap = new BeatmapDecoder().decode(osuFile).result;
 
-                            break;
+            specDataProcessor = new SpectatorDataProcessor(beatmap, [
+                playerInfo1,
+                playerInfo2,
+                playerInfo3,
+                playerInfo4,
+            ]);
+
+            let firstLoad = false;
+
+            for (let i = 0; i < playerInfos.length; ++i) {
+                previews[i].load(
+                    beatmap,
+                    specDataProcessor.managers.get(playerInfos[i].uid)!,
+                    () => {
+                        if (firstLoad) {
+                            return;
                         }
-                    }
-                }
+
+                        firstLoad = true;
+                        background.src = backgroundBlob;
+                        audio.src = audioBlob;
+
+                        const { metadata } = beatmap;
+                        $("#title a")
+                            .prop("href", `//osu.ppy.sh/b/${beatmapId}`)
+                            .text(
+                                `${metadata.artist} - ${metadata.title} (${metadata.creator}) [${metadata.version}]`
+                            );
+                        $("#play").addClass("e");
+                    },
+                    (_, e) => alert(e)
+                );
             }
 
-            await reader.close();
-
-            if (backgroundBlob && osuFile) {
-                const beatmap = new BeatmapDecoder().decode(osuFile).result;
-
-                specDataProcessor = new SpectatorDataProcessor(beatmap, [
-                    playerInfo1,
-                    playerInfo2,
-                    playerInfo3,
-                    playerInfo4,
-                ]);
-
-                let firstLoad = false;
-
-                for (let i = 0; i < playerInfos.length; ++i) {
-                    previews[i].load(
-                        beatmap,
-                        specDataProcessor.managers.get(playerInfos[i].uid)!,
-                        () => {
-                            if (firstLoad) {
-                                return;
-                            }
-
-                            firstLoad = true;
-                            background.src = backgroundBlob;
-                            audio.src = audioBlob;
-
-                            const { metadata } = beatmap;
-                            $("#title a")
-                                .prop("href", `//osu.ppy.sh/b/${beatmapId}`)
-                                .text(
-                                    `${metadata.artist} - ${metadata.title} (${metadata.creator}) [${metadata.version}]`
-                                );
-                            $("#play").addClass("e");
-                        },
-                        (_, e) => alert(e)
-                    );
-                }
-
-                clientManager = new FayeClientManager(specDataProcessor!);
-                await clientManager.beginSubscriptions();
-            } else {
-                $("#title a").text("An error has occurred, sorry!");
-            }
-        })();
+            clientManager = new FayeClientManager(specDataProcessor!);
+            await clientManager.beginSubscriptions();
+        } else {
+            $("#title a").text("An error has occurred, sorry!");
+        }
     })
     .trigger("hashchange");
 
