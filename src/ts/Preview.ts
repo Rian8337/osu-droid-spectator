@@ -47,18 +47,17 @@ export class Preview {
      */
     scoreCounter!: DrawableScoreCounter;
 
-    private readonly container: HTMLElement;
     private readonly screen: HTMLCanvasElement;
     private get ctx(): CanvasRenderingContext2D {
         return this.screen.getContext("2d")!;
     }
 
-    constructor(dest: HTMLElement, anchor: PreviewAnchor) {
-        this.container = dest;
+    constructor(anchor: PreviewAnchor) {
+        const container = $("#container")[0];
 
         this.screen = document.createElement("canvas");
         this.applyCanvasPosition(this.screen, anchor);
-        this.container.appendChild(this.screen);
+        container.appendChild(this.screen);
     }
 
     /**
@@ -66,15 +65,8 @@ export class Preview {
      *
      * @param beatmap The beatmap to load.
      * @param specDataManager The spectator data processor of this preview.
-     * @param onSuccess The function to be called when the operation succeeds.
-     * @param onFail The function to be called when the operation fails.
      */
-    load(
-        beatmap: Beatmap,
-        specDataManager: SpectatorDataManager,
-        onSuccess?: (preview: Preview) => unknown,
-        onFail?: (preview: Preview, e: Error) => unknown
-    ): void {
+    load(beatmap: Beatmap, specDataManager: SpectatorDataManager): void {
         try {
             this.beatmap = new DrawableBeatmap(beatmap, specDataManager.mods);
             this.specDataManager = specDataManager;
@@ -106,14 +98,8 @@ export class Preview {
 
             this.beatmap.update(this.ctx);
             this.at(0);
-
-            if (onSuccess) {
-                onSuccess(this);
-            }
         } catch (e) {
-            if (onFail) {
-                onFail(this, <Error>e);
-            }
+            // Ignore error.
         }
     }
 

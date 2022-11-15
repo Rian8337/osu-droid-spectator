@@ -68,9 +68,23 @@ export class SpectatorDataProcessor {
         return Number.isFinite(latestEventTime) ? latestEventTime : null;
     }
 
+    private lastFrameTime = Date.now();
+
     constructor(beatmap: Beatmap, playerInfo: PlayerInfo[]) {
         this.beatmap = beatmap;
-        this.reset(playerInfo);
+
+        for (const player of playerInfo) {
+            this.managers.set(
+                player.uid,
+                new SpectatorDataManager(
+                    this.beatmap,
+                    player,
+                    <(Mod & IModApplicableToDroid)[]>(
+                        ModUtil.pcStringToMods(player.mods)
+                    )
+                )
+            );
+        }
     }
 
     /**
@@ -80,39 +94,28 @@ export class SpectatorDataProcessor {
      * @returns Whether spectator data is available for all players at the given time.
      */
     isAvailableAt(time: number): boolean {
+        let isAvailable = true;
+
         for (const manager of this.managers.values()) {
             if (!manager.isAvailableAt(time)) {
-                return false;
+                isAvailable = false;
+
+                break;
             }
         }
 
-        return true;
-    }
+        if (!isAvailable) {
+            const currentTime = Date.now();
+            const diff = currentTime - this.lastFrameTime;
 
-    /**
-     * Resets the state of this processor.
-     *
-     * @param playerInfo The new players. If specified, managers will be reloaded.
-     */
-    reset(playerInfo?: PlayerInfo[]): void {
-        if (playerInfo) {
-            for (const player of playerInfo) {
-                this.managers.set(
-                    player.uid,
-                    new SpectatorDataManager(
-                        this.beatmap,
-                        player,
-                        <(Mod & IModApplicableToDroid)[]>(
-                            ModUtil.pcStringToMods(player.mods)
-                        )
-                    )
-                );
-            }
-        } else {
-            for (const manager of this.managers.values()) {
-                manager.reset();
+            // If time between last and current frame is more than 20 seconds,
+            // just return true, otherwise spectator will not proceed.
+            if (diff >= 20 * 1000) {
+                return true;
             }
         }
+
+        return isAvailable;
     }
 
     /**
@@ -128,6 +131,11 @@ export class SpectatorDataProcessor {
 
         if (!manager) {
             return false;
+        }
+
+        if (!manager.willBeSubmitted) {
+            // Do not process data if the score will not be submitted.
+            return true;
         }
 
         const { events } = manager;
