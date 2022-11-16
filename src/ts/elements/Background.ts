@@ -29,8 +29,13 @@ background.addEventListener("load", () => {
     container.style.backgroundImage = `url(${canvas.toDataURL()})`;
 });
 
-background.addEventListener("error", () => {
-    container.style.backgroundImage = "none";
-});
+background.addEventListener("error", clearBackground);
 
-export default background;
+/**
+ * Clears the current background.
+ */
+export function clearBackground(): void {
+    container.style.backgroundImage = "none";
+}
+
+export { background };

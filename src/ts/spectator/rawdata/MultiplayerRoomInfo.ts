@@ -16,11 +16,6 @@ export interface MultiplayerRoomInfo {
     requiredMods: string;
 
     /**
-     * The combination of mods that are allowed to be played.
-     */
-    allowedMods: string;
-
-    /**
      * The custom speed multiplier to be used.
      */
     speedMultiplier: number;

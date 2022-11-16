@@ -25,7 +25,7 @@ export abstract class DrawableHitObject {
     readonly object: HitObject;
 
     /**
-     * The mods applied to this object.
+     * The mods used by the player.
      */
     readonly mods: (Mod & IModApplicableToDroid)[];
 

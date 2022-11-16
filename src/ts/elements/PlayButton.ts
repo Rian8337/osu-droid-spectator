@@ -1,11 +1,9 @@
-import audio from "./Audio";
+import { audioState } from "./Audio";
 
 $("#play").on("click", function (e) {
     e.preventDefault();
 
     if ($(this).hasClass("e")) {
-        audio.play();
-    } else {
-        audio.pause();
+        $(audioState.audio).trigger("play");
     }
 });

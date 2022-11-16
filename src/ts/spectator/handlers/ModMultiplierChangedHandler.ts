@@ -1,25 +1,17 @@
-import { ModUtil } from "../../osu-base";
-import settings from "../../Settings";
+import { setModMultipliers } from "../../settings/RoomSettings";
 
 /**
  * A handler responsible for handling mod score multiplier changed events.
  */
 export abstract class ModMultiplierChangeHandler {
     /**
-     * Handles the event when a mod multiplier changes.
+     * Handles the event when mod multipliers change.
      *
-     * @param mods The mods multipliers are set to.
-     * @param value The score multiplier value of the mod.
+     * @param newMultipliers The new mod multipliers.
      */
-    static handle(mods: string, value: number): void {
+    static handle(newMultipliers: Record<string, number>): void {
         console.log("Mod multiplier changed");
 
-        for (const mod of ModUtil.pcStringToMods(mods)) {
-            if (!mod.isApplicableToDroid()) {
-                continue;
-            }
-
-            settings.modMultipliers[mod.acronym] = value;
-        }
+        setModMultipliers(newMultipliers);
     }
 }

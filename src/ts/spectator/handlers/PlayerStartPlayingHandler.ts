@@ -1,5 +1,7 @@
 import { ModUtil } from "../../osu-base";
-import settings from "../../Settings";
+import { pickedBeatmap } from "../../settings/BeatmapSettings";
+import { previews } from "../../settings/PreviewSettings";
+import { dataProcessor } from "../../settings/SpectatorSettings";
 
 /**
  * A handler responsible for handling events when a player starts playing.
@@ -12,24 +14,34 @@ export abstract class PlayerStartPlayingHandler {
      * @param mods The mods applied by the player.
      * @param beatmapHash The MD5 hash of the beatmap played by the player.
      */
-    static handle(uid: number, mods: string, beatmapHash: string): void {
+    static async handle(
+        uid: number,
+        mods: string,
+        beatmapHash: string,
+        forcedAR?: number
+    ): Promise<void> {
         console.log("Player starts playing");
 
-        if (!settings.processor) {
-            return;
-        }
-
-        const manager = settings.processor.managers.get(uid);
+        const manager = dataProcessor?.managers.get(uid);
 
         if (!manager) {
-            return;
+            throw new Error("No manager for player");
         }
 
-        if (settings.beatmap?.hash !== beatmapHash) {
+        const preview = previews.get(uid);
+
+        if (!preview) {
+            throw new Error("No preview for player");
+        }
+
+        manager.reset();
+
+        if (pickedBeatmap?.hash !== beatmapHash) {
             manager.willBeSubmitted = false;
             return;
         }
 
-        manager.applyMods(ModUtil.droidStringToMods(mods));
+        manager.applyPlayerSettings(ModUtil.droidStringToMods(mods), forcedAR);
+        preview.load(manager);
     }
 }

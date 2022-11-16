@@ -1,14 +1,24 @@
 import { Client as FayeClient } from "faye";
-import settings from "../Settings";
+import { roomId } from "../settings/RoomSettings";
+import { dataProcessor } from "../settings/SpectatorSettings";
 import { BeatmapChangedHandler } from "./handlers/BeatmapChangedHandler";
 import { ModMultiplierChangeHandler } from "./handlers/ModMultiplierChangedHandler";
+import { PlayerJoinedHandler } from "./handlers/PlayerJoinedHandler";
+import { PlayerLeftHandler } from "./handlers/PlayerLeftHandler";
 import { PlayerStartPlayingHandler } from "./handlers/PlayerStartPlayingHandler";
 import { RequiredModsChangedHandler } from "./handlers/RequiredModsChangedHandler";
 import { RoomClosedHandler } from "./handlers/RoomClosedHandler";
 import { SpeedMultiplierChangedHandler } from "./handlers/SpeedMultiplierChangedHandler";
-import { PickedBeatmap } from "./rawdata/PickedBeatmap";
-import { SpectatorData } from "./rawdata/SpectatorData";
-import { SpectatorDataProcessor } from "./SpectatorDataProcessor";
+import { isBeatmapChangedMessage } from "./messages/BeatmapChangedMessage";
+import { BroadcastedMessage } from "./messages/BroadcastedMessage";
+import { isModMultiplierChangedMessage } from "./messages/ModMultiplierChangedMessage";
+import { isPlayerJoinedMessage } from "./messages/PlayerJoinedMessage";
+import { isPlayerLeftMessage } from "./messages/PlayerLeftMessage";
+import { isPlayerStartPlayingMessage } from "./messages/PlayerStartPlayingMessage";
+import { isRequiredModsChangedMessage } from "./messages/RequiredModsChangedMessage";
+import { isRoomClosedMessage } from "./messages/RoomClosedMessage";
+import { isSpectatorDataMessage } from "./messages/SpectatorDataMessage";
+import { isSpeedMultiplierChangedMessage } from "./messages/SpeedMultiplierChangedMessage";
 
 /**
  * A manager for the Faye client.
@@ -22,108 +32,75 @@ export class FayeClientManager {
     );
 
     /**
-     * The spectator data processor.
-     */
-    readonly processor: SpectatorDataProcessor;
-
-    /**
-     * List of all subscriptions currently connected.
+     * The subscription to the main server.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private readonly subscriptions: any[] = [];
+    subscription: any;
 
     /**
-     * @param processor The processor used to process the data.
+     * Begins the subscription to the channel.
      */
-    constructor(processor: SpectatorDataProcessor) {
-        this.processor = processor;
-    }
-
-    /**
-     * Begins subscription to channels.
-     */
-    async beginSubscriptions(): Promise<void> {
-        // End existing subscriptions first.
-        await this.endSubscriptions();
-
-        this.subscriptions.push(
-            await this.client.subscribe(
-                `/${settings.roomId}/beatmapChange`,
-                (message: PickedBeatmap) =>
-                    BeatmapChangedHandler.handle(message),
-                undefined
-            )
-        );
-
-        this.subscriptions.push(
-            await this.client.subscribe(
-                `/${settings.roomId}/modMultiplierChange`,
-                (message: { mods: string; value: number }) =>
-                    ModMultiplierChangeHandler.handle(
-                        message.mods,
-                        message.value
-                    ),
-                undefined
-            )
-        );
-
-        this.subscriptions.push(
-            await this.client.subscribe(
-                `/${settings.roomId}/requiredModsChange`,
-                (message: { mods: string }) =>
-                    RequiredModsChangedHandler.handle(message.mods),
-                undefined
-            )
-        );
-
-        this.subscriptions.push(
-            await this.client.subscribe(
-                `/${settings.roomId}/roomClosed`,
-                () => RoomClosedHandler.handle(),
-                undefined
-            )
-        );
-
-        this.subscriptions.push(
-            await this.client.subscribe(
-                `/${settings.roomId}/speedMultiplierChange`,
-                (message: { value: number }) =>
-                    SpeedMultiplierChangedHandler.handle(message.value),
-                undefined
-            )
-        );
-
-        for (const uid of this.processor.managers.keys()) {
-            this.subscriptions.push(
-                await this.client.subscribe(
-                    `/${settings.roomId}/playerSettings/${uid}`,
-                    (message: { modstring: string; hash: string }) =>
-                        PlayerStartPlayingHandler.handle(
-                            uid,
-                            message.modstring,
-                            message.hash
-                        ),
-                    undefined
-                )
-            );
-
-            this.subscriptions.push(
-                await this.client.subscribe(
-                    `/${settings.roomId}/spectatorData/${uid}`,
-                    (message: SpectatorData) =>
-                        this.processor.processData(message.uid, message),
-                    undefined
-                )
-            );
+    async beginSubscription(): Promise<void> {
+        if (!dataProcessor) {
+            throw new Error("Spectator data processor is not initialized yet");
         }
+
+        await this.endSubscription();
+
+        this.subscription = await this.client.subscribe(
+            `/${roomId}`,
+            (message: BroadcastedMessage) => {
+                if (isSpectatorDataMessage(message)) {
+                    dataProcessor?.processData(message.data);
+                }
+
+                if (isBeatmapChangedMessage(message)) {
+                    BeatmapChangedHandler.handle(message.beatmap);
+                }
+
+                if (isModMultiplierChangedMessage(message)) {
+                    ModMultiplierChangeHandler.handle(message.multipliers);
+                }
+
+                if (isPlayerJoinedMessage(message)) {
+                    PlayerJoinedHandler.handle(message.player);
+                }
+
+                if (isPlayerLeftMessage(message)) {
+                    PlayerLeftHandler.handle(message.uid);
+                }
+
+                if (isRequiredModsChangedMessage(message)) {
+                    RequiredModsChangedHandler.handle(message.mods);
+                }
+
+                if (isRoomClosedMessage(message)) {
+                    RoomClosedHandler.handle();
+                }
+
+                if (isSpeedMultiplierChangedMessage(message)) {
+                    SpeedMultiplierChangedHandler.handle(message.value);
+                }
+
+                if (isPlayerStartPlayingMessage(message)) {
+                    PlayerStartPlayingHandler.handle(
+                        message.uid,
+                        message.mods,
+                        message.hash,
+                        message.forcedAR
+                    );
+                }
+            },
+            undefined
+        );
     }
 
     /**
-     * End subscription to channels.
+     * Ends the subscription to the channel.
      */
-    async endSubscriptions(): Promise<void> {
-        for (const subscription of this.subscriptions) {
-            await subscription.cancel();
+    async endSubscription(): Promise<void> {
+        if (this.subscription) {
+            await this.subscription.cancel();
         }
     }
 }

@@ -1,32 +1,41 @@
-import settings from "../Settings";
+import { previews } from "../settings/PreviewSettings";
+import { dataProcessor } from "../settings/SpectatorSettings";
 
 const audio = new Audio();
 
 $(audio)
     .on("play", () => {
         $("#play").removeClass("e");
-        for (const preview of settings.previews.values()) {
-            preview.beatmap.refresh();
+
+        for (const preview of previews.values()) {
+            preview.beatmap?.refresh();
         }
 
         requestAnimationFrame(function foo() {
             const currentTime = audio.currentTime * 1000;
-            if (
-                settings.processor?.isAvailableAt(currentTime) &&
-                !audio.ended
-            ) {
+            if (currentTime === 0) {
+                audioState.audioLastPause = Date.now();
+            }
+
+            if (dataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
                 audio.play();
-            } else if (!audio.ended) {
+            } else {
+                if (!audio.paused) {
+                    audioState.audioLastPause = Date.now();
+                }
+
                 audio.pause();
             }
 
             if (!audio.paused) {
-                for (const preview of settings.previews.values()) {
-                    preview.at(audio.currentTime * 1000);
+                for (const preview of previews.values()) {
+                    preview.at(currentTime);
                 }
             }
 
-            requestAnimationFrame(foo);
+            if (audio.src) {
+                requestAnimationFrame(foo);
+            }
         });
     })
     .on("durationchange", function () {
@@ -38,4 +47,46 @@ $(audio)
         $("#progress").val(this.currentTime);
     });
 
-export default audio;
+$(document.body).on("mousemove", function () {
+    const self = $(this);
+
+    clearTimeout(self.data("h"));
+
+    self.addClass("h").data(
+        "h",
+        setTimeout(() => {
+            if (!audio.paused) {
+                self.removeClass("h");
+            }
+        }, 3000)
+    );
+});
+
+const audioState = {
+    audio: audio,
+    audioLastPause: Date.now(),
+
+    /**
+     * The duration of the pause of the audio.
+     */
+    get pauseDuration(): number {
+        return Date.now() - this.audioLastPause;
+    },
+};
+
+/**
+ * Resets the state of the audio player.
+ */
+export function resetAudio(resetSrc: boolean): void {
+    audio.pause();
+
+    if (resetSrc) {
+        audio.src = "";
+    }
+
+    audio.currentTime = 0;
+
+    audioState.audioLastPause = Date.now();
+}
+
+export { audioState };

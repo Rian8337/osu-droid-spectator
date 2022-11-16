@@ -1,5 +1,5 @@
-import audio from "./Audio";
+import { audioState } from "./Audio";
 
 (<JQuery<HTMLInputElement>>$("#volume")).on("change", function () {
-    audio.volume = parseInt(this.value) / 100;
+    audioState.audio.volume = parseInt(this.value) / 100;
 });

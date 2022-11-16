@@ -1,20 +1,14 @@
-import {
-    Beatmap,
-    Circle,
-    IModApplicableToDroid,
-    Mod,
-    ModUtil,
-    Slider,
-    SliderTick,
-    Vector2,
-} from "../osu-base";
+import { audioState } from "../elements/Audio";
+import { Circle, Slider, SliderTick, Vector2 } from "../osu-base";
+import { parsedBeatmap } from "../settings/BeatmapSettings";
+import { players } from "../settings/PlayerSettings";
 import { SpectatorAccuracyEvent } from "./events/SpectatorAccuracyEvent";
 import { SpectatorComboEvent } from "./events/SpectatorComboEvent";
 import { SpectatorCursorEvent } from "./events/SpectatorCursorEvent";
 import { SpectatorObjectDataEvent } from "./events/SpectatorObjectDataEvent";
 import { SpectatorScoreEvent } from "./events/SpectatorScoreEvent";
 import { HitResult } from "./rawdata/HitResult";
-import { PlayerInfo } from "./rawdata/PlayerInfo";
+import { MultiplayerPlayer } from "./rawdata/MultiplayerPlayer";
 import { SpectatorData } from "./rawdata/SpectatorData";
 import { SpectatorDataManager } from "./SpectatorDataManager";
 
@@ -26,11 +20,6 @@ export class SpectatorDataProcessor {
      * The managers of spectator data, mapped by players' uid.
      */
     readonly managers = new Map<number, SpectatorDataManager>();
-
-    /**
-     * The beatmap being played by the players.
-     */
-    readonly beatmap: Beatmap;
 
     /**
      * The time at which the earliest event occurs for this player.
@@ -68,23 +57,36 @@ export class SpectatorDataProcessor {
         return Number.isFinite(latestEventTime) ? latestEventTime : null;
     }
 
-    private lastFrameTime = Date.now();
-
-    constructor(beatmap: Beatmap, playerInfo: PlayerInfo[]) {
-        this.beatmap = beatmap;
-
-        for (const player of playerInfo) {
-            this.managers.set(
-                player.uid,
-                new SpectatorDataManager(
-                    this.beatmap,
-                    player,
-                    <(Mod & IModApplicableToDroid)[]>(
-                        ModUtil.pcStringToMods(player.mods)
-                    )
-                )
-            );
+    constructor() {
+        if (!parsedBeatmap) {
+            throw new Error("No beatmaps have been loaded yet");
         }
+
+        for (const player of players.values()) {
+            this.addPlayer(player);
+        }
+    }
+
+    /**
+     * Adds a player to the list of managers.
+     *
+     * @param player The player to add.
+     */
+    addPlayer(player: MultiplayerPlayer): void {
+        if (this.managers.has(player.uid)) {
+            return;
+        }
+
+        this.managers.set(player.uid, new SpectatorDataManager(player));
+    }
+
+    /**
+     * Removes a player from the list of managers.
+     *
+     * @param uid The uid of the player.
+     */
+    removePlayer(uid: number): void {
+        this.managers.delete(uid);
     }
 
     /**
@@ -95,23 +97,18 @@ export class SpectatorDataProcessor {
      */
     isAvailableAt(time: number): boolean {
         let isAvailable = true;
+        // Use pause duration to check the need to continue playing despite the lack of data.
+        const playDespiteData = audioState.pauseDuration >= 20 * 1000;
 
         for (const manager of this.managers.values()) {
             if (!manager.isAvailableAt(time)) {
-                isAvailable = false;
-
-                break;
-            }
-        }
-
-        if (!isAvailable) {
-            const currentTime = Date.now();
-            const diff = currentTime - this.lastFrameTime;
-
-            // If time between last and current frame is more than 20 seconds,
-            // just return true, otherwise spectator will not proceed.
-            if (diff >= 20 * 1000) {
-                return true;
+                if (playDespiteData) {
+                    // Set to infinity until the next data comes.
+                    manager.latestDataTime = Number.POSITIVE_INFINITY;
+                } else {
+                    isAvailable = false;
+                    break;
+                }
             }
         }
 
@@ -121,13 +118,15 @@ export class SpectatorDataProcessor {
     /**
      * Adds spectator data for a player.
      *
-     * @param uid The uid of the player.
      * @param data The data to add.
      * @returns Whether the data addition was successful.
      */
-    processData(uid: number, data: SpectatorData): boolean {
-        console.log("Received data from uid", uid);
-        const manager = this.managers.get(uid);
+    processData(data: SpectatorData): boolean {
+        if (!parsedBeatmap) {
+            throw new Error("No beatmaps have been loaded yet");
+        }
+
+        const manager = this.managers.get(data.uid);
 
         if (!manager) {
             return false;
@@ -141,7 +140,7 @@ export class SpectatorDataProcessor {
         const { events } = manager;
 
         for (const objectData of data.hitObjectData) {
-            const object = this.beatmap.hitObjects.objects[objectData.index];
+            const object = parsedBeatmap.hitObjects.objects[objectData.index];
             let time = object.endTime;
 
             if (object instanceof Circle) {

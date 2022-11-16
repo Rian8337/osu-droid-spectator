@@ -5,8 +5,9 @@ import { SpectatorDataManager } from "./spectator/SpectatorDataManager";
 import { DrawableScoreCounter } from "./drawables/counters/DrawableScoreCounter";
 import { DrawableAccuracyCounter } from "./drawables/counters/DrawableAccuracyCounter";
 import { DrawablePlayerInfo } from "./drawables/DrawablePlayerInfo";
-import { PreviewAnchor } from "./PreviewAnchor";
-import { Anchor, Beatmap } from "./osu-base";
+import { Anchor } from "./osu-base";
+import { parsedBeatmap } from "./settings/BeatmapSettings";
+import { PreviewAnchor, availableAnchors } from "./settings/PreviewSettings";
 
 /**
  * Represents a beatmap preview.
@@ -47,60 +48,80 @@ export class Preview {
      */
     scoreCounter!: DrawableScoreCounter;
 
-    private readonly screen: HTMLCanvasElement;
+    /**
+     * The uid of the player in this preview.
+     */
+    readonly uid: number;
+
+    /**
+     * The canvas element of this preview.
+     */
+    readonly screen: HTMLCanvasElement;
+
+    /**
+     * The anchor of this preview.
+     */
+    readonly anchor: PreviewAnchor;
+
     private get ctx(): CanvasRenderingContext2D {
         return this.screen.getContext("2d")!;
     }
 
-    constructor(anchor: PreviewAnchor) {
+    constructor(uid: number, anchor: PreviewAnchor) {
         const container = $("#container")[0];
 
+        this.uid = uid;
         this.screen = document.createElement("canvas");
-        this.applyCanvasPosition(this.screen, anchor);
+        this.anchor = anchor;
+        this.applyCanvasPosition();
         container.appendChild(this.screen);
     }
 
     /**
      * Loads this preview and prepares the beatmap.
      *
-     * @param beatmap The beatmap to load.
      * @param specDataManager The spectator data processor of this preview.
      */
-    load(beatmap: Beatmap, specDataManager: SpectatorDataManager): void {
-        try {
-            this.beatmap = new DrawableBeatmap(beatmap, specDataManager.mods);
-            this.specDataManager = specDataManager;
-            this.playerInfo = new DrawablePlayerInfo(
-                specDataManager.uid,
-                specDataManager.username,
-                specDataManager.mods
-            );
-            this.ctx.restore();
-            this.ctx.save();
-
-            this.drawableCursors.length = 0;
-
-            for (const manager of specDataManager.events.cursor) {
-                this.drawableCursors.push(
-                    new DrawableCursor(manager, specDataManager.mods)
-                );
-            }
-
-            this.accuracyCounter = new DrawableAccuracyCounter(
-                specDataManager.events.accuracy
-            );
-            this.comboCounter = new DrawableComboCounter(
-                specDataManager.events.combo
-            );
-            this.scoreCounter = new DrawableScoreCounter(
-                specDataManager.events.score
-            );
-
-            this.beatmap.update(this.ctx);
-            this.at(0);
-        } catch (e) {
-            // Ignore error.
+    load(specDataManager: SpectatorDataManager): void {
+        if (!parsedBeatmap) {
+            // Beatmap may not have loaded yet. In that case, simply return.
+            return;
         }
+
+        this.beatmap = new DrawableBeatmap(
+            parsedBeatmap,
+            specDataManager.mods,
+            specDataManager.forcedAR
+        );
+        this.specDataManager = specDataManager;
+        this.playerInfo = new DrawablePlayerInfo(
+            specDataManager.uid,
+            specDataManager.username,
+            specDataManager.mods
+        );
+        this.ctx.restore();
+        this.ctx.save();
+
+        this.drawableCursors.length = 0;
+
+        for (const manager of specDataManager.events.cursor) {
+            this.drawableCursors.push(
+                new DrawableCursor(manager, specDataManager.mods)
+            );
+        }
+
+        this.accuracyCounter = new DrawableAccuracyCounter(
+            specDataManager.events.accuracy
+        );
+        this.comboCounter = new DrawableComboCounter(
+            specDataManager.events.combo
+        );
+        this.scoreCounter = new DrawableScoreCounter(
+            specDataManager.events.score
+        );
+
+        this.beatmap.update(this.ctx);
+        this.at(0);
     }
 
     /**
@@ -109,6 +130,12 @@ export class Preview {
      * @param time The time.
      */
     at(time: number): void {
+        if (!this.beatmap) {
+            // The beatmap may not be loaded yet. In that case, do nothing.
+            return;
+        }
+
+        // TODO: display team, hit error bar, and ready state
         this.ctx.save();
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -124,34 +151,39 @@ export class Preview {
         }
     }
 
-    private applyCanvasPosition(
-        canvas: HTMLCanvasElement,
-        anchor: PreviewAnchor
-    ): void {
-        canvas.width = window.innerWidth / 2;
-        canvas.height = window.innerHeight / 2;
+    /**
+     * Deletes this preview from the container.
+     */
+    delete(): void {
+        $(this.screen).remove();
 
-        const ctx = canvas.getContext("2d")!;
-        ctx.scale(0.5, 0.5);
+        availableAnchors.push(this.anchor);
+    }
 
-        if (anchor === Anchor.topLeft) {
+    private applyCanvasPosition(): void {
+        this.screen.width = window.innerWidth / 2;
+        this.screen.height = window.innerHeight / 2;
+
+        this.ctx.scale(0.5, 0.5);
+
+        if (this.anchor === Anchor.topLeft) {
             return;
         }
 
-        canvas.style.position = "absolute";
+        this.screen.style.position = "absolute";
 
-        switch (anchor) {
+        switch (this.anchor) {
             case Anchor.topCenter:
-                canvas.style.left = `${window.innerWidth / 2}px`;
-                canvas.style.top = "0px";
+                this.screen.style.left = `${window.innerWidth / 2}px`;
+                this.screen.style.top = "0px";
                 break;
             case Anchor.centerLeft:
-                canvas.style.left = "0px";
-                canvas.style.top = `${window.innerHeight / 2}px`;
+                this.screen.style.left = "0px";
+                this.screen.style.top = `${window.innerHeight / 2}px`;
                 break;
             case Anchor.center:
-                canvas.style.left = `${window.innerWidth / 2}px`;
-                canvas.style.top = `${window.innerHeight / 2}px`;
+                this.screen.style.left = `${window.innerWidth / 2}px`;
+                this.screen.style.top = `${window.innerHeight / 2}px`;
                 break;
         }
     }

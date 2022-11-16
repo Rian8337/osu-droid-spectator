@@ -29,8 +29,12 @@ export async function getOsuFile(
     if (!osuFile) {
         // If not found, try cleaning the file name.
         for (const entry of entries) {
-            const cleanedFilename1 = entry.filename.replace(/[^a-zA-Z]/g, "");
-            const cleanedFilename2 = osuFilename.replace(/[^a-zA-Z]/g, "");
+            const cleanedFilename1 = entry.filename
+                .replace(/[^a-zA-Z]/g, "")
+                .toLowerCase();
+            const cleanedFilename2 = osuFilename
+                .replace(/[^a-zA-Z]/g, "")
+                .toLowerCase();
 
             if (cleanedFilename1 !== cleanedFilename2) {
                 continue;

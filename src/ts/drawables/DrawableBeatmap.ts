@@ -86,7 +86,11 @@ export class DrawableBeatmap {
         }
     }
 
-    constructor(beatmap: Beatmap, mods: (Mod & IModApplicableToDroid)[]) {
+    constructor(
+        beatmap: Beatmap,
+        mods: (Mod & IModApplicableToDroid)[],
+        forcedAR?: number
+    ) {
         this.beatmap = beatmap;
 
         if (this.beatmap.hitObjects.objects.length === 0) {
@@ -95,13 +99,14 @@ export class DrawableBeatmap {
 
         const stats = new MapStats({
             cs: beatmap.difficulty.cs,
-            ar: beatmap.difficulty.ar,
+            ar: forcedAR ?? beatmap.difficulty.ar,
             mods: mods.filter(
                 (v) =>
                     !ModUtil.speedChangingMods.find(
                         (m) => m.acronym === v.acronym
                     )
             ),
+            isForceAR: forcedAR !== undefined,
         }).calculate({ mode: Modes.droid });
 
         this.objectScale = (1 - (0.7 * (stats.cs! - 5)) / 5) / 2;

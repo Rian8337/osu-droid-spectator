@@ -1,5 +1,6 @@
 import {
     IModApplicableToDroid,
+    MathUtils,
     Mod,
     ModHardRock,
     Playfield,
@@ -53,22 +54,19 @@ export class DrawableCursor {
             );
         }
 
+        // TODO: clamp to screen instead of playfield
+        const x = MathUtils.clamp(position.x, 0, Playfield.baseSize.x);
+        const y = MathUtils.clamp(position.y, 0, Playfield.baseSize.y);
+
         const radius = 15;
-        const gradient = ctx.createRadialGradient(
-            position.x,
-            position.y,
-            0,
-            position.x,
-            position.y,
-            radius
-        );
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
 
         gradient.addColorStop(0, "#ffffff");
         gradient.addColorStop(1, "#9e3fe8");
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.arc(position.x, position.y, radius, -Math.PI, Math.PI);
+        ctx.arc(x, y, radius, -Math.PI, Math.PI);
         ctx.fill();
         ctx.closePath();
         ctx.restore();
