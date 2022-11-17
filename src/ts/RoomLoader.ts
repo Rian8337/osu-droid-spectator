@@ -65,7 +65,11 @@ export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
     setForceARMinimumValue(roomInfo.forcedAR.minValue);
     setForceARMaximumValue(roomInfo.forcedAR.maxValue);
 
-    await BeatmapChangedHandler.handle();
+    if (roomInfo.beatmap) {
+        await BeatmapChangedHandler.handle();
+    } else {
+        $("#title a").text("No beatmaps selected yet");
+    }
 
     SpeedMultiplierChangedHandler.handle(roomInfo.speedMultiplier);
 

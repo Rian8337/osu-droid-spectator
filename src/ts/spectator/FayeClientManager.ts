@@ -43,10 +43,6 @@ export class FayeClientManager {
      * Begins the subscription to the channel.
      */
     async beginSubscription(): Promise<void> {
-        if (!dataProcessor) {
-            throw new Error("Spectator data processor is not initialized yet");
-        }
-
         await this.endSubscription();
 
         this.subscription = await this.client.subscribe(

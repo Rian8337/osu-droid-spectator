@@ -42,7 +42,7 @@ export abstract class BeatmapChangedHandler {
 
             const beatmapToLoad = newBeatmap ?? pickedBeatmap;
 
-            $("#title a").text("Loading...");
+            $("#title a").text("Loading...").removeProp("href");
 
             if (!beatmapToLoad) {
                 throw new Error("No beatmaps to load");
@@ -56,9 +56,14 @@ export abstract class BeatmapChangedHandler {
             const apiResponse = await fetch(
                 `https://api.chimu.moe/v1/map/${beatmapId}`
             );
-            const data: ChimuAPIResponse = await apiResponse.json();
+            let data: ChimuAPIResponse | undefined;
+            try {
+                data = await apiResponse.json();
+            } catch {
+                data = undefined;
+            }
 
-            if (data.FileMD5 !== beatmapToLoad.hash) {
+            if (data?.FileMD5 !== beatmapToLoad.hash) {
                 $("#title a").text("Beatmap not found in mirror, sorry!");
                 return;
             }

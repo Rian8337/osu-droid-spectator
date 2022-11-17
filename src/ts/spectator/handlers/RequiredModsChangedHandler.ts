@@ -1,4 +1,4 @@
-import { audioState } from "../../elements/Audio";
+import { setAudioPlaybackRate } from "../../elements/Audio";
 import { MapStats, ModUtil } from "../../osu-base";
 import { setRequiredMods, speedMultiplier } from "../../settings/RoomSettings";
 
@@ -19,8 +19,8 @@ export abstract class RequiredModsChangedHandler {
         const stats = new MapStats({
             speedMultiplier: speedMultiplier,
             mods: ModUtil.pcStringToMods(mods),
-        });
+        }).calculate();
 
-        audioState.audio.playbackRate = stats.speedMultiplier;
+        setAudioPlaybackRate(stats.speedMultiplier);
     }
 }

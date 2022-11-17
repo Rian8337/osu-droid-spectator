@@ -59,16 +59,6 @@ body.h #speed, body.h #control, body.h #title, body.h #mania.e {
     opacity: .6;
 }
 
-#speed {
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
-    width: 40px;
-}
-    #speed button:not(.e) {
-        color: #666;
-    }
-
 #mania {
     top: 50%;
     left: 0;

@@ -17,25 +17,25 @@ $(audio)
                 audioState.audioLastPause = Date.now();
             }
 
-            if (dataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
-                audio.play();
-            } else {
-                if (!audio.paused) {
-                    audioState.audioLastPause = Date.now();
-                }
-
-                audio.pause();
-            }
-
-            if (!audio.paused) {
-                for (const preview of previews.values()) {
-                    preview.at(currentTime);
-                }
-            }
-
             if (audio.src) {
-                requestAnimationFrame(foo);
+                if (dataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
+                    audio.play();
+                } else {
+                    if (!audio.paused) {
+                        audioState.audioLastPause = Date.now();
+                    }
+
+                    audio.pause();
+                }
+
+                if (!audio.paused) {
+                    for (const preview of previews.values()) {
+                        preview.at(currentTime);
+                    }
+                }
             }
+
+            requestAnimationFrame(foo);
         });
     })
     .on("durationchange", function () {
@@ -62,7 +62,7 @@ $(document.body).on("mousemove", function () {
     );
 });
 
-const audioState = {
+export const audioState = {
     audio: audio,
     audioLastPause: Date.now(),
 
@@ -89,4 +89,11 @@ export function resetAudio(resetSrc: boolean): void {
     audioState.audioLastPause = Date.now();
 }
 
-export { audioState };
+/**
+ * Sets the audio playback rate.
+ * 
+ * @param value The value to set.
+ */
+export function setAudioPlaybackRate(value: number): void {
+    audio.playbackRate = value;
+}
