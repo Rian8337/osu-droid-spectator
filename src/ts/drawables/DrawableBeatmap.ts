@@ -127,7 +127,7 @@ export class DrawableBeatmap {
         }
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        const zeroCoordinate = DrawableBeatmap.zeroCoordinate;
+        const { zeroCoordinate } = DrawableBeatmap;
         ctx.translate(zeroCoordinate.x, zeroCoordinate.y);
     }
 

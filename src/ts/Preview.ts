@@ -16,17 +16,17 @@ export class Preview {
     /**
      * The beatmap being previewed.
      */
-    beatmap!: DrawableBeatmap;
+    beatmap?: DrawableBeatmap;
 
     /**
      * The player information being displayed.
      */
-    playerInfo!: DrawablePlayerInfo;
+    playerInfo?: DrawablePlayerInfo;
 
     /**
      * The spectator data manager responsible for this preview.
      */
-    specDataManager!: SpectatorDataManager;
+    specDataManager?: SpectatorDataManager;
 
     /**
      * The drawable cursors responsible for this preview.
@@ -36,17 +36,17 @@ export class Preview {
     /**
      * The accuracy counter responsible for this preview.
      */
-    accuracyCounter!: DrawableAccuracyCounter;
+    accuracyCounter?: DrawableAccuracyCounter;
 
     /**
      * The combo counter responsible for this preview.
      */
-    comboCounter!: DrawableComboCounter;
+    comboCounter?: DrawableComboCounter;
 
     /**
      * The score counter responsible for this preview.
      */
-    scoreCounter!: DrawableScoreCounter;
+    scoreCounter?: DrawableScoreCounter;
 
     /**
      * The uid of the player in this preview.
@@ -130,21 +130,23 @@ export class Preview {
      * @param time The time.
      */
     at(time: number): void {
-        if (!this.beatmap) {
+        if (!this.beatmap || !this.specDataManager) {
             // The beatmap may not be loaded yet. In that case, do nothing.
             return;
         }
 
         // TODO: display team, hit error bar, and ready state
+        this.applyCanvasPosition();
+        this.beatmap?.update(this.ctx);
         this.ctx.save();
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         this.ctx.restore();
         this.beatmap.draw(this.ctx, time, this.specDataManager);
-        this.playerInfo.draw(this.ctx);
-        this.accuracyCounter.draw(this.ctx, time);
-        this.comboCounter.draw(this.ctx, time);
-        this.scoreCounter.draw(this.ctx, time);
+        this.playerInfo?.draw(this.ctx);
+        this.accuracyCounter?.draw(this.ctx, time);
+        this.comboCounter?.draw(this.ctx, time);
+        this.scoreCounter?.draw(this.ctx, time);
 
         for (const drawableCursor of this.drawableCursors) {
             drawableCursor.draw(this.ctx, time);
@@ -158,6 +160,9 @@ export class Preview {
         $(this.screen).remove();
     }
 
+    /**
+     * Applies the canvas position with respect to the window size.
+     */
     private applyCanvasPosition(): void {
         this.screen.width = window.innerWidth / 2;
         this.screen.height = window.innerHeight / 2;
