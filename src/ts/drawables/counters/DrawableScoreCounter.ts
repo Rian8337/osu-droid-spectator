@@ -18,7 +18,7 @@ export class DrawableScoreCounter extends DrawableCounter<SpectatorScoreEvent> {
 
         ctx.textAlign = "right";
         ctx.fillText(
-            score.toString().padStart(7, "0"),
+            score.toString().padStart(8, "0"),
             Playfield.baseSize.x +
                 zeroCoordinate.x -
                 DrawableScoreCounter.paddingX,
