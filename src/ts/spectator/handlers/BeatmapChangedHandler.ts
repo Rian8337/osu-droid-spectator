@@ -16,7 +16,7 @@ import {
     beatmapNeedsReloading,
 } from "../../settings/BeatmapSettings";
 import { reloadPreview } from "../../settings/PreviewSettings";
-import { initProcessor } from "../../settings/SpectatorSettings";
+import { initProcessor, resetProcessor } from "../../settings/SpectatorSettings";
 import { ZipReader, BlobReader } from "../../zip-js";
 import { PickedBeatmap } from "../rawdata/PickedBeatmap";
 
@@ -32,6 +32,8 @@ export abstract class BeatmapChangedHandler {
      * @param newBeatmap The new beatmap, if any.
      */
     static async handle(newBeatmap?: PickedBeatmap): Promise<void> {
+        resetProcessor();
+
         if (
             !parsedBeatmap ||
             (newBeatmap && newBeatmap.id !== pickedBeatmap?.id)

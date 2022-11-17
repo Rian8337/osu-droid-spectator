@@ -12,8 +12,15 @@ export const fayeClient = new FayeClientManager();
 export let dataProcessor: SpectatorDataProcessor | null = null;
 
 /**
- * Initializes or reinitializes the spectator data processor.
+ * Initializes the spectator data processor.
  */
 export function initProcessor(): void {
     dataProcessor = new SpectatorDataProcessor();
+}
+
+/**
+ * Resets the spectator data processor, setting it to `null`.
+ */
+export function resetProcessor(): void {
+    dataProcessor = null;
 }
