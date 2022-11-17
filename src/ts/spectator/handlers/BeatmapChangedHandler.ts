@@ -11,12 +11,10 @@ import {
     pickedBeatmap,
     parsedBeatmap,
     setPickedBeatmap,
-    setBeatmapNeedsReloading,
     setParsedBeatmap,
-    beatmapNeedsReloading,
 } from "../../settings/BeatmapSettings";
 import { reloadPreview } from "../../settings/PreviewSettings";
-import { initProcessor, resetProcessor } from "../../settings/SpectatorSettings";
+import { initProcessor } from "../../settings/SpectatorSettings";
 import { ZipReader, BlobReader } from "../../zip-js";
 import { PickedBeatmap } from "../rawdata/PickedBeatmap";
 
@@ -32,22 +30,23 @@ export abstract class BeatmapChangedHandler {
      * @param newBeatmap The new beatmap, if any.
      */
     static async handle(newBeatmap?: PickedBeatmap): Promise<void> {
-        resetProcessor();
-
         if (
             !parsedBeatmap ||
             (newBeatmap && newBeatmap.id !== pickedBeatmap?.id)
         ) {
             console.log("Beatmap changed");
+
+            resetAudio(true);
+            reloadPreview();
+            clearBackground();
+
             const beatmapToLoad = newBeatmap ?? pickedBeatmap;
+
+            $("#title a").text("Loading...");
 
             if (!beatmapToLoad) {
                 throw new Error("No beatmaps to load");
             }
-
-            setBeatmapNeedsReloading(true);
-            resetAudio(true);
-            clearBackground();
 
             const beatmapId = beatmapToLoad.id;
             let backgroundBlob = "";
@@ -94,6 +93,7 @@ export abstract class BeatmapChangedHandler {
             if (backgroundBlob && osuFile) {
                 setPickedBeatmap(beatmapToLoad);
                 setParsedBeatmap(new BeatmapDecoder().decode(osuFile).result);
+                initProcessor();
 
                 background.src = backgroundBlob;
                 audioState.audio.src = audioBlob;
@@ -105,13 +105,6 @@ export abstract class BeatmapChangedHandler {
             } else {
                 $("#title a").text("An error has occurred, sorry!");
             }
-        }
-
-        if (beatmapNeedsReloading) {
-            setBeatmapNeedsReloading(false);
-            resetAudio(false);
-            reloadPreview();
-            initProcessor();
         }
     }
 }

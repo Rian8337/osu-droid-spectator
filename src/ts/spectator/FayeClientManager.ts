@@ -8,6 +8,7 @@ import { PlayerLeftHandler } from "./handlers/PlayerLeftHandler";
 import { PlayerStartPlayingHandler } from "./handlers/PlayerStartPlayingHandler";
 import { RequiredModsChangedHandler } from "./handlers/RequiredModsChangedHandler";
 import { RoomClosedHandler } from "./handlers/RoomClosedHandler";
+import { RoundStartHandler } from "./handlers/RoundStartHandler";
 import { SpeedMultiplierChangedHandler } from "./handlers/SpeedMultiplierChangedHandler";
 import { isBeatmapChangedMessage } from "./messages/BeatmapChangedMessage";
 import { BroadcastedMessage } from "./messages/BroadcastedMessage";
@@ -17,6 +18,7 @@ import { isPlayerLeftMessage } from "./messages/PlayerLeftMessage";
 import { isPlayerStartPlayingMessage } from "./messages/PlayerStartPlayingMessage";
 import { isRequiredModsChangedMessage } from "./messages/RequiredModsChangedMessage";
 import { isRoomClosedMessage } from "./messages/RoomClosedMessage";
+import { isRoundStartedMessage } from "./messages/RoundStartedMessage";
 import { isSpectatorDataMessage } from "./messages/SpectatorDataMessage";
 import { isSpeedMultiplierChangedMessage } from "./messages/SpeedMultiplierChangedMessage";
 
@@ -52,6 +54,10 @@ export class FayeClientManager {
             (message: BroadcastedMessage) => {
                 if (isSpectatorDataMessage(message)) {
                     dataProcessor?.processData(message.data);
+                }
+
+                if (isRoundStartedMessage(message)) {
+                    RoundStartHandler.handle();
                 }
 
                 if (isBeatmapChangedMessage(message)) {

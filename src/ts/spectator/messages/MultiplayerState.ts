@@ -38,6 +38,11 @@ export enum MultiplayerState {
     roomClosed,
 
     /**
+     * Received when a round starts.
+     */
+    roundStarted,
+
+    /**
      * Received when a player sends their spectator data.
      */
     spectatorData,

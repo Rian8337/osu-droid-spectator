@@ -12,11 +12,6 @@ export let parsedBeatmap: Beatmap | null = null;
 export let pickedBeatmap: PickedBeatmap | null = null;
 
 /**
- * Whether the beatmap needs reloading for the next playback.
- */
-export let beatmapNeedsReloading = false;
-
-/**
  * Sets the picked beatmap.
  *
  * @param newPickedBeatmap The picked beatmap.
@@ -32,13 +27,4 @@ export function setPickedBeatmap(newPickedBeatmap: PickedBeatmap | null): void {
  */
 export function setParsedBeatmap(newParsedBeatmap: Beatmap): void {
     parsedBeatmap = newParsedBeatmap;
-}
-
-/**
- * Sets the beatmap needs reloading flag.
- *
- * @param value The value.
- */
-export function setBeatmapNeedsReloading(value: boolean): void {
-    beatmapNeedsReloading = value;
 }

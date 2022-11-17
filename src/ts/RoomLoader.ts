@@ -9,7 +9,7 @@ import {
     setRoomId,
     setSpeedMultiplier,
 } from "./settings/RoomSettings";
-import { dataProcessor, fayeClient } from "./settings/SpectatorSettings";
+import { fayeClient } from "./settings/SpectatorSettings";
 import { BeatmapChangedHandler } from "./spectator/handlers/BeatmapChangedHandler";
 import { SpeedMultiplierChangedHandler } from "./spectator/handlers/SpeedMultiplierChangedHandler";
 import { MultiplayerRoomInfo } from "./spectator/rawdata/MultiplayerRoomInfo";
@@ -66,10 +66,6 @@ export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
     setForceARMaximumValue(roomInfo.forcedAR.maxValue);
 
     await BeatmapChangedHandler.handle();
-
-    if (!dataProcessor) {
-        return;
-    }
 
     SpeedMultiplierChangedHandler.handle(roomInfo.speedMultiplier);
 

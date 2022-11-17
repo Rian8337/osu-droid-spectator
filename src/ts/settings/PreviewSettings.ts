@@ -70,6 +70,7 @@ export function removePreview(uid: number): void {
         return;
     }
 
+    preview.delete();
     previews.delete(preview.uid);
-    availableAnchors.push(preview.anchor);
+    availableAnchors.unshift(preview.anchor);
 }

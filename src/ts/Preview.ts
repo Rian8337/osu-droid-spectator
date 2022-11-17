@@ -7,7 +7,7 @@ import { DrawableAccuracyCounter } from "./drawables/counters/DrawableAccuracyCo
 import { DrawablePlayerInfo } from "./drawables/DrawablePlayerInfo";
 import { Anchor } from "./osu-base";
 import { parsedBeatmap } from "./settings/BeatmapSettings";
-import { PreviewAnchor, availableAnchors } from "./settings/PreviewSettings";
+import { PreviewAnchor } from "./settings/PreviewSettings";
 
 /**
  * Represents a beatmap preview.
@@ -156,8 +156,6 @@ export class Preview {
      */
     delete(): void {
         $(this.screen).remove();
-
-        availableAnchors.push(this.anchor);
     }
 
     private applyCanvasPosition(): void {
