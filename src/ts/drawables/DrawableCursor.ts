@@ -54,9 +54,8 @@ export class DrawableCursor {
             );
         }
 
-        // TODO: clamp to screen instead of playfield
-        const x = MathUtils.clamp(position.x, 0, Playfield.baseSize.x);
-        const y = MathUtils.clamp(position.y, 0, Playfield.baseSize.y);
+        const x = MathUtils.clamp(position.x, 0, window.innerWidth);
+        const y = MathUtils.clamp(position.y, 0, window.innerHeight);
 
         const radius = 15;
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
