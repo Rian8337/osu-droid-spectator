@@ -63,18 +63,30 @@ export class Preview {
      */
     readonly anchor: PreviewAnchor;
 
-    private get ctx(): CanvasRenderingContext2D {
+    /**
+     * The canvas context of the screen.
+     */
+    get ctx(): CanvasRenderingContext2D {
         return this.screen.getContext("2d")!;
     }
 
     constructor(uid: number, anchor: PreviewAnchor) {
-        const container = $("#container")[0];
-
         this.uid = uid;
         this.screen = document.createElement("canvas");
         this.anchor = anchor;
+
+        this.screen.id = `preview${this.anchor}`;
         this.applyCanvasPosition();
-        container.appendChild(this.screen);
+        this.attachToContainer();
+    }
+
+    /**
+     * Attaches the screen to the container.
+     */
+    attachToContainer(): void {
+        this.delete();
+
+        $("#container")[0].appendChild(this.screen);
     }
 
     /**
@@ -135,7 +147,7 @@ export class Preview {
             return;
         }
 
-        // TODO: display team, hit error bar, and ready state
+        // TODO: hit error bar, and ready state
         this.applyCanvasPosition();
         this.beatmap?.update(this.ctx);
         this.ctx.save();

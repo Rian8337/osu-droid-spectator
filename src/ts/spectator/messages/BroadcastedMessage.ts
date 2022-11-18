@@ -1,4 +1,4 @@
-import { MultiplayerState } from "./MultiplayerState";
+import { MultiplayerState } from "../structures/MultiplayerState";
 
 /**
  * A broadcast message received from the server.

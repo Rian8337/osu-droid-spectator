@@ -9,7 +9,7 @@ import { DrawableBeatmap } from "../DrawableBeatmap";
 import { DrawableCircle } from "./DrawableCircle";
 import { DrawableHitObject } from "./DrawableHitObject";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
-import { HitResult } from "../../spectator/rawdata/HitResult";
+import { HitResult } from "../../spectator/structures/HitResult";
 
 /**
  * Represents a slider that can be drawn.

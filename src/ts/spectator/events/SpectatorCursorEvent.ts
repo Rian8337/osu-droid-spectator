@@ -1,5 +1,5 @@
 import { Vector2 } from "../../osu-base";
-import { MovementType } from "../rawdata/MovementType";
+import { MovementType } from "../structures/MovementType";
 import { SpectatorEvent } from "./SpectatorEvent";
 
 /**

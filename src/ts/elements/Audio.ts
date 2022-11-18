@@ -1,5 +1,10 @@
+import { MapStats, ModUtil } from "../osu-base";
 import { previews } from "../settings/PreviewSettings";
-import { dataProcessor } from "../settings/SpectatorSettings";
+import { speedMultiplier, requiredMods } from "../settings/RoomSettings";
+import {
+    dataProcessor,
+    teamScoreCounters,
+} from "../settings/SpectatorSettings";
 
 const audio = new Audio();
 
@@ -17,6 +22,9 @@ $(audio)
                 audioState.audioLastPause = Date.now();
             }
 
+            // TODO: add logic to fast-forward to earliest available event time for several cases
+            // (i.e. spectator client is refreshed in the middle of a round)
+            // TODO: investigate "element has no source" cause
             if (audio.src) {
                 if (dataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
                     audio.play();
@@ -31,6 +39,10 @@ $(audio)
                 if (!audio.paused) {
                     for (const preview of previews.values()) {
                         preview.at(currentTime);
+                    }
+
+                    for (const counter of teamScoreCounters.values()) {
+                        counter.draw(currentTime);
                     }
                 }
             }
@@ -85,15 +97,22 @@ export function resetAudio(resetSrc: boolean): void {
     }
 
     audio.currentTime = 0;
-
     audioState.audioLastPause = Date.now();
+
+    const stats = new MapStats({
+        speedMultiplier: speedMultiplier,
+        mods: ModUtil.pcStringToMods(requiredMods),
+    }).calculate();
+
+    setAudioPlaybackRate(stats.speedMultiplier);
 }
 
 /**
  * Sets the audio playback rate.
- * 
+ *
  * @param value The value to set.
  */
 export function setAudioPlaybackRate(value: number): void {
+    console.log(value);
     audio.playbackRate = value;
 }

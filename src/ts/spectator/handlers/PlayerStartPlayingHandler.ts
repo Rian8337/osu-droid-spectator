@@ -42,6 +42,7 @@ export abstract class PlayerStartPlayingHandler {
         }
 
         manager.applyPlayerSettings(ModUtil.droidStringToMods(mods), forcedAR);
+        preview.attachToContainer();
         preview.load(manager);
     }
 }

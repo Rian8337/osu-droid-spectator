@@ -1,4 +1,4 @@
-import { HitResult } from "../rawdata/HitResult";
+import { HitResult } from "../structures/HitResult";
 import { SpectatorObjectData } from "../rawdata/SpectatorObjectData";
 import { SpectatorEvent } from "./SpectatorEvent";
 

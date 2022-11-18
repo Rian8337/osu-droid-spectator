@@ -7,7 +7,7 @@ import {
     Vector2,
 } from "../osu-base";
 import { SpectatorCursorEvent } from "../spectator/events/SpectatorCursorEvent";
-import { MovementType } from "../spectator/rawdata/MovementType";
+import { MovementType } from "../spectator/structures/MovementType";
 import { SpectatorEventManager } from "../spectator/SpectatorEventManager";
 import { DrawableBeatmap } from "./DrawableBeatmap";
 
@@ -56,8 +56,16 @@ export class DrawableCursor {
         }
 
         const { zeroCoordinate } = DrawableBeatmap;
-        const x = MathUtils.clamp(position.x, -zeroCoordinate.x, window.innerWidth);
-        const y = MathUtils.clamp(position.y, -zeroCoordinate.y, window.innerHeight);
+        const x = MathUtils.clamp(
+            position.x,
+            -zeroCoordinate.x,
+            window.innerWidth
+        );
+        const y = MathUtils.clamp(
+            position.y,
+            -zeroCoordinate.y,
+            window.innerHeight
+        );
 
         const radius = 15;
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);

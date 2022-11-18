@@ -12,6 +12,7 @@ import {
     parsedBeatmap,
     setPickedBeatmap,
     setParsedBeatmap,
+    calculateMaxScore,
 } from "../../settings/BeatmapSettings";
 import { reloadPreview } from "../../settings/PreviewSettings";
 import { initProcessor } from "../../settings/SpectatorSettings";
@@ -53,6 +54,7 @@ export abstract class BeatmapChangedHandler {
             let audioBlob = "";
             let osuFile = "";
 
+            // TODO: switch to sayobot
             const apiResponse = await fetch(
                 `https://api.chimu.moe/v1/map/${beatmapId}`
             );
@@ -98,6 +100,7 @@ export abstract class BeatmapChangedHandler {
             if (backgroundBlob && osuFile) {
                 setPickedBeatmap(beatmapToLoad);
                 setParsedBeatmap(new BeatmapDecoder().decode(osuFile).result);
+                calculateMaxScore();
                 initProcessor();
 
                 background.src = backgroundBlob;

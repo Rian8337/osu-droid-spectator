@@ -9,7 +9,7 @@ import {
     Vector2,
 } from "../../osu-base";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
-import { HitResult } from "../../spectator/rawdata/HitResult";
+import { HitResult } from "../../spectator/structures/HitResult";
 
 /**
  * Represents a hitobject that can be drawn.
@@ -154,6 +154,10 @@ export abstract class DrawableHitObject {
         hitTime: number,
         hitResult: HitResult
     ): void {
+        if (hitResult === HitResult.great) {
+            return;
+        }
+
         const dt = time - hitTime;
         if (dt < 0) {
             return;
@@ -185,10 +189,6 @@ export abstract class DrawableHitObject {
 
         // Colors are taken from osu!lazer (https://github.com/ppy/osu/blob/daae560ff731bdf49970a5bc6588c0861fac760f/osu.Game/Graphics/OsuColour.cs#L105-L131)
         switch (hitResult) {
-            case HitResult.great:
-                ctx.fillStyle = "#66ccff";
-                text = "300";
-                break;
             case HitResult.good:
                 ctx.fillStyle = "#b3d944";
                 text = "100";

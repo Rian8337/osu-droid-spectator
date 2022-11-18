@@ -1,3 +1,5 @@
+import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
+
 /**
  * The ID of the room.
  */
@@ -39,6 +41,16 @@ export const forcedAR = {
      */
     maxValue: 12.5,
 };
+
+/**
+ * The team mode.
+ */
+export let teamMode = MultiplayerTeamMode.headToHead;
+
+/**
+ * The score portion if the win condition is ScoreV2.
+ */
+export let scorePortion = 0.4;
 
 /**
  * Sets the room ID.
@@ -103,4 +115,22 @@ export function setForceARMinimumValue(value: number): void {
  */
 export function setForceARMaximumValue(value: number): void {
     forcedAR.maxValue = value;
+}
+
+/**
+ * Sets the team mode.
+ *
+ * @param mode The team mode.
+ */
+export function setTeamMode(mode: MultiplayerTeamMode): void {
+    teamMode = mode;
+}
+
+/**
+ * Sets the score portion value.
+ *
+ * @param value The value.
+ */
+export function setScorePortion(value: number): void {
+    scorePortion = value;
 }

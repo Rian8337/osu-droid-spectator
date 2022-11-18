@@ -26,7 +26,7 @@ export abstract class DrawableCounter<T extends SpectatorCountableEvent> {
      * Sets a canvas context up for drawing a counter.
      *
      * @param ctx The canvas context.
-     * @param fontSize
+     * @param fontSize The font size.
      */
     protected setupContext(
         ctx: CanvasRenderingContext2D,

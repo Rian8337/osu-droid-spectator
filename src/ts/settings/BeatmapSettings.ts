@@ -1,10 +1,15 @@
-import { Beatmap } from "../osu-base";
+import { Beatmap, MapStats } from "../osu-base";
 import { PickedBeatmap } from "../spectator/rawdata/PickedBeatmap";
 
 /**
  * The parsed beatmap from beatmap decoder.
  */
 export let parsedBeatmap: Beatmap | null = null;
+
+/**
+ * The maximum score of the current beatmap.
+ */
+export let maxScore = 0;
 
 /**
  * The beatmap that is currently being played.
@@ -27,4 +32,11 @@ export function setPickedBeatmap(newPickedBeatmap: PickedBeatmap | null): void {
  */
 export function setParsedBeatmap(newParsedBeatmap: Beatmap): void {
     parsedBeatmap = newParsedBeatmap;
+}
+
+/**
+ * Calculates the maximum osu!droid score of the currently picked beatmap.
+ */
+export function calculateMaxScore(): void {
+    maxScore = parsedBeatmap?.maxDroidScore(new MapStats()) ?? 0;
 }

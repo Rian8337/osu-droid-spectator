@@ -1,4 +1,4 @@
-import { HitResult } from "./HitResult";
+import { HitResult } from "../structures/HitResult";
 
 /**
  * Represents spectator object hit data to be sent to the spectator client.

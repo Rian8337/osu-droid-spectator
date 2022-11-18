@@ -7,7 +7,9 @@ import {
     setModMultipliers,
     setRequiredMods,
     setRoomId,
+    setScorePortion,
     setSpeedMultiplier,
+    setTeamMode,
 } from "./settings/RoomSettings";
 import { fayeClient } from "./settings/SpectatorSettings";
 import { BeatmapChangedHandler } from "./spectator/handlers/BeatmapChangedHandler";
@@ -54,7 +56,9 @@ export async function askRoomID(): Promise<void> {
 export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
     setPickedBeatmap(roomInfo.beatmap);
     setRequiredMods(roomInfo.requiredMods);
+    setTeamMode(roomInfo.teamMode);
     setSpeedMultiplier(roomInfo.speedMultiplier);
+    setScorePortion(roomInfo.scorePortion);
 
     for (const player of roomInfo.players) {
         addPlayer(player);

@@ -6,7 +6,7 @@ import {
     Vector2,
 } from "../../osu-base";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
-import { HitResult } from "../../spectator/rawdata/HitResult";
+import { HitResult } from "../../spectator/structures/HitResult";
 import { DrawableHitObject } from "./DrawableHitObject";
 
 /**

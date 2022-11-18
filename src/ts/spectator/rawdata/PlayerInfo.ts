@@ -1,3 +1,5 @@
+import { MultiplayerTeam } from "../structures/MultiplayerTeam";
+
 /**
  * Represents basic information about a player.
  */
@@ -11,4 +13,9 @@ export interface PlayerInfo {
      * The username of the player.
      */
     readonly username: string;
+
+    /**
+     * The team of the player.
+     */
+    readonly team?: MultiplayerTeam;
 }

@@ -9,6 +9,7 @@ export abstract class RoomClosedHandler {
      */
     static handle(): void {
         console.log("Room closed");
+
         askRoomID();
     }
 }

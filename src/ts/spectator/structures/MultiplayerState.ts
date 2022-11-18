@@ -28,6 +28,11 @@ export enum MultiplayerState {
     playerStartPlaying,
 
     /**
+     * Received when a player's team changed.
+     */
+    playerTeamChanged,
+
+    /**
      * Received when the required mods of the room changed.
      */
     requiredModsChanged,
@@ -43,6 +48,11 @@ export enum MultiplayerState {
     roundStarted,
 
     /**
+     * Received when the score portion of the room was changed.
+     */
+    scorePortionChanged,
+
+    /**
      * Received when a player sends their spectator data.
      */
     spectatorData,
@@ -51,4 +61,9 @@ export enum MultiplayerState {
      * Received when the speed multiplier of the room changed.
      */
     speedMultiplierChanged,
+
+    /**
+     * Received when the team mode was changed.
+     */
+    teamModeChanged,
 }

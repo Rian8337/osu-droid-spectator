@@ -1,4 +1,5 @@
-import { MultiplayerPlayer } from "./MultiplayerPlayer";
+import { MultiplayerTeamMode } from "../structures/MultiplayerTeamMode";
+import { MultiplayerPlayer } from "../structures/MultiplayerPlayer";
 import { PickedBeatmap } from "./PickedBeatmap";
 
 /**
@@ -56,4 +57,14 @@ export interface MultiplayerRoomInfo {
          */
         maxValue: number;
     };
+
+    /**
+     * The team mode of the room.
+     */
+    teamMode: MultiplayerTeamMode;
+
+    /**
+     * The score portion of the room. Will be used if the room's win condition is ScoreV2.
+     */
+    scorePortion: number;
 }

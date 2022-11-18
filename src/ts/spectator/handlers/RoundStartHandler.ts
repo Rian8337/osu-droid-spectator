@@ -1,6 +1,9 @@
 import { resetAudio } from "../../elements/Audio";
-import { reloadPreview } from "../../settings/PreviewSettings";
-import { initProcessor } from "../../settings/SpectatorSettings";
+import { removePreviews } from "../../settings/PreviewSettings";
+import {
+    initProcessor,
+    initTeamScoreCounters,
+} from "../../settings/SpectatorSettings";
 
 /**
  * A handler responsible for handling round start events.
@@ -12,8 +15,9 @@ export abstract class RoundStartHandler {
     static handle(): void {
         console.log("Round started");
 
-        reloadPreview();
+        removePreviews();
         resetAudio(false);
+        initTeamScoreCounters();
         initProcessor();
     }
 }

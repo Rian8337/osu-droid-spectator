@@ -1,6 +1,6 @@
 import { SpectatorData } from "../rawdata/SpectatorData";
 import { BroadcastedMessage } from "./BroadcastedMessage";
-import { MultiplayerState } from "./MultiplayerState";
+import { MultiplayerState } from "../structures/MultiplayerState";
 
 /**
  * A message received from the server when a player sends their spectator data.

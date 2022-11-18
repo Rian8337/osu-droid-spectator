@@ -1,16 +1,20 @@
-import { IModApplicableToDroid, Mod } from "../osu-base";
+import { IModApplicableToDroid, Mod, Playfield } from "../osu-base";
+import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { PlayerInfo } from "../spectator/rawdata/PlayerInfo";
 import { DrawableBeatmap } from "./DrawableBeatmap";
+import { players } from "../settings/PlayerSettings";
+import { teamColors } from "../settings/SpectatorSettings";
 
 /**
  * Represents player information to be drawn.
  */
-export class DrawablePlayerInfo implements Omit<PlayerInfo, "mods"> {
+export class DrawablePlayerInfo implements PlayerInfo {
     private static readonly paddingX = 5;
     private static readonly paddingY = 35;
 
     readonly uid: number;
     readonly username: string;
+    readonly team?: MultiplayerTeam;
 
     /**
      * The mods that they used to play.
@@ -25,6 +29,7 @@ export class DrawablePlayerInfo implements Omit<PlayerInfo, "mods"> {
         this.uid = uid;
         this.username = username;
         this.mods = mods;
+        this.team = players.get(this.uid)?.team;
     }
 
     /**
@@ -45,17 +50,32 @@ export class DrawablePlayerInfo implements Omit<PlayerInfo, "mods"> {
 
         const { zeroCoordinate } = DrawableBeatmap;
 
+        // TODO: figure out why the hell score multiplier doesn't work in-game
+        switch (this.team) {
+            case MultiplayerTeam.red:
+                ctx.fillStyle = teamColors.red;
+                break;
+            case MultiplayerTeam.blue:
+                ctx.fillStyle = teamColors.blue;
+                break;
+            default:
+                ctx.fillStyle = "#fff";
+        }
+
         ctx.globalAlpha = 1;
-        ctx.textAlign = "left";
-        ctx.fillStyle = "#fff";
+        ctx.textAlign = "right";
         ctx.fillText(
             `${this.username} (${this.uid})${
                 this.mods.length > 0
                     ? ` [+${this.mods.reduce((a, m) => a + m.acronym, "")}]`
                     : ""
             }`,
-            DrawablePlayerInfo.paddingX - zeroCoordinate.x,
-            DrawablePlayerInfo.paddingY - zeroCoordinate.y
+            Playfield.baseSize.x +
+                zeroCoordinate.x -
+                DrawablePlayerInfo.paddingX,
+            Playfield.baseSize.y +
+                zeroCoordinate.y -
+                DrawablePlayerInfo.paddingY
         );
         ctx.restore();
     }

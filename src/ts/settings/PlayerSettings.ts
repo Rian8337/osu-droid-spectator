@@ -1,4 +1,5 @@
-import { MultiplayerPlayer } from "../spectator/rawdata/MultiplayerPlayer";
+import { MultiplayerPlayer } from "../spectator/structures/MultiplayerPlayer";
+import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 
 /**
  * The players who are playing in the room.
@@ -21,4 +22,18 @@ export function addPlayer(player: MultiplayerPlayer): void {
  */
 export function removePlayer(uid: number): void {
     players.delete(uid);
+}
+
+/**
+ * Sets a player's team.
+ *
+ * @param uid The uid of the player.
+ * @param team The player's team.
+ */
+export function setPlayerTeam(uid: number, team?: MultiplayerTeam): void {
+    const player = players.get(uid);
+
+    if (player) {
+        player.team = team;
+    }
 }

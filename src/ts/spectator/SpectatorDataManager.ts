@@ -201,12 +201,14 @@ export class SpectatorDataManager {
         );
 
         for (const mod of this.mods) {
-            if (modMultipliers[mod.acronym]) {
-                this.scoreMultiplier *= modMultipliers[mod.acronym];
+            if (!modMultipliers[mod.acronym]) {
+                continue;
+            }
 
-                if (mod.droidScoreMultiplier > 0) {
-                    this.scoreMultiplier /= mod.droidScoreMultiplier;
-                }
+            this.scoreMultiplier *= modMultipliers[mod.acronym];
+
+            if (mod.droidScoreMultiplier > 0) {
+                this.scoreMultiplier /= mod.droidScoreMultiplier;
             }
         }
 

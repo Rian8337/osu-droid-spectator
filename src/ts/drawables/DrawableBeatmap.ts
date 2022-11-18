@@ -18,7 +18,7 @@ import { DrawableHitObject } from "./hitobjects/DrawableHitObject";
 import { DrawableSlider } from "./hitobjects/DrawableSlider";
 import { DrawableSpinner } from "./hitobjects/DrawableSpinner";
 import { SpectatorDataManager } from "../spectator/SpectatorDataManager";
-import { HitResult } from "../spectator/rawdata/HitResult";
+import { HitResult } from "../spectator/structures/HitResult";
 
 /**
  * Represents a beatmap that can be used to draw objects.

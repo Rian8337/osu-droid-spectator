@@ -1,6 +1,6 @@
 import { PickedBeatmap } from "../rawdata/PickedBeatmap";
 import { BroadcastedMessage } from "./BroadcastedMessage";
-import { MultiplayerState } from "./MultiplayerState";
+import { MultiplayerState } from "../structures/MultiplayerState";
 
 /**
  * A message received from the server when the beatmap of the room was changed.

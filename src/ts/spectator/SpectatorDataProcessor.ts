@@ -7,8 +7,8 @@ import { SpectatorComboEvent } from "./events/SpectatorComboEvent";
 import { SpectatorCursorEvent } from "./events/SpectatorCursorEvent";
 import { SpectatorObjectDataEvent } from "./events/SpectatorObjectDataEvent";
 import { SpectatorScoreEvent } from "./events/SpectatorScoreEvent";
-import { HitResult } from "./rawdata/HitResult";
-import { MultiplayerPlayer } from "./rawdata/MultiplayerPlayer";
+import { HitResult } from "./structures/HitResult";
+import { MultiplayerPlayer } from "./structures/MultiplayerPlayer";
 import { SpectatorData } from "./rawdata/SpectatorData";
 import { SpectatorDataManager } from "./SpectatorDataManager";
 
@@ -96,6 +96,15 @@ export class SpectatorDataProcessor {
      * @returns Whether spectator data is available for all players at the given time.
      */
     isAvailableAt(time: number): boolean {
+        if (!parsedBeatmap) {
+            return false;
+        }
+
+        // If the time is past the last object, always assume data is available.
+        if (time > parsedBeatmap.hitObjects.objects.at(-1)!.endTime) {
+            return true;
+        }
+
         let isAvailable = true;
         // Use pause duration to check the need to continue playing despite the lack of data.
         const playDespiteData = audioState.pauseDuration >= 20 * 1000;
@@ -138,6 +147,22 @@ export class SpectatorDataProcessor {
         }
 
         const { events } = manager;
+
+        events.score.add(
+            new SpectatorScoreEvent(data.secPassed * 1000, data.currentScore)
+        );
+
+        events.accuracy.add(
+            new SpectatorAccuracyEvent(
+                data.secPassed * 1000,
+                data.currentAccuracy,
+                events.accuracy.events.length + data.hitObjectData.length
+            )
+        );
+
+        events.combo.add(
+            new SpectatorComboEvent(data.secPassed * 1000, data.currentCombo)
+        );
 
         for (const objectData of data.hitObjectData) {
             const object = parsedBeatmap.hitObjects.objects[objectData.index];
@@ -214,7 +239,11 @@ export class SpectatorDataProcessor {
             }
 
             events.accuracy.add(
-                new SpectatorAccuracyEvent(time, objectData.currentAccuracy)
+                new SpectatorAccuracyEvent(
+                    time,
+                    objectData.currentAccuracy,
+                    events.accuracy.events.length
+                )
             );
 
             events.combo.add(
@@ -229,21 +258,6 @@ export class SpectatorDataProcessor {
                 new SpectatorObjectDataEvent(time, objectData)
             );
         }
-
-        events.score.add(
-            new SpectatorScoreEvent(data.secPassed * 1000, data.currentScore)
-        );
-
-        events.accuracy.add(
-            new SpectatorAccuracyEvent(
-                data.secPassed * 1000,
-                data.currentAccuracy
-            )
-        );
-
-        events.combo.add(
-            new SpectatorComboEvent(data.secPassed * 1000, data.currentCombo)
-        );
 
         for (let i = 0; i < data.cursorMovement.length; ++i) {
             const cursorMovement = data.cursorMovement[i];
@@ -263,6 +277,12 @@ export class SpectatorDataProcessor {
         }
 
         manager.latestDataTime = data.secPassed * 1000;
+        console.log(
+            "Received data from uid",
+            manager.uid,
+            "latest data time is set to",
+            manager.latestDataTime
+        );
         return true;
     }
 }

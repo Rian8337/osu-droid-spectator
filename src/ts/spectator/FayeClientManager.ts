@@ -6,21 +6,27 @@ import { ModMultiplierChangeHandler } from "./handlers/ModMultiplierChangedHandl
 import { PlayerJoinedHandler } from "./handlers/PlayerJoinedHandler";
 import { PlayerLeftHandler } from "./handlers/PlayerLeftHandler";
 import { PlayerStartPlayingHandler } from "./handlers/PlayerStartPlayingHandler";
+import { PlayerTeamChangedHandler } from "./handlers/PlayerTeamChangedHandler";
 import { RequiredModsChangedHandler } from "./handlers/RequiredModsChangedHandler";
 import { RoomClosedHandler } from "./handlers/RoomClosedHandler";
 import { RoundStartHandler } from "./handlers/RoundStartHandler";
+import { ScorePortionChangedHandler } from "./handlers/ScorePortionChangedHandler";
 import { SpeedMultiplierChangedHandler } from "./handlers/SpeedMultiplierChangedHandler";
+import { TeamModeChangedHandler } from "./handlers/TeamModeChangedHandler";
 import { isBeatmapChangedMessage } from "./messages/BeatmapChangedMessage";
 import { BroadcastedMessage } from "./messages/BroadcastedMessage";
 import { isModMultiplierChangedMessage } from "./messages/ModMultiplierChangedMessage";
 import { isPlayerJoinedMessage } from "./messages/PlayerJoinedMessage";
 import { isPlayerLeftMessage } from "./messages/PlayerLeftMessage";
 import { isPlayerStartPlayingMessage } from "./messages/PlayerStartPlayingMessage";
+import { isPlayerTeamChangedMessage } from "./messages/PlayerTeamChangedMessage";
 import { isRequiredModsChangedMessage } from "./messages/RequiredModsChangedMessage";
 import { isRoomClosedMessage } from "./messages/RoomClosedMessage";
 import { isRoundStartedMessage } from "./messages/RoundStartedMessage";
+import { isScorePortionChangedMessage } from "./messages/ScorePortionChangedMessage";
 import { isSpectatorDataMessage } from "./messages/SpectatorDataMessage";
 import { isSpeedMultiplierChangedMessage } from "./messages/SpeedMultiplierChangedMessage";
+import { isTeamModeChangedMessage } from "./messages/TeamModeChangedMessage";
 
 /**
  * A manager for the Faye client.
@@ -64,12 +70,20 @@ export class FayeClientManager {
                     ModMultiplierChangeHandler.handle(message.multipliers);
                 }
 
+                if (isScorePortionChangedMessage(message)) {
+                    ScorePortionChangedHandler.handle(message.value);
+                }
+
                 if (isPlayerJoinedMessage(message)) {
                     PlayerJoinedHandler.handle(message.player);
                 }
 
                 if (isPlayerLeftMessage(message)) {
                     PlayerLeftHandler.handle(message.uid);
+                }
+
+                if (isPlayerTeamChangedMessage(message)) {
+                    PlayerTeamChangedHandler.handle(message.uid, message.team);
                 }
 
                 if (isRequiredModsChangedMessage(message)) {
@@ -91,6 +105,10 @@ export class FayeClientManager {
                         message.hash,
                         message.forcedAR
                     );
+                }
+
+                if (isTeamModeChangedMessage(message)) {
+                    TeamModeChangedHandler.handle(message.mode);
                 }
             },
             undefined

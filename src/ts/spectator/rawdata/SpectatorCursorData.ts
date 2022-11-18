@@ -1,4 +1,4 @@
-import { MovementType } from "./MovementType";
+import { MovementType } from "../structures/MovementType";
 import { SpectatorCursorPosition } from "./SpectatorCursorPosition";
 
 /**
