@@ -29,6 +29,13 @@ export const teamColors = {
 };
 
 /**
+ * Resets the spectator data processor.
+ */
+export function resetProcessor(): void {
+    dataProcessor = null;
+}
+
+/**
  * Initializes the spectator data processor.
  */
 export function initProcessor(): void {

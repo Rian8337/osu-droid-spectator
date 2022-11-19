@@ -1,6 +1,5 @@
 import { setAudioPlaybackRate } from "../../elements/Audio";
-import { MapStats, ModUtil } from "../../osu-base";
-import { requiredMods, setSpeedMultiplier } from "../../settings/RoomSettings";
+import { setSpeedMultiplier } from "../../settings/RoomSettings";
 
 /**
  * A handler responsible for handling speed multiplier changed events.
@@ -15,12 +14,6 @@ export abstract class SpeedMultiplierChangedHandler {
         console.log("Speed multiplier changed");
 
         setSpeedMultiplier(speedMultiplier);
-
-        const stats = new MapStats({
-            speedMultiplier: speedMultiplier,
-            mods: ModUtil.pcStringToMods(requiredMods),
-        }).calculate();
-
-        setAudioPlaybackRate(stats.speedMultiplier);
+        setAudioPlaybackRate();
     }
 }

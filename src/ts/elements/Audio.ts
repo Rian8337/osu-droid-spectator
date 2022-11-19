@@ -27,6 +27,7 @@ $(audio)
             // TODO: investigate "element has no source" cause
             if (audio.src) {
                 if (dataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
+                    // Investigate why this is still being called even though there's no source.
                     audio.play();
                 } else {
                     if (!audio.paused) {
@@ -98,21 +99,17 @@ export function resetAudio(resetSrc: boolean): void {
 
     audio.currentTime = 0;
     audioState.audioLastPause = Date.now();
+    audio.volume = parseFloat(localStorage.getItem("volume") ?? "100") / 100;
+}
 
+/**
+ * Sets the audio playback rate based on currently set required mods and speed multiplier.
+ */
+export function setAudioPlaybackRate(): void {
     const stats = new MapStats({
         speedMultiplier: speedMultiplier,
         mods: ModUtil.pcStringToMods(requiredMods),
     }).calculate();
 
-    setAudioPlaybackRate(stats.speedMultiplier);
-}
-
-/**
- * Sets the audio playback rate.
- *
- * @param value The value to set.
- */
-export function setAudioPlaybackRate(value: number): void {
-    console.log(value);
-    audio.playbackRate = value;
+    audio.playbackRate = stats.speedMultiplier;
 }

@@ -89,7 +89,6 @@ export function addPreview(uid: number): boolean {
     const player = players.get(uid);
 
     if (!player) {
-        console.log("Hi", 1);
         return false;
     }
 
@@ -137,7 +136,6 @@ export function removePreview(uid: number): void {
     const player = players.get(uid);
 
     if (!preview || !player) {
-        console.log("Hii", 1);
         return;
     }
 
@@ -147,10 +145,8 @@ export function removePreview(uid: number): void {
 
     if (teamMode === MultiplayerTeamMode.teamVS) {
         if (player.team === MultiplayerTeam.red) {
-            console.log("Hii", 2);
             redAvailableAnchors.unshift(<RedPreviewAnchor>preview.anchor);
         } else {
-            console.log("Hii", 3);
             blueAvailableAnchors.unshift(<BluePreviewAnchor>preview.anchor);
         }
     }
