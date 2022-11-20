@@ -1,6 +1,7 @@
 import { createHash } from "crypto";
 import { audioState, resetAudio } from "../../elements/Audio";
 import { background, clearBackground } from "../../elements/Background";
+import JSZip, { JSZipObject } from "../../jszip";
 import { BeatmapDecoder } from "../../osu-base";
 import {
     pickedBeatmap,
@@ -14,13 +15,6 @@ import {
     initProcessor,
     resetProcessor,
 } from "../../settings/SpectatorSettings";
-import {
-    ZipReader,
-    BlobReader,
-    Entry,
-    TextWriter,
-    BlobWriter,
-} from "../../zip-js";
 import { PickedBeatmap } from "../rawdata/PickedBeatmap";
 
 /**
@@ -74,18 +68,16 @@ export abstract class BeatmapChangedHandler {
                 return;
             }
 
-            const blob = await downloadResponse.blob();
-            const reader = new ZipReader(new BlobReader(blob));
+            const zip = new JSZip();
+            await zip.loadAsync(await downloadResponse.blob());
 
-            const entries = await reader.getEntries();
+            const entries = Object.values(zip.files);
             osuFile = await this.getOsuFile(entries, beatmapToLoad.hash);
-            // TODO: investigate beatmap ID 1557181
+
             if (osuFile) {
                 backgroundBlob = await this.getBackgroundBlob(entries, osuFile);
                 audioBlob = await this.getAudioBlob(entries, osuFile);
             }
-
-            await reader.close();
 
             if (backgroundBlob && osuFile) {
                 setPickedBeatmap(beatmapToLoad);
@@ -114,17 +106,17 @@ export abstract class BeatmapChangedHandler {
      * @returns The .osu file.
      */
     private static async getOsuFile(
-        entries: Entry[],
+        entries: JSZipObject[],
         hash: string
     ): Promise<string> {
         let osuFile = "";
 
         for (const entry of entries) {
-            if (!entry.filename.endsWith(".osu")) {
+            if (!entry.name.endsWith(".osu")) {
                 continue;
             }
 
-            const file = await entry.getData(new TextWriter());
+            const file = await entry.async("string");
             const fileHash = createHash("md5").update(file).digest("hex");
 
             if (hash !== fileHash) {
@@ -147,7 +139,7 @@ export abstract class BeatmapChangedHandler {
      * @returns The background blob.
      */
     private static async getBackgroundBlob(
-        entries: Entry[],
+        entries: JSZipObject[],
         osuFile: string
     ): Promise<string> {
         let backgroundBlob = "";
@@ -160,14 +152,11 @@ export abstract class BeatmapChangedHandler {
         const backgroundFilename = backgroundMatch[0];
 
         for (const entry of entries) {
-            if (entry.filename !== backgroundFilename) {
+            if (entry.name !== backgroundFilename) {
                 continue;
             }
 
-            const extension = backgroundFilename.split(".").pop()!;
-            backgroundBlob = URL.createObjectURL(
-                await entry.getData(new BlobWriter(`image/${extension}`))
-            );
+            backgroundBlob = URL.createObjectURL(await entry.async("blob"));
 
             break;
         }
@@ -176,7 +165,7 @@ export abstract class BeatmapChangedHandler {
             // If not found, try cleaning file name first.
             for (const entry of entries) {
                 if (
-                    entry.filename
+                    entry.name
                         .replace(this.fileNameCleanerRegex, "")
                         .toLowerCase() !==
                     backgroundFilename
@@ -186,10 +175,7 @@ export abstract class BeatmapChangedHandler {
                     continue;
                 }
 
-                const extension = backgroundFilename.split(".").pop()!;
-                backgroundBlob = URL.createObjectURL(
-                    await entry.getData(new BlobWriter(`image/${extension}`))
-                );
+                backgroundBlob = URL.createObjectURL(await entry.async("blob"));
 
                 break;
             }
@@ -206,7 +192,7 @@ export abstract class BeatmapChangedHandler {
      * @returns The audio blob.
      */
     private static async getAudioBlob(
-        entries: Entry[],
+        entries: JSZipObject[],
         osuFile: string
     ): Promise<string> {
         let audioBlob = "";
@@ -219,14 +205,11 @@ export abstract class BeatmapChangedHandler {
         const audioFilename = audioMatch[0];
 
         for (const entry of entries) {
-            if (entry.filename !== audioFilename) {
+            if (entry.name !== audioFilename) {
                 continue;
             }
 
-            const extension = audioFilename.split(".").pop()!;
-            audioBlob = URL.createObjectURL(
-                await entry.getData(new BlobWriter(`audio/${extension}`))
-            );
+            audioBlob = URL.createObjectURL(await entry.async("blob"));
 
             break;
         }
@@ -235,7 +218,7 @@ export abstract class BeatmapChangedHandler {
             // If not found, try cleaning file name first.
             for (const entry of entries) {
                 if (
-                    entry.filename
+                    entry.name
                         .replace(this.fileNameCleanerRegex, "")
                         .toLowerCase() !==
                     audioFilename
@@ -245,10 +228,7 @@ export abstract class BeatmapChangedHandler {
                     continue;
                 }
 
-                const extension = audioFilename.split(".").pop()!;
-                audioBlob = URL.createObjectURL(
-                    await entry.getData(new BlobWriter(`audio/${extension}`))
-                );
+                audioBlob = URL.createObjectURL(await entry.async("blob"));
 
                 break;
             }
