@@ -13,6 +13,8 @@ export abstract class PlayerJoinedHandler {
      * @param player The player.
      */
     static handle(player: MultiplayerPlayer) {
+        console.log("Player joined room");
+
         addPlayer(player);
         addPreview(player.uid);
 

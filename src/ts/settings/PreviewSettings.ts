@@ -93,7 +93,7 @@ export function addPreview(uid: number): boolean {
     }
 
     let anchor: PreviewAnchor | undefined;
-
+    // TODO: investigate manager/previews not being added
     switch (player.team) {
         case MultiplayerTeam.red:
             anchor = redAvailableAnchors.shift();

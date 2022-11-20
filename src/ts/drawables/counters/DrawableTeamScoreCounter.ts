@@ -56,6 +56,9 @@ export class DrawableTeamScoreCounter {
                 continue;
             }
 
+            // TODO: take a look at scorev2 difference
+            // TODO: add a "room" for counter at the middle of the screen
+            // TODO: attempt to add a "line" to notice score diff just like in official osu! tournament client
             let score = manager.events.score.eventAt(time)?.score ?? 0;
             const accuracyEvent =
                 manager.events.accuracy.eventAt(time) ??
@@ -69,14 +72,21 @@ export class DrawableTeamScoreCounter {
             }
 
             const maxScoreV2 = 1e6;
-            const scorePortionScoreV2 =
+            const tempScorePortionScoreV2 =
                 Math.sqrt(score / maxScore) * scorePortion * maxScoreV2;
-            const accPortionScoreV2 =
+            const tempAccPortionScoreV2 =
                 (Math.pow(accuracyEvent.accuracy, 2) *
                     (1 - scorePortion) *
                     maxScoreV2 *
                     accuracyEvent.objectIndex) /
                 parsedBeatmap.hitObjects.objects.length;
+
+            const scorePortionScoreV2 =
+                tempScorePortionScoreV2 -
+                this.calculateMissPenalty(player.uid, tempScorePortionScoreV2);
+            const accPortionScoreV2 =
+                tempAccPortionScoreV2 -
+                this.calculateMissPenalty(player.uid, tempAccPortionScoreV2);
 
             teamScore +=
                 (scorePortionScoreV2 + accPortionScoreV2) *
@@ -104,7 +114,7 @@ export class DrawableTeamScoreCounter {
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            this.ctx.font = `50px "Comic Sans MS", cursive, sans-serif`;
+            this.ctx.font = `50px bold "Times New Roman", cursive, sans-serif`;
         } catch (e) {
             // Ignore error
         }
@@ -123,5 +133,19 @@ export class DrawableTeamScoreCounter {
                 this.screen.style.left = `${this.screen.width}px`;
                 break;
         }
+    }
+
+    /**
+     * Calculates the miss penalty of a player.
+     *
+     * @param uid The uid of the player.
+     * @param tempScoreV2 The temporary score v2 value.
+     * @returns The score v2 value with miss penalty.
+     */
+    private calculateMissPenalty(uid: number, tempScoreV2: number): number {
+        const misses =
+            dataProcessor?.managers.get(uid)?.events.objectData.misses ?? 0;
+
+        return tempScoreV2 * 5e-3 * misses;
     }
 }

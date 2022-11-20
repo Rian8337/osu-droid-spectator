@@ -54,6 +54,8 @@ export class FayeClientManager {
         this.subscription = await this.client.subscribe(
             `/${roomId}`,
             (message: BroadcastedMessage) => {
+                console.log(message);
+
                 if (isSpectatorDataMessage(message)) {
                     dataProcessor?.processData(message.data);
                 }

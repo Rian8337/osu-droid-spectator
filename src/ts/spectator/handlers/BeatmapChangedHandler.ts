@@ -79,7 +79,7 @@ export abstract class BeatmapChangedHandler {
 
             const entries = await reader.getEntries();
             osuFile = await this.getOsuFile(entries, beatmapToLoad.hash);
-
+            // TODO: investigate beatmap ID 1557181
             if (osuFile) {
                 backgroundBlob = await this.getBackgroundBlob(entries, osuFile);
                 audioBlob = await this.getAudioBlob(entries, osuFile);

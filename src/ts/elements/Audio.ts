@@ -24,10 +24,8 @@ $(audio)
 
             // TODO: add logic to fast-forward to earliest available event time for several cases
             // (i.e. spectator client is refreshed in the middle of a round)
-            // TODO: investigate "element has no source" cause
             if (audio.src) {
                 if (dataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
-                    // Investigate why this is still being called even though there's no source.
                     audio.play();
                 } else {
                     if (!audio.paused) {

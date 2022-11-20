@@ -12,6 +12,8 @@ export abstract class PlayerLeftHandler {
      * @param uid The uid of the player.
      */
     static handle(uid: number) {
+        console.log("Player left room");
+
         removePreview(uid);
         removePlayer(uid);
 

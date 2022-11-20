@@ -5,6 +5,13 @@ import { SpectatorEventManager } from "./SpectatorEventManager";
  * A manager for object data events.
  */
 export class SpectatorObjectDataEventManager extends SpectatorEventManager<SpectatorObjectDataEvent> {
+    /**
+     * The amount of misses achieved.
+     *
+     * Used for calculating display score v2.
+     */
+    misses = 0;
+
     override add(...events: SpectatorObjectDataEvent[]): void {
         for (const event of events) {
             this._events[event.index] = event;

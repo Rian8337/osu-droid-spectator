@@ -9,7 +9,7 @@ import { teamColors } from "../settings/SpectatorSettings";
  * Represents player information to be drawn.
  */
 export class DrawablePlayerInfo implements PlayerInfo {
-    private static readonly paddingX = 5;
+    private static readonly paddingX = 15;
     private static readonly paddingY = 35;
 
     readonly uid: number;
@@ -43,7 +43,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
         try {
             // This code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `30px "Comic Sans MS", cursive, sans-serif`;
+            ctx.font = `40px bold "Times New Roman", cursive, sans-serif`;
         } catch (e) {
             // Ignore error
         }
