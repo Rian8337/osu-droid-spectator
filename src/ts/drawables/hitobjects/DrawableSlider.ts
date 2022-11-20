@@ -15,7 +15,7 @@ import { HitResult } from "../../spectator/structures/HitResult";
  * Represents a slider that can be drawn.
  */
 export class DrawableSlider extends DrawableCircle {
-    private static readonly opacity = 0.5;
+    private static readonly opacity = 0.3;
     private static readonly reverseArrow = String.fromCharCode(10132);
 
     /**
@@ -235,6 +235,7 @@ export class DrawableSlider extends DrawableCircle {
         ctx.stroke();
 
         // Border
+        ctx.globalAlpha /= DrawableSlider.opacity;
         ctx.globalCompositeOperation = "source-over";
         ctx.shadowBlur = 0;
         ctx.strokeStyle = "#fff";
