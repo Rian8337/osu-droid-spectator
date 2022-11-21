@@ -125,7 +125,7 @@ export class DrawableBeatmap {
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `${this.drawableHitObjects[0].radius}px "Times New Roman", cursive, sans-serif`;
+            ctx.font = `${this.drawableHitObjects[0].radius}px Trebuchet MS, sans-serif`;
         } catch (e) {
             // Ignore error
         }

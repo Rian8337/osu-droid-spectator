@@ -1,10 +1,7 @@
 import { MapStats, ModUtil } from "../osu-base";
 import { previews } from "../settings/PreviewSettings";
 import { speedMultiplier, requiredMods } from "../settings/RoomSettings";
-import {
-    dataProcessor,
-    teamScoreCounters,
-} from "../settings/SpectatorSettings";
+import { dataProcessor, teamScoreDisplay } from "../settings/SpectatorSettings";
 
 const audio = new Audio();
 
@@ -40,9 +37,7 @@ $(audio)
                         preview.at(currentTime);
                     }
 
-                    for (const counter of teamScoreCounters.values()) {
-                        counter.draw(currentTime);
-                    }
+                    teamScoreDisplay?.draw(currentTime);
                 }
             }
 

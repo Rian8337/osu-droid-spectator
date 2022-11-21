@@ -43,7 +43,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
         try {
             // This code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `bold 40px "Times New Roman", cursive, sans-serif`;
+            ctx.font = `bold 40px Trebuchet MS, sans-serif`;
         } catch (e) {
             // Ignore error
         }

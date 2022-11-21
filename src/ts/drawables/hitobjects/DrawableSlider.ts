@@ -235,7 +235,6 @@ export class DrawableSlider extends DrawableCircle {
         ctx.stroke();
 
         // Border
-        ctx.globalAlpha /= DrawableSlider.opacity;
         ctx.globalCompositeOperation = "source-over";
         ctx.shadowBlur = 0;
         ctx.strokeStyle = "#fff";

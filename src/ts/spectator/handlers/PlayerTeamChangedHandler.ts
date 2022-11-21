@@ -1,4 +1,5 @@
 import { setPlayerTeam } from "../../settings/PlayerSettings";
+import { addPreview, removePreview } from "../../settings/PreviewSettings";
 import { MultiplayerTeam } from "../structures/MultiplayerTeam";
 
 /**
@@ -15,5 +16,7 @@ export abstract class PlayerTeamChangedHandler {
         console.log("Player team changed");
 
         setPlayerTeam(uid, team);
+        removePreview(uid);
+        addPreview(uid);
     }
 }

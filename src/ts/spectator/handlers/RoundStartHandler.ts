@@ -2,7 +2,7 @@ import { resetAudio } from "../../elements/Audio";
 import { removePreviews } from "../../settings/PreviewSettings";
 import {
     initProcessor,
-    initTeamScoreCounters,
+    initTeamScoreDisplay,
 } from "../../settings/SpectatorSettings";
 
 /**
@@ -17,7 +17,7 @@ export abstract class RoundStartHandler {
 
         removePreviews();
         resetAudio(false);
-        initTeamScoreCounters();
+        initTeamScoreDisplay();
         initProcessor();
     }
 }

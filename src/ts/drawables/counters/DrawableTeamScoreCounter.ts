@@ -1,3 +1,4 @@
+import { ModHardRock } from "../../osu-base";
 import { maxScore, parsedBeatmap } from "../../settings/BeatmapSettings";
 import { players } from "../../settings/PlayerSettings";
 import { scorePortion } from "../../settings/RoomSettings";
@@ -14,33 +15,39 @@ export class DrawableTeamScoreCounter {
     readonly team: MultiplayerTeam;
 
     /**
-     * The canvas element of this preview.
+     * The current team score.
      */
-    readonly screen: HTMLCanvasElement;
-
-    private get ctx(): CanvasRenderingContext2D {
-        return this.screen.getContext("2d")!;
-    }
+    score = 0;
 
     constructor(team: MultiplayerTeam) {
         this.team = team;
-        this.screen = document.createElement("canvas");
-
-        const container = $("#container")[0];
-        container.appendChild(this.screen);
     }
 
     /**
      * Draws the counter to the screen.
      *
-     * @param time The time to draw the counter at.
+     * @param ctx The canvas context.
+     * @param boldText Whether to bold the counter.
      */
-    draw(time: number): void {
+    draw(ctx: CanvasRenderingContext2D, boldText: boolean): void {
         if (!parsedBeatmap) {
             throw new Error("No beatmaps have been loaded yet");
         }
 
-        this.applyCanvasConfig();
+        this.applyCanvasConfig(ctx, boldText);
+        ctx.fillText(this.score.toLocaleString("en-US"), 0, 0);
+        ctx.restore();
+    }
+
+    /**
+     * Calculates the team's score at a given time.
+     *
+     * @param time The time.
+     */
+    calculateTeamScore(time: number): void {
+        if (!parsedBeatmap) {
+            throw new Error("No beatmaps have been loaded yet");
+        }
 
         let teamScore = 0;
 
@@ -55,8 +62,7 @@ export class DrawableTeamScoreCounter {
                 continue;
             }
 
-            // TODO: take a look at scorev2 difference
-            // TODO: attempt to add a "line" to notice score diff just like in official osu! tournament client
+            // TODO: it's still wrong with mods other than PR idk why fksdfbdslf
             const scoreEvent = manager.events.score.eventAtOrDefault(time);
             const syncedScoreEvent =
                 manager.events.syncedScore.eventAtOrDefault(time);
@@ -85,10 +91,10 @@ export class DrawableTeamScoreCounter {
             const tempScorePortionScoreV2 =
                 Math.sqrt(score / maxScore) * scorePortion * maxScoreV2;
             const tempAccPortionScoreV2 =
-                Math.pow(accuracyEvent.accuracy, 2) *
-                (1 - scorePortion) *
-                maxScoreV2 *
-                (accuracyEvent.objectIndex + 1) /
+                (Math.pow(accuracyEvent.accuracy, 2) *
+                    (1 - scorePortion) *
+                    maxScoreV2 *
+                    (accuracyEvent.objectIndex + 1)) /
                 parsedBeatmap.hitObjects.objects.length;
 
             const scorePortionScoreV2 =
@@ -101,47 +107,49 @@ export class DrawableTeamScoreCounter {
             teamScore +=
                 (scorePortionScoreV2 + accPortionScoreV2) *
                 manager.scoreMultiplier;
+
+            if (manager.mods.some((m) => m instanceof ModHardRock)) {
+                teamScore *= 1.1 / new ModHardRock().droidScoreMultiplier;
+            }
         }
 
-        teamScore = Math.round(teamScore);
-
-        this.ctx.fillText(teamScore.toLocaleString("en-US"), 0, 0);
+        this.score = Math.round(teamScore);
     }
 
-    /**
-     * Deletes this counter from the screen.
-     */
-    delete(): void {
-        $(this.screen).remove();
-    }
+    private applyCanvasConfig(
+        ctx: CanvasRenderingContext2D,
+        boldText: boolean
+    ): void {
+        ctx.save();
 
-    private applyCanvasConfig(): void {
-        this.screen.width = window.innerWidth / 2;
-        this.screen.height = window.innerHeight;
-
-        this.ctx.translate(this.screen.width / 2, this.screen.height / 2);
+        const { canvas } = ctx;
 
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            this.ctx.font = `bold 40px "Times New Roman", cursive, sans-serif`;
+            ctx.font = `${boldText ? "bold " : ""}${
+                canvas.height / 2
+            }px Trebuchet MS, sans-serif`;
         } catch (e) {
             // Ignore error
         }
 
-        this.ctx.textAlign = "center";
-        this.ctx.textBaseline = "middle";
-        this.screen.style.position = "absolute";
+        ctx.textBaseline = "middle";
 
-        switch (this.team) {
-            case MultiplayerTeam.red:
-                this.ctx.fillStyle = teamColors.red;
-                this.screen.style.left = "0px";
-                break;
-            case MultiplayerTeam.blue:
-                this.ctx.fillStyle = teamColors.blue;
-                this.screen.style.left = `${this.screen.width}px`;
-                break;
+        if (this.team === MultiplayerTeam.red) {
+            ctx.textAlign = "right";
+            ctx.fillStyle = teamColors.red;
+            ctx.translate(
+                canvas.width / 2 - canvas.width / 25,
+                canvas.height / 2 - canvas.height / 5
+            );
+        } else {
+            ctx.textAlign = "left";
+            ctx.fillStyle = teamColors.blue;
+            ctx.translate(
+                canvas.width / 2 + canvas.width / 25,
+                canvas.height / 2 - canvas.height / 5
+            );
         }
     }
 

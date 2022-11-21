@@ -1,7 +1,6 @@
-import { DrawableTeamScoreCounter } from "../drawables/counters/DrawableTeamScoreCounter";
+import { DrawableTeamScoreDisplay } from "../drawables/DrawableTeamScoreDisplay";
 import { FayeClientManager } from "../spectator/FayeClientManager";
 import { SpectatorDataProcessor } from "../spectator/SpectatorDataProcessor";
-import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
 import { teamMode } from "./RoomSettings";
 
@@ -16,12 +15,9 @@ export const fayeClient = new FayeClientManager();
 export let dataProcessor: SpectatorDataProcessor | null = null;
 
 /**
- * Team score counters. Only displayed if the team mode is TeamVS.
+ * The team score display. Not `null` if the team mode is TeamVS.
  */
-export const teamScoreCounters = new Map<
-    MultiplayerTeam,
-    DrawableTeamScoreCounter
->();
+export let teamScoreDisplay: DrawableTeamScoreDisplay | null = null;
 
 export const teamColors = {
     red: "#ff7070",
@@ -43,23 +39,13 @@ export function initProcessor(): void {
 }
 
 /**
- * Initializes team score counters.
+ * Initializes the team score display.
  */
-export function initTeamScoreCounters(): void {
-    for (const counter of teamScoreCounters.values()) {
-        counter.delete();
-    }
-
+export function initTeamScoreDisplay(): void {
     if (teamMode === MultiplayerTeamMode.headToHead) {
-        teamScoreCounters.clear();
+        teamScoreDisplay?.delete();
+        teamScoreDisplay = null;
     } else {
-        teamScoreCounters.set(
-            MultiplayerTeam.red,
-            new DrawableTeamScoreCounter(MultiplayerTeam.red)
-        );
-        teamScoreCounters.set(
-            MultiplayerTeam.blue,
-            new DrawableTeamScoreCounter(MultiplayerTeam.blue)
-        );
+        teamScoreDisplay = new DrawableTeamScoreDisplay();
     }
 }
