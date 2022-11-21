@@ -10,7 +10,7 @@ export class SpectatorAccuracyEvent extends SpectatorEvent {
     readonly accuracy: number;
 
     /**
-     * The index of the object at which this accuracy change happened.
+     * The index of the object at which this event occurred.
      */
     readonly objectIndex: number;
 

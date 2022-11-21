@@ -5,13 +5,19 @@ import {
     Mod,
     ModPrecise,
     ModUtil,
-} from "../osu-base";
-import { parsedBeatmap } from "../settings/BeatmapSettings";
-import { modMultipliers, speedMultiplier } from "../settings/RoomSettings";
-import { PlayerInfo } from "./rawdata/PlayerInfo";
-import { SpectatorEventManager } from "./SpectatorEventManager";
+} from "../../osu-base";
+import { parsedBeatmap } from "../../settings/BeatmapSettings";
+import { modMultipliers, speedMultiplier } from "../../settings/RoomSettings";
+import { PlayerInfo } from "../rawdata/PlayerInfo";
+import { SpectatorAccuracyEventManager } from "./SpectatorAccuracyEventManager";
+import { SpectatorComboEventManager } from "./SpectatorComboEventManager";
+import { SpectatorCursorEventManager } from "./SpectatorCursorEventManager";
 import { SpectatorEventManagers } from "./SpectatorEventManagers";
 import { SpectatorObjectDataEventManager } from "./SpectatorObjectDataEventManager";
+import { SpectatorScoreEventManager } from "./SpectatorScoreEventManager";
+import { SpectatorSyncedAccuracyEventManager } from "./SpectatorSyncedAccuracyEventManager";
+import { SpectatorSyncedComboEventManager } from "./SpectatorSyncedComboEventManager";
+import { SpectatorSyncedScoreEventManager } from "./SpectatorSyncedScoreEventManager";
 
 /**
  * Represents a manager for spectator data of a player.
@@ -121,17 +127,20 @@ export class SpectatorDataManager {
         }
 
         this.events = {
-            accuracy: new SpectatorEventManager(),
-            combo: new SpectatorEventManager(),
+            accuracy: new SpectatorAccuracyEventManager(),
+            combo: new SpectatorComboEventManager(),
             cursor: [],
             objectData: new SpectatorObjectDataEventManager(
                 parsedBeatmap.hitObjects.objects.length
             ),
-            score: new SpectatorEventManager(),
+            score: new SpectatorScoreEventManager(),
+            syncedAccuracy: new SpectatorSyncedAccuracyEventManager(),
+            syncedCombo: new SpectatorSyncedComboEventManager(),
+            syncedScore: new SpectatorSyncedScoreEventManager(),
         };
 
         for (let i = 0; i < 10; ++i) {
-            this.events.cursor.push(new SpectatorEventManager());
+            this.events.cursor.push(new SpectatorCursorEventManager());
         }
     }
 

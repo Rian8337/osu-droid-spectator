@@ -1,9 +1,14 @@
-import { SpectatorEvent } from "./events/SpectatorEvent";
+import { SpectatorEvent } from "../events/SpectatorEvent";
 
 /**
  * Represents a manager for any kind of spectator event.
  */
-export class SpectatorEventManager<T extends SpectatorEvent> {
+export abstract class SpectatorEventManager<T extends SpectatorEvent> {
+    /**
+     * The default event of this manager.
+     */
+    abstract readonly defaultEvent: T;
+
     /**
      * The events associated with this manager.
      */
@@ -103,6 +108,18 @@ export class SpectatorEventManager<T extends SpectatorEvent> {
      */
     clear(): void {
         this._events.length = 0;
+    }
+
+    /**
+     * Binary searches the events list to find the active event at the given time.
+     *
+     * Includes logic for returning the default event if no events were found.
+     *
+     * @param time The time to find the event at.
+     * @returns The event at the given time, or the default event.
+     */
+    eventAtOrDefault(time: number): T {
+        return this.eventAt(time) ?? this.defaultEvent;
     }
 
     /**

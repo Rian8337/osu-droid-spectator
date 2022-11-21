@@ -2,7 +2,6 @@ import { maxScore, parsedBeatmap } from "../../settings/BeatmapSettings";
 import { players } from "../../settings/PlayerSettings";
 import { scorePortion } from "../../settings/RoomSettings";
 import { dataProcessor, teamColors } from "../../settings/SpectatorSettings";
-import { SpectatorAccuracyEvent } from "../../spectator/events/SpectatorAccuracyEvent";
 import { MultiplayerTeam } from "../../spectator/structures/MultiplayerTeam";
 
 /**
@@ -57,12 +56,23 @@ export class DrawableTeamScoreCounter {
             }
 
             // TODO: take a look at scorev2 difference
-            // TODO: add a "room" for counter at the middle of the screen
             // TODO: attempt to add a "line" to notice score diff just like in official osu! tournament client
-            let score = manager.events.score.eventAt(time)?.score ?? 0;
-            const accuracyEvent =
-                manager.events.accuracy.eventAt(time) ??
-                new SpectatorAccuracyEvent(time, 1, 0);
+            const scoreEvent = manager.events.score.eventAtOrDefault(time);
+            const syncedScoreEvent =
+                manager.events.syncedScore.eventAtOrDefault(time);
+
+            let score = scoreEvent.score;
+            if (syncedScoreEvent.time > scoreEvent.time) {
+                score = syncedScoreEvent.score;
+            }
+
+            let accuracyEvent = manager.events.accuracy.eventAtOrDefault(time);
+            const syncedAccuracyEvent =
+                manager.events.syncedAccuracy.eventAtOrDefault(time);
+
+            if (syncedAccuracyEvent.time > accuracyEvent.time) {
+                accuracyEvent = syncedAccuracyEvent;
+            }
 
             // Remove original score multiplier from the score first to preserve NoMod scorev1.
             for (const mod of manager.mods) {
@@ -75,10 +85,10 @@ export class DrawableTeamScoreCounter {
             const tempScorePortionScoreV2 =
                 Math.sqrt(score / maxScore) * scorePortion * maxScoreV2;
             const tempAccPortionScoreV2 =
-                (Math.pow(accuracyEvent.accuracy, 2) *
-                    (1 - scorePortion) *
-                    maxScoreV2 *
-                    accuracyEvent.objectIndex) /
+                Math.pow(accuracyEvent.accuracy, 2) *
+                (1 - scorePortion) *
+                maxScoreV2 *
+                (accuracyEvent.objectIndex + 1) /
                 parsedBeatmap.hitObjects.objects.length;
 
             const scorePortionScoreV2 =
@@ -95,7 +105,7 @@ export class DrawableTeamScoreCounter {
 
         teamScore = Math.round(teamScore);
 
-        this.ctx.fillText(teamScore.toString(), 0, 0);
+        this.ctx.fillText(teamScore.toLocaleString("en-US"), 0, 0);
     }
 
     /**
@@ -114,7 +124,7 @@ export class DrawableTeamScoreCounter {
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            this.ctx.font = `50px bold "Times New Roman", cursive, sans-serif`;
+            this.ctx.font = `bold 40px "Times New Roman", cursive, sans-serif`;
         } catch (e) {
             // Ignore error
         }

@@ -8,7 +8,7 @@ import {
 } from "../osu-base";
 import { SpectatorCursorEvent } from "../spectator/events/SpectatorCursorEvent";
 import { MovementType } from "../spectator/structures/MovementType";
-import { SpectatorEventManager } from "../spectator/SpectatorEventManager";
+import { SpectatorEventManager } from "../spectator/managers/SpectatorEventManager";
 import { DrawableBeatmap } from "./DrawableBeatmap";
 
 /**

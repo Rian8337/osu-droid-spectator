@@ -1,13 +1,15 @@
 import { DrawableBeatmap } from "./drawables/DrawableBeatmap";
 import { DrawableComboCounter } from "./drawables/counters/DrawableComboCounter";
 import { DrawableCursor } from "./drawables/DrawableCursor";
-import { SpectatorDataManager } from "./spectator/SpectatorDataManager";
+import { SpectatorDataManager } from "./spectator/managers/SpectatorDataManager";
 import { DrawableScoreCounter } from "./drawables/counters/DrawableScoreCounter";
 import { DrawableAccuracyCounter } from "./drawables/counters/DrawableAccuracyCounter";
 import { DrawablePlayerInfo } from "./drawables/DrawablePlayerInfo";
 import { Anchor } from "./osu-base";
 import { parsedBeatmap } from "./settings/BeatmapSettings";
 import { PreviewAnchor } from "./settings/PreviewSettings";
+import { teamMode } from "./settings/RoomSettings";
+import { MultiplayerTeamMode } from "./spectator/structures/MultiplayerTeamMode";
 
 /**
  * Represents a beatmap preview.
@@ -70,6 +72,13 @@ export class Preview {
         return this.screen.getContext("2d")!;
     }
 
+    /**
+     * The height padding with respect to team mode.
+     */
+    static get heightPadding(): number {
+        return teamMode === MultiplayerTeamMode.teamVS ? 40 : 0;
+    }
+
     constructor(uid: number, anchor: PreviewAnchor) {
         this.uid = uid;
         this.screen = document.createElement("canvas");
@@ -123,13 +132,16 @@ export class Preview {
         }
 
         this.accuracyCounter = new DrawableAccuracyCounter(
-            specDataManager.events.accuracy
+            specDataManager.events.accuracy,
+            specDataManager.events.syncedAccuracy
         );
         this.comboCounter = new DrawableComboCounter(
-            specDataManager.events.combo
+            specDataManager.events.combo,
+            specDataManager.events.syncedCombo
         );
         this.scoreCounter = new DrawableScoreCounter(
-            specDataManager.events.score
+            specDataManager.events.score,
+            specDataManager.events.syncedScore
         );
 
         this.beatmap.update(this.ctx);
@@ -147,7 +159,7 @@ export class Preview {
             return;
         }
 
-        // TODO: hit error bar, and ready state
+        // TODO: hit error bar and ready state
         this.applyCanvasPosition();
         this.beatmap?.update(this.ctx);
         this.ctx.save();
@@ -177,28 +189,31 @@ export class Preview {
      */
     private applyCanvasPosition(): void {
         this.screen.width = window.innerWidth / 2;
-        this.screen.height = window.innerHeight / 2;
+        this.screen.height = window.innerHeight / 2 - Preview.heightPadding;
 
         this.ctx.scale(0.5, 0.5);
-
-        if (this.anchor === Anchor.topLeft) {
-            return;
-        }
-
         this.screen.style.position = "absolute";
 
         switch (this.anchor) {
+            case Anchor.topLeft:
+                this.screen.style.left = "0px";
+                this.screen.style.top = "0px";
+                break;
             case Anchor.topCenter:
                 this.screen.style.left = `${window.innerWidth / 2}px`;
                 this.screen.style.top = "0px";
                 break;
             case Anchor.centerLeft:
                 this.screen.style.left = "0px";
-                this.screen.style.top = `${window.innerHeight / 2}px`;
+                this.screen.style.top = `${
+                    window.innerHeight / 2 + Preview.heightPadding
+                }px`;
                 break;
             case Anchor.center:
                 this.screen.style.left = `${window.innerWidth / 2}px`;
-                this.screen.style.top = `${window.innerHeight / 2}px`;
+                this.screen.style.top = `${
+                    window.innerHeight / 2 + Preview.heightPadding
+                }px`;
                 break;
         }
     }

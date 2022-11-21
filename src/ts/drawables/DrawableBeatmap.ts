@@ -17,8 +17,9 @@ import { DrawableCircle } from "./hitobjects/DrawableCircle";
 import { DrawableHitObject } from "./hitobjects/DrawableHitObject";
 import { DrawableSlider } from "./hitobjects/DrawableSlider";
 import { DrawableSpinner } from "./hitobjects/DrawableSpinner";
-import { SpectatorDataManager } from "../spectator/SpectatorDataManager";
+import { SpectatorDataManager } from "../spectator/managers/SpectatorDataManager";
 import { HitResult } from "../spectator/structures/HitResult";
+import { Preview } from "../Preview";
 
 /**
  * Represents a beatmap that can be used to draw objects.
@@ -30,7 +31,8 @@ export class DrawableBeatmap {
     static get zeroCoordinate(): Vector2 {
         return new Vector2(
             (window.innerWidth - Playfield.baseSize.x) / 2,
-            (window.innerHeight - Playfield.baseSize.y) / 2
+            (window.innerHeight - Playfield.baseSize.y) / 2 -
+                Preview.heightPadding
         );
     }
 
@@ -56,10 +58,12 @@ export class DrawableBeatmap {
             return DrawableBeatmap.defaultComboColors;
         }
     }
+
     private readonly objectDrawIndexes = {
         first: 0,
         last: -1,
     };
+
     static readonly defaultComboColors = [
         new RGBColor(0, 202, 0),
         new RGBColor(18, 124, 255),

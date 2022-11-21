@@ -1,17 +1,30 @@
 import { SpectatorCountableEvent } from "../../spectator/events/SpectatorCountableEvent";
-import { SpectatorEventManager } from "../../spectator/SpectatorEventManager";
+import { SpectatorSyncedCountableEvent } from "../../spectator/events/SpectatorSyncedCountableEvent";
+import { SpectatorEventManager } from "../../spectator/managers/SpectatorEventManager";
 
 /**
  * Represents a counter that can be drawn.
  */
-export abstract class DrawableCounter<T extends SpectatorCountableEvent> {
+export abstract class DrawableCounter<
+    SpecEvent extends SpectatorCountableEvent,
+    SpecSyncedEvent extends SpectatorSyncedCountableEvent
+> {
     /**
      * The event manager of this drawable counter.
      */
-    readonly manager: SpectatorEventManager<T>;
+    readonly manager: SpectatorEventManager<SpecEvent>;
 
-    constructor(manager: SpectatorEventManager<T>) {
+    /**
+     * The synced event manager of this drawable counter.
+     */
+    readonly syncedManager: SpectatorEventManager<SpecSyncedEvent>;
+
+    constructor(
+        manager: SpectatorEventManager<SpecEvent>,
+        syncedManager: SpectatorEventManager<SpecSyncedEvent>
+    ) {
         this.manager = manager;
+        this.syncedManager = syncedManager;
     }
 
     /**

@@ -10,7 +10,10 @@ import { SpectatorScoreEvent } from "./events/SpectatorScoreEvent";
 import { HitResult } from "./structures/HitResult";
 import { MultiplayerPlayer } from "./structures/MultiplayerPlayer";
 import { SpectatorData } from "./rawdata/SpectatorData";
-import { SpectatorDataManager } from "./SpectatorDataManager";
+import { SpectatorDataManager } from "./managers/SpectatorDataManager";
+import { SpectatorSyncedScoreEvent } from "./events/SpectatorSyncedScoreEvent";
+import { SpectatorSyncedAccuracyEvent } from "./events/SpectatorSyncedAccuracyEvent";
+import { SpectatorSyncedComboEvent } from "./events/SpectatorSyncedComboEvent";
 
 /**
  * A handler for holding and processing spectator data.
@@ -148,22 +151,6 @@ export class SpectatorDataProcessor {
 
         const { events } = manager;
 
-        events.score.add(
-            new SpectatorScoreEvent(data.secPassed * 1000, data.currentScore)
-        );
-
-        events.accuracy.add(
-            new SpectatorAccuracyEvent(
-                data.secPassed * 1000,
-                data.currentAccuracy,
-                events.accuracy.events.length + data.hitObjectData.length
-            )
-        );
-
-        events.combo.add(
-            new SpectatorComboEvent(data.secPassed * 1000, data.currentCombo)
-        );
-
         for (const objectData of data.hitObjectData) {
             const object = parsedBeatmap.hitObjects.objects[objectData.index];
             let time = object.endTime;
@@ -242,7 +229,7 @@ export class SpectatorDataProcessor {
                 new SpectatorAccuracyEvent(
                     time,
                     objectData.currentAccuracy,
-                    events.accuracy.events.length
+                    objectData.index
                 )
             );
 
@@ -258,6 +245,28 @@ export class SpectatorDataProcessor {
                 new SpectatorObjectDataEvent(time, objectData)
             );
         }
+
+        events.syncedScore.add(
+            new SpectatorSyncedScoreEvent(
+                data.secPassed * 1000,
+                data.currentScore
+            )
+        );
+
+        events.syncedAccuracy.add(
+            new SpectatorSyncedAccuracyEvent(
+                data.secPassed * 1000,
+                data.currentAccuracy,
+                events.accuracy.events.length - 1
+            )
+        );
+
+        events.syncedCombo.add(
+            new SpectatorSyncedComboEvent(
+                data.secPassed * 1000,
+                data.currentCombo
+            )
+        );
 
         for (let i = 0; i < data.cursorMovement.length; ++i) {
             const cursorMovement = data.cursorMovement[i];

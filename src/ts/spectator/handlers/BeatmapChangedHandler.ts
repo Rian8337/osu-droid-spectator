@@ -38,6 +38,7 @@ export abstract class BeatmapChangedHandler {
         ) {
             console.log("Beatmap changed");
 
+            // TODO: add logic to not redownload beatmapset (and reload audio + background) if beatmapset ID is equal
             resetProcessor();
             resetAudio(true);
             reloadPreview();
