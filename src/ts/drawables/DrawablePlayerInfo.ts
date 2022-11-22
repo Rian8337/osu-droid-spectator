@@ -149,9 +149,9 @@ export class DrawablePlayerInfo implements PlayerInfo {
         ctx.globalAlpha = 1;
         ctx.textAlign = "right";
         ctx.fillText(
-            `${this.username} (${this.uid})${
+            `${this.username}${
                 manager.mods.length > 0
-                    ? ` [+${manager.mods.reduce((a, m) => a + m.acronym, "")}]`
+                    ? ` (${manager.mods.reduce((a, m) => a + m.acronym, "")})`
                     : ""
             }`,
             Playfield.baseSize.x +
