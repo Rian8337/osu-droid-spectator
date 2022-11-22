@@ -63,7 +63,6 @@ export class DrawableTeamScoreCounter {
                 continue;
             }
 
-            // TODO: it's still wrong with mods other than PR idk why fksdfbdslf
             const scoreEvent = manager.events.score.eventAtOrDefault(time);
             const syncedScoreEvent =
                 manager.events.syncedScore.eventAtOrDefault(time);
