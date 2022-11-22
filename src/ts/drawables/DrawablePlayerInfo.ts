@@ -133,7 +133,6 @@ export class DrawablePlayerInfo implements PlayerInfo {
             fontSize += (missMaxFontSize - fontSize) * multiplier;
         }
 
-        console.log(`Fill color: ${color}`);
         ctx.save();
 
         try {
