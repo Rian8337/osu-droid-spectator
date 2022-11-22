@@ -203,7 +203,7 @@ export class DrawableHitErrorBar {
             );
 
             ctx.globalAlpha = opacity;
-            ctx.lineWidth = ctx.canvas.width / 85;
+            ctx.lineWidth = ctx.canvas.width / 100;
             ctx.strokeStyle = hitResultColors[event.result];
             ctx.beginPath();
             ctx.moveTo(
