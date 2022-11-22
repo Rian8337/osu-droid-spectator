@@ -185,7 +185,7 @@ export abstract class DrawableHitObject {
 
         ctx.globalAlpha = opacity;
         ctx.shadowBlur = this.shadowBlur;
-        ctx.fillStyle = hitResultColors[hitResult];
+        ctx.fillStyle = `rgb(${hitResultColors[hitResult]})`;
 
         let text = "";
 

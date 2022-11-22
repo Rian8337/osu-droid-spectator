@@ -123,8 +123,7 @@ export class Preview {
         this.specDataManager = specDataManager;
         this.playerInfo = new DrawablePlayerInfo(
             specDataManager.uid,
-            specDataManager.username,
-            specDataManager.mods
+            specDataManager.username
         );
         this.ctx.restore();
         this.ctx.save();
@@ -170,14 +169,13 @@ export class Preview {
             return;
         }
 
-        // TODO: ready state
         this.applyCanvasPosition();
         this.beatmap?.update(this.ctx);
         this.ctx.save();
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         this.ctx.restore();
-        this.playerInfo?.draw(this.ctx);
+        this.playerInfo?.draw(this.ctx, time);
         this.accuracyCounter?.draw(this.ctx, time);
         this.comboCounter?.draw(this.ctx, time);
         this.scoreCounter?.draw(this.ctx, time);

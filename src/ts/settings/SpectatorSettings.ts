@@ -1,7 +1,9 @@
 import { DrawableTeamScoreDisplay } from "../drawables/DrawableTeamScoreDisplay";
+import { RGBColor } from "../osu-base";
 import { FayeClientManager } from "../spectator/FayeClientManager";
 import { SpectatorDataProcessor } from "../spectator/SpectatorDataProcessor";
 import { HitResult } from "../spectator/structures/HitResult";
+import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
 import { teamMode } from "./RoomSettings";
 
@@ -23,9 +25,9 @@ export let teamScoreDisplay: DrawableTeamScoreDisplay | null = null;
 /**
  * Colors for each team.
  */
-export const teamColors = {
-    red: "#ff7070",
-    blue: "#566df5",
+export const teamColors: Record<MultiplayerTeam, RGBColor> = {
+    [MultiplayerTeam.red]: new RGBColor(255, 112, 112),
+    [MultiplayerTeam.blue]: new RGBColor(86, 109, 245),
 };
 
 /**
@@ -33,11 +35,11 @@ export const teamColors = {
  *
  * These colors are taken from osu!lazer [(source code)](https://github.com/ppy/osu/blob/daae560ff731bdf49970a5bc6588c0861fac760f/osu.Game/Graphics/OsuColour.cs#L105-L131).
  */
-export const hitResultColors: Record<HitResult, string> = {
-    [HitResult.great]: "#66ccff",
-    [HitResult.good]: "#b3d944",
-    [HitResult.meh]: "#ffcc22",
-    [HitResult.miss]: "#ed1121",
+export const hitResultColors: Record<HitResult, RGBColor> = {
+    [HitResult.great]: new RGBColor(102, 204, 255),
+    [HitResult.good]: new RGBColor(179, 217, 68),
+    [HitResult.meh]: new RGBColor(255, 204, 34),
+    [HitResult.miss]: new RGBColor(237, 17, 33),
 };
 
 /**

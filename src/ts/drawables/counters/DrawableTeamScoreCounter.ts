@@ -49,6 +49,7 @@ export class DrawableTeamScoreCounter {
             throw new Error("No beatmaps have been loaded yet");
         }
 
+        // TODO: consider different win conditions
         let teamScore = 0;
 
         for (const player of players.values()) {
@@ -135,20 +136,19 @@ export class DrawableTeamScoreCounter {
         }
 
         ctx.textBaseline = "middle";
+        ctx.fillStyle = `rgb(${teamColors[this.team]})`;
 
         if (this.team === MultiplayerTeam.red) {
             ctx.textAlign = "right";
-            ctx.fillStyle = teamColors.red;
             ctx.translate(
                 canvas.width / 2 - canvas.width / 25,
-                canvas.height / 2 - canvas.height / 5
+                canvas.height / 2 - canvas.height / 4
             );
         } else {
             ctx.textAlign = "left";
-            ctx.fillStyle = teamColors.blue;
             ctx.translate(
                 canvas.width / 2 + canvas.width / 25,
-                canvas.height / 2 - canvas.height / 5
+                canvas.height / 2 - canvas.height / 4
             );
         }
     }

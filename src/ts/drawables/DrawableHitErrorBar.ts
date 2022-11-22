@@ -75,7 +75,7 @@ export class DrawableHitErrorBar {
 
         ctx.globalAlpha = 1;
         ctx.lineWidth = ctx.canvas.height / 50;
-        ctx.strokeStyle = hitResultColors[HitResult.meh];
+        ctx.strokeStyle = `rgb(${hitResultColors[HitResult.meh]})`;
         ctx.beginPath();
         ctx.moveTo(centerCoordinate.x - drawDistance, centerCoordinate.y);
         ctx.lineTo(centerCoordinate.x + drawDistance, centerCoordinate.y);
@@ -96,7 +96,7 @@ export class DrawableHitErrorBar {
 
         ctx.globalAlpha = 1;
         ctx.lineWidth = ctx.canvas.height / 50;
-        ctx.strokeStyle = hitResultColors[HitResult.good];
+        ctx.strokeStyle = `rgb(${hitResultColors[HitResult.good]})`;
         ctx.beginPath();
         ctx.moveTo(centerCoordinate.x - drawDistance, centerCoordinate.y);
         ctx.lineTo(centerCoordinate.x + drawDistance, centerCoordinate.y);
@@ -117,7 +117,7 @@ export class DrawableHitErrorBar {
 
         ctx.globalAlpha = 1;
         ctx.lineWidth = ctx.canvas.height / 50;
-        ctx.strokeStyle = hitResultColors[HitResult.great];
+        ctx.strokeStyle = `rgb(${hitResultColors[HitResult.great]})`;
         ctx.beginPath();
         ctx.moveTo(centerCoordinate.x - drawDistance, centerCoordinate.y);
         ctx.lineTo(centerCoordinate.x + drawDistance, centerCoordinate.y);
@@ -182,7 +182,8 @@ export class DrawableHitErrorBar {
                 // Check for slider head break.
                 if (
                     event.accuracy !==
-                    this.hitWindow.hitWindowFor50(this.isPrecise) + 13
+                    Math.floor(this.hitWindow.hitWindowFor50(this.isPrecise)) +
+                        13
                 ) {
                     continue;
                 }
@@ -191,7 +192,7 @@ export class DrawableHitErrorBar {
             }
 
             const dt = time - eventTime;
-            if (dt < maxDrawTime) {
+            if (dt > maxDrawTime) {
                 break;
             }
 
@@ -204,7 +205,7 @@ export class DrawableHitErrorBar {
 
             ctx.globalAlpha = opacity;
             ctx.lineWidth = ctx.canvas.width / 100;
-            ctx.strokeStyle = hitResultColors[event.result];
+            ctx.strokeStyle = `rgb(${hitResultColors[event.result]})`;
             ctx.beginPath();
             ctx.moveTo(
                 centerCoordinate.x + distanceFromCenter,
