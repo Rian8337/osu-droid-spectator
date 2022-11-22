@@ -141,13 +141,13 @@ export class DrawableTeamScoreCounter {
             ctx.textAlign = "right";
             ctx.translate(
                 canvas.width / 2 - canvas.width / 25,
-                canvas.height / 2 - canvas.height / 4
+                canvas.height / 2 - canvas.height / 7.5
             );
         } else {
             ctx.textAlign = "left";
             ctx.translate(
                 canvas.width / 2 + canvas.width / 25,
-                canvas.height / 2 - canvas.height / 4
+                canvas.height / 2 - canvas.height / 7.5
             );
         }
     }
