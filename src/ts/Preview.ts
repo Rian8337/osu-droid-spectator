@@ -5,11 +5,12 @@ import { SpectatorDataManager } from "./spectator/managers/SpectatorDataManager"
 import { DrawableScoreCounter } from "./drawables/counters/DrawableScoreCounter";
 import { DrawableAccuracyCounter } from "./drawables/counters/DrawableAccuracyCounter";
 import { DrawablePlayerInfo } from "./drawables/DrawablePlayerInfo";
-import { Anchor } from "./osu-base";
+import { Anchor, ModPrecise } from "./osu-base";
 import { parsedBeatmap } from "./settings/BeatmapSettings";
 import { PreviewAnchor } from "./settings/PreviewSettings";
 import { teamMode } from "./settings/RoomSettings";
 import { MultiplayerTeamMode } from "./spectator/structures/MultiplayerTeamMode";
+import { DrawableHitErrorBar } from "./drawables/DrawableHitErrorBar";
 
 /**
  * Represents a beatmap preview.
@@ -49,6 +50,11 @@ export class Preview {
      * The score counter responsible for this preview.
      */
     scoreCounter?: DrawableScoreCounter;
+
+    /**
+     * The hit error bar responsible for this preview.
+     */
+    hitErrorBar?: DrawableHitErrorBar;
 
     /**
      * The uid of the player in this preview.
@@ -143,6 +149,11 @@ export class Preview {
             specDataManager.events.score,
             specDataManager.events.syncedScore
         );
+        this.hitErrorBar = new DrawableHitErrorBar(
+            specDataManager.events.objectData,
+            specDataManager.hitWindow,
+            specDataManager.mods.some((m) => m instanceof ModPrecise)
+        );
 
         this.beatmap.update(this.ctx);
         this.at(0);
@@ -159,18 +170,19 @@ export class Preview {
             return;
         }
 
-        // TODO: hit error bar and ready state
+        // TODO: ready state
         this.applyCanvasPosition();
         this.beatmap?.update(this.ctx);
         this.ctx.save();
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         this.ctx.restore();
-        this.beatmap.draw(this.ctx, time, this.specDataManager);
         this.playerInfo?.draw(this.ctx);
         this.accuracyCounter?.draw(this.ctx, time);
         this.comboCounter?.draw(this.ctx, time);
         this.scoreCounter?.draw(this.ctx, time);
+        this.hitErrorBar?.draw(this.ctx, time);
+        this.beatmap.draw(this.ctx, time, this.specDataManager);
 
         for (const drawableCursor of this.drawableCursors) {
             drawableCursor.draw(this.ctx, time);

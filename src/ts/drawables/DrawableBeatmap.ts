@@ -166,7 +166,7 @@ export class DrawableBeatmap {
                 DrawableHitObject.hitResultFadeOutTime;
 
             if (object.object instanceof Circle) {
-                const objectData = manager.events.objectData.eventAt(
+                const objectData = manager.events.objectData.eventAtIndex(
                     this.objectDrawIndexes.first
                 );
 
@@ -205,7 +205,7 @@ export class DrawableBeatmap {
             --i
         ) {
             const object = this.drawableHitObjects[i];
-            const hitData = manager.events.objectData.eventAt(i);
+            const hitData = manager.events.objectData.eventAtIndex(i);
             let timeThreshold =
                 object.object.endTime +
                 DrawableHitObject.hitResultFadeOutStartTime +

@@ -172,7 +172,7 @@ export class SpectatorDataProcessor {
                 let combo = 0;
 
                 if (objectData.index > 0) {
-                    const event = events.objectData.eventAt(
+                    const event = events.objectData.eventAtIndex(
                         objectData.index - 1
                     );
 

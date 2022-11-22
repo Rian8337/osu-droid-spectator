@@ -52,7 +52,7 @@ export class SpectatorObjectDataEventManager extends SpectatorEventManager<Spect
      * @param index The index of the event.
      * @returns The object data event, `null` if none found.
      */
-    override eventAt(index: number): SpectatorObjectDataEvent | null {
+    eventAtIndex(index: number): SpectatorObjectDataEvent | null {
         return this._events[index] ?? null;
     }
 }

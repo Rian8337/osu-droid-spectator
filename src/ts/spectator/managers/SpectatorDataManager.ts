@@ -49,9 +49,9 @@ export class SpectatorDataManager {
     readonly events: SpectatorEventManagers;
 
     /**
-     * The maximum hit window of this player.
+     * The hit window of this player.
      */
-    maxHitWindow = 0;
+    hitWindow = new DroidHitWindow(5);
 
     /**
      * The score multiplier of this player.
@@ -69,6 +69,15 @@ export class SpectatorDataManager {
      * Whether this player's score will be submitted to the server should they complete the beatmap.
      */
     willBeSubmitted = true;
+
+    /**
+     * The maximum hit window of this player.
+     */
+    get maxHitWindow(): number {
+        return this.hitWindow.hitWindowFor50(
+            this.mods.some((m) => m instanceof ModPrecise)
+        );
+    }
 
     /**
      * The time at which the earliest event occurs for this player.
@@ -184,7 +193,7 @@ export class SpectatorDataManager {
         this.recalculateScoreMultiplier();
 
         if (parsedBeatmap) {
-            this.maxHitWindow = new DroidHitWindow(
+            this.hitWindow = new DroidHitWindow(
                 new MapStats({
                     od: parsedBeatmap.difficulty.od,
                     mods: mods.filter(
@@ -194,7 +203,7 @@ export class SpectatorDataManager {
                             )
                     ),
                 }).calculate().od!
-            ).hitWindowFor50(mods.some((m) => m instanceof ModPrecise));
+            );
         }
 
         this.forcedAR = forcedAR;

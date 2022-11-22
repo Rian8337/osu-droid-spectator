@@ -8,6 +8,7 @@ import {
     RGBColor,
     Vector2,
 } from "../../osu-base";
+import { hitResultColors } from "../../settings/SpectatorSettings";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/structures/HitResult";
 
@@ -184,21 +185,18 @@ export abstract class DrawableHitObject {
 
         ctx.globalAlpha = opacity;
         ctx.shadowBlur = this.shadowBlur;
+        ctx.fillStyle = hitResultColors[hitResult];
 
         let text = "";
 
-        // Colors are taken from osu!lazer (https://github.com/ppy/osu/blob/daae560ff731bdf49970a5bc6588c0861fac760f/osu.Game/Graphics/OsuColour.cs#L105-L131)
         switch (hitResult) {
             case HitResult.good:
-                ctx.fillStyle = "#b3d944";
                 text = "100";
                 break;
             case HitResult.meh:
-                ctx.fillStyle = "#ffcc22";
                 text = "50";
                 break;
             case HitResult.miss:
-                ctx.fillStyle = "#ed1121";
                 text = "❌";
                 break;
         }
