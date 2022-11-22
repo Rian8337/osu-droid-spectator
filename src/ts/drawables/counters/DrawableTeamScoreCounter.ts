@@ -49,9 +49,9 @@ export class DrawableTeamScoreCounter {
             throw new Error("No beatmaps have been loaded yet");
         }
 
-        // TODO: consider different win conditions
-        let teamScore = 0;
+        this.score = 0;
 
+        // TODO: consider different win conditions
         for (const player of players.values()) {
             if (player.team !== this.team) {
                 continue;
@@ -104,16 +104,16 @@ export class DrawableTeamScoreCounter {
                 tempAccPortionScoreV2 -
                 this.calculateMissPenalty(player.uid, tempAccPortionScoreV2);
 
-            teamScore +=
+            let totalScore =
                 (scorePortionScoreV2 + accPortionScoreV2) *
                 manager.scoreMultiplier;
 
             if (manager.mods.some((m) => m instanceof ModHardRock)) {
-                teamScore *= 1.1 / new ModHardRock().droidScoreMultiplier;
+                totalScore *= 1.1 / new ModHardRock().droidScoreMultiplier;
             }
-        }
 
-        this.score = Math.round(teamScore);
+            this.score += Math.round(totalScore);
+        }
     }
 
     private applyCanvasConfig(
