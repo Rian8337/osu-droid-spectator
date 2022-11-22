@@ -36,7 +36,7 @@ export class DrawableHitErrorBar {
 
         return new Vector2(
             zeroCoordinate.x / 2,
-            Playfield.baseSize.y + zeroCoordinate.y / 2
+            Playfield.baseSize.y + zeroCoordinate.y / 1.75
         );
     }
 
