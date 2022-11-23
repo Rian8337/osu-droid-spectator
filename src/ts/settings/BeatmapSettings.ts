@@ -1,3 +1,4 @@
+import JSZip from "../jszip";
 import { Beatmap, MapStats } from "../osu-base";
 import { PickedBeatmap } from "../spectator/rawdata/PickedBeatmap";
 
@@ -15,6 +16,11 @@ export let maxScore = 0;
  * The beatmap that is currently being played.
  */
 export let pickedBeatmap: PickedBeatmap | null = null;
+
+/**
+ * The beatmapset that's currently used.
+ */
+export let beatmapset = new JSZip();
 
 /**
  * Sets the picked beatmap.
@@ -39,4 +45,11 @@ export function setParsedBeatmap(newParsedBeatmap: Beatmap): void {
  */
 export function calculateMaxScore(): void {
     maxScore = parsedBeatmap?.maxDroidScore(new MapStats()) ?? 0;
+}
+
+/**
+ * Resets the beatmapset.
+ */
+export function resetBeatmapset(): void {
+    beatmapset = new JSZip();
 }

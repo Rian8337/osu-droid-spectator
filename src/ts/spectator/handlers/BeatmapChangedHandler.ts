@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import { audioState, resetAudio } from "../../elements/Audio";
 import { background, clearBackground } from "../../elements/Background";
-import JSZip, { JSZipObject } from "../../jszip";
+import { JSZipObject } from "../../jszip";
 import { BeatmapDecoder } from "../../osu-base";
 import {
     pickedBeatmap,
@@ -9,6 +9,8 @@ import {
     setPickedBeatmap,
     setParsedBeatmap,
     calculateMaxScore,
+    resetBeatmapset,
+    beatmapset,
 } from "../../settings/BeatmapSettings";
 import { reloadPreview } from "../../settings/PreviewSettings";
 import {
@@ -37,31 +39,32 @@ export abstract class BeatmapChangedHandler {
      * @param newBeatmap The new beatmap, if any.
      */
     static async handle(newBeatmap?: PickedBeatmap): Promise<void> {
+        console.log("Beatmap changed");
+
+        resetProcessor();
+        reloadPreview();
+
+        let backgroundBlob = "";
+        let audioBlob = "";
+        let osuFile = "";
+        const beatmapToLoad = newBeatmap ?? pickedBeatmap;
+
+        if (!beatmapToLoad) {
+            throw new Error("No beatmaps to load");
+        }
+
         if (
             !parsedBeatmap ||
-            (newBeatmap && newBeatmap.id !== pickedBeatmap?.id)
+            (newBeatmap && newBeatmap.setId !== pickedBeatmap?.setId)
         ) {
-            console.log("Beatmap changed");
-
-            // TODO: add logic to not redownload beatmapset (and reload audio + background) if beatmapset ID is equal
-            resetProcessor();
+            resetBeatmapset();
             resetAudio(true);
-            reloadPreview();
             clearBackground();
 
             // TODO: try to locally store beatmapset
-            const beatmapToLoad = newBeatmap ?? pickedBeatmap;
-
             $("#title a").text("Loading...").removeProp("href");
 
-            if (!beatmapToLoad) {
-                throw new Error("No beatmaps to load");
-            }
-
-            const { id: beatmapId, setId: beatmapSetId } = beatmapToLoad;
-            let backgroundBlob = "";
-            let audioBlob = "";
-            let osuFile = "";
+            const { setId: beatmapSetId } = beatmapToLoad;
 
             this.abortController?.abort();
             this.abortController = new AbortController();
@@ -79,33 +82,32 @@ export abstract class BeatmapChangedHandler {
                 return;
             }
 
-            const zip = new JSZip();
-            await zip.loadAsync(await downloadResponse.blob());
+            await beatmapset.loadAsync(await downloadResponse.blob());
+        }
 
-            const entries = Object.values(zip.files);
-            osuFile = await this.getOsuFile(entries, beatmapToLoad.hash);
+        const entries = Object.values(beatmapset.files);
+        osuFile = await this.getOsuFile(entries, beatmapToLoad.hash);
 
-            if (osuFile) {
-                backgroundBlob = await this.getBackgroundBlob(entries, osuFile);
-                audioBlob = await this.getAudioBlob(entries, osuFile);
-            }
+        if (osuFile) {
+            backgroundBlob = await this.getBackgroundBlob(entries, osuFile);
+            audioBlob = await this.getAudioBlob(entries, osuFile);
+        }
 
-            if (backgroundBlob && osuFile) {
-                setPickedBeatmap(beatmapToLoad);
-                setParsedBeatmap(new BeatmapDecoder().decode(osuFile).result);
-                calculateMaxScore();
-                initProcessor();
+        if (backgroundBlob && osuFile) {
+            setPickedBeatmap(beatmapToLoad);
+            setParsedBeatmap(new BeatmapDecoder().decode(osuFile).result);
+            calculateMaxScore();
+            initProcessor();
 
-                background.src = backgroundBlob;
-                audioState.audio.src = audioBlob;
+            background.src = backgroundBlob;
+            audioState.audio.src = audioBlob;
 
-                $("#title a")
-                    .prop("href", `//osu.ppy.sh/b/${beatmapId}`)
-                    .text(beatmapToLoad.name);
-                $("#play").addClass("e");
-            } else {
-                $("#title a").text("An error has occurred, sorry!");
-            }
+            $("#title a")
+                .prop("href", `//osu.ppy.sh/b/${beatmapToLoad.id}`)
+                .text(beatmapToLoad.name);
+            $("#play").addClass("e");
+        } else {
+            $("#title a").text("An error has occurred, sorry!");
         }
     }
 
