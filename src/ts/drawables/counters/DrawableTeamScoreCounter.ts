@@ -1,4 +1,4 @@
-import { ModHardRock } from "../../osu-base";
+import { ModDoubleTime, ModHardRock, ModHidden } from "../../osu-base";
 import { maxScore, parsedBeatmap } from "../../settings/BeatmapSettings";
 import { players } from "../../settings/PlayerSettings";
 import { scorePortion } from "../../settings/RoomSettings";
@@ -110,6 +110,14 @@ export class DrawableTeamScoreCounter {
 
             if (manager.mods.some((m) => m instanceof ModHardRock)) {
                 totalScore *= 1.1 / new ModHardRock().droidScoreMultiplier;
+            }
+
+            if (
+                manager.mods.filter(
+                    (m) => m instanceof ModHidden || m instanceof ModDoubleTime
+                ).length === 2
+            ) {
+                totalScore /= new ModHidden().droidScoreMultiplier;
             }
 
             this.score += Math.round(totalScore);

@@ -25,6 +25,11 @@ export abstract class BeatmapChangedHandler {
     private static readonly fileNameCleanerRegex = /[^\x00-\x7F]/g;
 
     /**
+     * The abort controller for the current beatmap request.
+     */
+    private static abortController: AbortController | null = null;
+
+    /**
      * Handles a beatmap changed event.
      *
      * Includes logic for reloading of rooms (i.e. for another gameplay with the same beatmap).
@@ -44,6 +49,7 @@ export abstract class BeatmapChangedHandler {
             reloadPreview();
             clearBackground();
 
+            // TODO: try to locally store beatmapset
             const beatmapToLoad = newBeatmap ?? pickedBeatmap;
 
             $("#title a").text("Loading...").removeProp("href");
@@ -57,8 +63,12 @@ export abstract class BeatmapChangedHandler {
             let audioBlob = "";
             let osuFile = "";
 
+            this.abortController?.abort();
+            this.abortController = new AbortController();
+
             const downloadResponse = await fetch(
-                `https://txy1.sayobot.cn/beatmaps/download/novideo/${beatmapSetId}`
+                `https://txy1.sayobot.cn/beatmaps/download/novideo/${beatmapSetId}`,
+                { signal: this.abortController.signal }
             );
 
             if (

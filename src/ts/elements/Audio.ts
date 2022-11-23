@@ -17,18 +17,13 @@ $(audio)
             const currentTime = audio.currentTime * 1000;
             if (currentTime === 0) {
                 audioState.audioLastPause = Date.now();
+                audio.currentTime = dataProcessor?.earliestEventTime ?? 0;
             }
 
-            // TODO: add logic to fast-forward to earliest available event time for several cases
-            // (i.e. spectator client is refreshed in the middle of a round)
             if (audio.src) {
                 if (dataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
                     audio.play();
                 } else {
-                    if (!audio.paused) {
-                        audioState.audioLastPause = Date.now();
-                    }
-
                     audio.pause();
                 }
 
@@ -38,6 +33,8 @@ $(audio)
                     }
 
                     teamScoreDisplay?.draw(currentTime);
+                } else if (!audio.ended) {
+                    audioState.audioLastPause = Date.now();
                 }
             }
 
@@ -92,7 +89,8 @@ export function resetAudio(resetSrc: boolean): void {
 
     audio.currentTime = 0;
     audioState.audioLastPause = Date.now();
-    audio.volume = parseFloat(localStorage.getItem("volume") ?? "100") / 100;
+    audio.volume = parseInt(localStorage.getItem("volume") ?? "100") / 100;
+    setAudioPlaybackRate();
 }
 
 /**

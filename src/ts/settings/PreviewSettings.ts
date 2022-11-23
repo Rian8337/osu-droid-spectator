@@ -1,9 +1,7 @@
 import { Anchor } from "../osu-base";
 import { Preview } from "../Preview";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
-import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
 import { players } from "./PlayerSettings";
-import { teamMode } from "./RoomSettings";
 
 /**
  * Supported anchor types for a preview.
@@ -124,6 +122,7 @@ export function addPreview(uid: number): boolean {
     if (!anchor) {
         return false;
     }
+    console.log(uid, player.team, anchor);
 
     previews.set(uid, new Preview(uid, anchor));
 
@@ -147,11 +146,12 @@ export function removePreview(uid: number): void {
     previews.delete(preview.uid);
     availableAnchors.unshift(preview.anchor);
 
-    if (teamMode === MultiplayerTeamMode.teamVS) {
-        if (player.team === MultiplayerTeam.red) {
+    switch (player.team) {
+        case MultiplayerTeam.red:
             redAvailableAnchors.unshift(<RedPreviewAnchor>preview.anchor);
-        } else {
+            break;
+        case MultiplayerTeam.blue:
             blueAvailableAnchors.unshift(<BluePreviewAnchor>preview.anchor);
-        }
+            break;
     }
 }
