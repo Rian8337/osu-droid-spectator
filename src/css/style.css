@@ -27,11 +27,11 @@ button::-moz-focus-inner {
 body > * {
     position: fixed;
 }
-#speed, #control, #title, #mania {
+#speed, #control, #title {
     background: rgba(0, 0, 0, .6);
     display: none;
 }
-body.h #speed, body.h #control, body.h #title, body.h #mania.e {
+body.h #speed, body.h #control, body.h #title, body.h {
     display: block;
 }
 
@@ -57,13 +57,6 @@ body.h #speed, body.h #control, body.h #title, body.h #mania.e {
 }
 #play.e {
     opacity: .6;
-}
-
-#mania {
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    width: 40px;
 }
 
 #control {
