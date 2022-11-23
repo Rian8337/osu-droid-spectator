@@ -13,8 +13,6 @@ import {
 } from "./settings/RoomSettings";
 import { fayeClient } from "./settings/SpectatorSettings";
 import { BeatmapChangedHandler } from "./spectator/handlers/BeatmapChangedHandler";
-import { PlayerStartPlayingHandler } from "./spectator/handlers/PlayerStartPlayingHandler";
-import { RoundStartHandler } from "./spectator/handlers/RoundStartHandler";
 import { SpeedMultiplierChangedHandler } from "./spectator/handlers/SpeedMultiplierChangedHandler";
 import { MultiplayerRoomInfo } from "./spectator/rawdata/MultiplayerRoomInfo";
 
@@ -81,16 +79,16 @@ export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
 
     fayeClient.beginSubscription();
 
-    if (roomInfo.isPlaying && roomInfo.beatmap) {
-        RoundStartHandler.handle();
+    // if (roomInfo.isPlaying && roomInfo.beatmap) {
+    //     RoundStartHandler.handle();
 
-        for (const player of roomInfo.players) {
-            PlayerStartPlayingHandler.handle(
-                player.uid,
-                player.mods,
-                roomInfo.beatmap.hash,
-                player.forcedAR
-            );
-        }
-    }
+    //     for (const player of roomInfo.players) {
+    //         PlayerStartPlayingHandler.handle(
+    //             player.uid,
+    //             player.mods,
+    //             roomInfo.beatmap.hash,
+    //             player.forcedAR
+    //         );
+    //     }
+    // }
 }
