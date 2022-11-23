@@ -4,6 +4,7 @@ import { speedMultiplier, requiredMods } from "../settings/RoomSettings";
 import { dataProcessor, teamScoreDisplay } from "../settings/SpectatorSettings";
 
 const audio = new Audio();
+let firstPlayback = true;
 
 $(audio)
     .on("play", () => {
@@ -13,16 +14,20 @@ $(audio)
             preview.beatmap?.refresh();
         }
 
-        requestAnimationFrame(function foo() {
+        if (firstPlayback) {
+            audio.currentTime = dataProcessor?.earliestEventTime ?? 0;
+            audioState.audioLastPause = Date.now();
+            firstPlayback = false;
+        }
+
+        // TODO: add logic to fast-forward to earliest available event time for several cases
+        // (i.e. spectator client is refreshed in the middle of a round)
+        requestAnimationFrame(async function foo() {
             const currentTime = audio.currentTime * 1000;
-            if (currentTime === 0) {
-                audioState.audioLastPause = Date.now();
-                audio.currentTime = dataProcessor?.earliestEventTime ?? 0;
-            }
 
             if (audio.src) {
                 if (dataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
-                    audio.play();
+                    await audio.play();
                 } else {
                     audio.pause();
                 }
@@ -90,6 +95,7 @@ export function resetAudio(resetSrc: boolean): void {
     audio.currentTime = 0;
     audioState.audioLastPause = Date.now();
     audio.volume = parseInt(localStorage.getItem("volume") ?? "100") / 100;
+    firstPlayback = true;
     setAudioPlaybackRate();
 }
 
