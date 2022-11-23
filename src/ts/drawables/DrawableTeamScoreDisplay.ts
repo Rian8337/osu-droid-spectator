@@ -116,8 +116,8 @@ export class DrawableTeamScoreDisplay {
             this.counters[MultiplayerTeam.blue].score -
             this.counters[MultiplayerTeam.red].score;
         const lineLength = this.screen.width / 2.5;
-        // Cap score difference line at 800000 score.
-        const lineLengthMultiplier = MathUtils.clamp(scoreDiff / 800000, -1, 1);
+        // Cap score difference line at 500000 score.
+        const lineLengthMultiplier = MathUtils.clamp(scoreDiff / 500000, -1, 1);
 
         this.ctx.translate(
             this.screen.width / 2,
