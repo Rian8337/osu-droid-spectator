@@ -12,7 +12,17 @@ export interface MultiplayerPlayer {
     readonly username: string;
 
     /**
+     * The mods used by the player, in droid mod string.
+     */
+    readonly mods: string;
+
+    /**
      * The team this player is at, if in Team VS team mode.
      */
     team?: MultiplayerTeam;
+
+    /**
+     * The forced AR setting used by the player.
+     */
+    forcedAR?: number;
 }

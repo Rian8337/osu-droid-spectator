@@ -67,4 +67,9 @@ export interface MultiplayerRoomInfo {
      * The score portion of the room. Will be used if the room's win condition is ScoreV2.
      */
     scorePortion: number;
+
+    /**
+     * Whether the room is currently playing.
+     */
+    isPlaying: boolean;
 }

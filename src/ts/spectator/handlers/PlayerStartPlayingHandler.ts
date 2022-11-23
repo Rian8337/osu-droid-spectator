@@ -11,15 +11,15 @@ export abstract class PlayerStartPlayingHandler {
      * Handles the event when a player starts playing.
      *
      * @param uid The uid of the player.
-     * @param mods The mods applied by the player.
+     * @param mods The mods applied by the player, in droid mod string.
      * @param beatmapHash The MD5 hash of the beatmap played by the player.
      */
-    static async handle(
+    static handle(
         uid: number,
         mods: string,
         beatmapHash: string,
         forcedAR?: number
-    ): Promise<void> {
+    ): void {
         console.log("Player starts playing");
 
         const manager = dataProcessor?.managers.get(uid);
