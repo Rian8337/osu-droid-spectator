@@ -1,3 +1,4 @@
+import { openDatabase } from "./settings/DatabaseSettings";
 import { setPickedBeatmap } from "./settings/BeatmapSettings";
 import { addPlayer } from "./settings/PlayerSettings";
 import {
@@ -68,9 +69,10 @@ export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
     setForceARAllowRule(roomInfo.forcedAR.allowed);
     setForceARMinimumValue(roomInfo.forcedAR.minValue);
     setForceARMaximumValue(roomInfo.forcedAR.maxValue);
+    await openDatabase();
 
     if (roomInfo.beatmap) {
-        await BeatmapChangedHandler.handle();
+        await BeatmapChangedHandler.handle(roomInfo.beatmap);
     } else {
         $("#title a").text("No beatmaps selected yet");
     }

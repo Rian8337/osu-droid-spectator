@@ -86,7 +86,6 @@ export function removePreviews(): void {
 export function addPreview(uid: number): boolean {
     const player = players.get(uid);
 
-    console.log("Hi", 1);
     if (!player) {
         return false;
     }
@@ -97,7 +96,6 @@ export function addPreview(uid: number): boolean {
         case MultiplayerTeam.red:
             anchor = redAvailableAnchors.shift();
 
-            console.log("Hi", 2);
             if (!anchor) {
                 return false;
             }
@@ -107,7 +105,6 @@ export function addPreview(uid: number): boolean {
         case MultiplayerTeam.blue:
             anchor = blueAvailableAnchors.shift();
 
-            console.log("Hi", 3);
             if (!anchor) {
                 return false;
             }
@@ -118,11 +115,9 @@ export function addPreview(uid: number): boolean {
             anchor = availableAnchors.shift();
     }
 
-    console.log("Hi", 4);
     if (!anchor) {
         return false;
     }
-    console.log(uid, player.team, anchor);
 
     previews.set(uid, new Preview(uid, anchor));
 
