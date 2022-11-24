@@ -11,6 +11,7 @@ import {
     calculateMaxScore,
     resetBeatmapset,
     beatmapset,
+    downloadBeatmapset,
 } from "../../settings/BeatmapSettings";
 import {
     getBeatmapsetFromDB,
@@ -45,9 +46,6 @@ export abstract class BeatmapChangedHandler {
     static async handle(newBeatmap: PickedBeatmap): Promise<void> {
         resetProcessor();
         reloadPreview();
-        resetBeatmapset();
-        resetAudio(true);
-        clearBackground();
 
         $("#title a").text("Loading...").removeProp("href");
 
@@ -55,15 +53,16 @@ export abstract class BeatmapChangedHandler {
 
         if (!parsedBeatmap || newBeatmap.setId !== pickedBeatmap?.setId) {
             console.log("Beatmap changed");
-            alreadyAttemptDownload = true;
+
+            resetBeatmapset();
+            resetAudio(true);
+            clearBackground();
 
             let beatmapsetBlob = await getBeatmapsetFromDB(newBeatmap.setId);
 
             if (!beatmapsetBlob) {
+                beatmapsetBlob = await downloadBeatmapset(newBeatmap.setId);
                 alreadyAttemptDownload = true;
-                beatmapsetBlob = await this.downloadBeatmapset(
-                    newBeatmap.setId
-                );
 
                 if (beatmapsetBlob) {
                     await storeBeatmapsetToDB(newBeatmap.setId, beatmapsetBlob);
@@ -89,9 +88,7 @@ export abstract class BeatmapChangedHandler {
 
             console.log(".osu file not found, redownloading beatmapset");
 
-            const beatmapsetBlob = await this.downloadBeatmapset(
-                newBeatmap.setId
-            );
+            const beatmapsetBlob = await downloadBeatmapset(newBeatmap.setId);
             if (!beatmapsetBlob) {
                 $("#title a").text("Beatmap not found in mirror, sorry!");
                 return;
@@ -129,29 +126,6 @@ export abstract class BeatmapChangedHandler {
             .prop("href", `//osu.ppy.sh/b/${newBeatmap.id}`)
             .text(newBeatmap.name);
         $("#play").addClass("e");
-    }
-
-    /**
-     * Downloads a beatmapset from Sayobot.
-     *
-     * @param setId The ID of the beatmapset.
-     */
-    private static async downloadBeatmapset(
-        setId: number
-    ): Promise<Blob | null> {
-        this.abortController?.abort();
-        this.abortController = new AbortController();
-
-        const downloadResponse = await fetch(
-            `https://txy1.sayobot.cn/beatmaps/download/novideo/${setId}`,
-            { signal: this.abortController.signal }
-        );
-
-        if (downloadResponse.status >= 400 && downloadResponse.status < 200) {
-            return null;
-        }
-
-        return downloadResponse.blob();
     }
 
     /**

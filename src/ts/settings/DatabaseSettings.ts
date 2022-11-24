@@ -70,11 +70,11 @@ export function getBeatmapsetFromDB(
         objectStoreRequest.onsuccess = () => {
             if (objectStoreRequest.result) {
                 console.log(
-                    `Beatmap set ID ${beatmapsetId} retrieved from database`
+                    `Beatmapset with ID ${beatmapsetId} retrieved from database`
                 );
             } else {
                 console.log(
-                    `Beatmap set ID ${beatmapsetId} not found in database`
+                    `Beatmapset with ID ${beatmapsetId} not found in database`
                 );
             }
 
@@ -105,12 +105,16 @@ export function storeBeatmapsetToDB(
 
         const transaction = db.transaction("beatmaps", "readwrite");
         transaction.oncomplete = () => {
-            console.log(`Beatmap set ID ${beatmapsetId} stored into database`);
+            console.log(
+                `Beatmapset with ID ${beatmapsetId} stored into database`
+            );
 
             resolve();
         };
         transaction.onabort = () => {
-            console.log("Beatmapset storing transaction aborted");
+            console.log(
+                `Beatmapset storing transaction aborted, was storing ID ${beatmapsetId}`
+            );
 
             resolve();
         };

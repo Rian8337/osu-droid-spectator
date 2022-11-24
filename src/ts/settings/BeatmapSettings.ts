@@ -53,3 +53,27 @@ export function calculateMaxScore(): void {
 export function resetBeatmapset(): void {
     beatmapset = new JSZip();
 }
+
+let abortController: AbortController | null = null;
+
+/**
+ * Downloads a beatmapset from Sayobot.
+ *
+ * @param setId The ID of the beatmapset.
+ * @returns The downloaded beatmapset.
+ */
+export async function downloadBeatmapset(setId: number): Promise<Blob | null> {
+    abortController?.abort();
+    abortController = new AbortController();
+
+    const downloadResponse = await fetch(
+        `https://txy1.sayobot.cn/beatmaps/download/novideo/${setId}`,
+        { signal: abortController.signal }
+    );
+
+    if (downloadResponse.status >= 400 && downloadResponse.status < 200) {
+        return null;
+    }
+
+    return downloadResponse.blob();
+}

@@ -95,7 +95,8 @@ export function addPreview(uid: number): boolean {
     switch (player.team) {
         case MultiplayerTeam.red:
             // Use blue team anchor if there's no available anchor anymore.
-            anchor = redAvailableAnchors.shift() ?? blueAvailableAnchors.shift();
+            anchor =
+                redAvailableAnchors.shift() ?? blueAvailableAnchors.shift();
 
             if (!anchor) {
                 return false;
@@ -105,7 +106,8 @@ export function addPreview(uid: number): boolean {
             break;
         case MultiplayerTeam.blue:
             // Use red team anchor if there's no available anchor anymore.
-            anchor = blueAvailableAnchors.shift() ?? redAvailableAnchors.shift();
+            anchor =
+                blueAvailableAnchors.shift() ?? redAvailableAnchors.shift();
 
             if (!anchor) {
                 return false;
@@ -144,7 +146,10 @@ export function removePreview(uid: number): void {
     availableAnchors.unshift(preview.anchor);
 
     if (teamMode === MultiplayerTeamMode.teamVS) {
-        if (preview.anchor === Anchor.topLeft || preview.anchor === Anchor.centerLeft) {
+        if (
+            preview.anchor === Anchor.topLeft ||
+            preview.anchor === Anchor.centerLeft
+        ) {
             redAvailableAnchors.unshift(preview.anchor);
         } else {
             blueAvailableAnchors.unshift(preview.anchor);
