@@ -1,8 +1,7 @@
 {
-  "name": "osu-preview",
+  "name": "osu-droid-spectator",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A web-based spectator client for osu!droid collaborating with multiplayer-based Discord bot",
   "scripts": {
     "compile-ts": "dts-gen -m faye -o -f node_modules/faye/src/faye_node.d.ts && node src/bundler.js",
     "format-code": "npx prettier -w --loglevel=silent \"src/ts/**\"",
@@ -10,7 +9,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "devDependencies": {
     "@babel/core": "^7.20.2",
     "@babel/preset-env": "^7.20.2",
