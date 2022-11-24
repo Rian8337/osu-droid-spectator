@@ -1,5 +1,5 @@
 import { resetAudio } from "../../elements/Audio";
-import { removePreviews } from "../../settings/PreviewSettings";
+import { removePreviewsFromScreen } from "../../settings/PreviewSettings";
 import {
     initProcessor,
     initTeamScoreDisplay,
@@ -15,7 +15,7 @@ export abstract class RoundStartHandler {
     static handle(): void {
         console.log("Round started");
 
-        removePreviews();
+        removePreviewsFromScreen();
         resetAudio(false);
         initTeamScoreDisplay();
         initProcessor();

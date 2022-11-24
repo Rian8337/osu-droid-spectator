@@ -1,7 +1,9 @@
 import { Anchor } from "../osu-base";
 import { Preview } from "../Preview";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
+import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
 import { players } from "./PlayerSettings";
+import { teamMode } from "./RoomSettings";
 
 /**
  * Supported anchor types for a preview.
@@ -57,23 +59,21 @@ export const previews = new Map<number, Preview>();
  * Reloads the preview with a list of new players.
  */
 export function reloadPreview(): void {
-    removePreviews();
+    removePreviewsFromScreen();
 
     for (const uid of previews.keys()) {
         removePreview(uid);
     }
 
     for (const uid of players.keys()) {
-        if (!addPreview(uid)) {
-            break;
-        }
+        addPreview(uid);
     }
 }
 
 /**
  * Removes all previews from the container.
  */
-export function removePreviews(): void {
+export function removePreviewsFromScreen(): void {
     $("#container").empty();
 }
 
@@ -91,10 +91,11 @@ export function addPreview(uid: number): boolean {
     }
 
     let anchor: PreviewAnchor | undefined;
-    // TODO: investigate manager/previews not being added
+
     switch (player.team) {
         case MultiplayerTeam.red:
-            anchor = redAvailableAnchors.shift();
+            // Use blue team anchor if there's no available anchor anymore.
+            anchor = redAvailableAnchors.shift() ?? blueAvailableAnchors.shift();
 
             if (!anchor) {
                 return false;
@@ -103,7 +104,8 @@ export function addPreview(uid: number): boolean {
             availableAnchors.splice(availableAnchors.indexOf(anchor), 1);
             break;
         case MultiplayerTeam.blue:
-            anchor = blueAvailableAnchors.shift();
+            // Use red team anchor if there's no available anchor anymore.
+            anchor = blueAvailableAnchors.shift() ?? redAvailableAnchors.shift();
 
             if (!anchor) {
                 return false;
@@ -137,16 +139,15 @@ export function removePreview(uid: number): void {
         return;
     }
 
-    preview.delete();
+    preview.deattachFromContainer();
     previews.delete(preview.uid);
     availableAnchors.unshift(preview.anchor);
 
-    switch (player.team) {
-        case MultiplayerTeam.red:
-            redAvailableAnchors.unshift(<RedPreviewAnchor>preview.anchor);
-            break;
-        case MultiplayerTeam.blue:
-            blueAvailableAnchors.unshift(<BluePreviewAnchor>preview.anchor);
-            break;
+    if (teamMode === MultiplayerTeamMode.teamVS) {
+        if (preview.anchor === Anchor.topLeft || preview.anchor === Anchor.centerLeft) {
+            redAvailableAnchors.unshift(preview.anchor);
+        } else {
+            blueAvailableAnchors.unshift(preview.anchor);
+        }
     }
 }

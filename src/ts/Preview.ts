@@ -99,7 +99,7 @@ export class Preview {
      * Attaches the screen to the container.
      */
     attachToContainer(): void {
-        this.delete();
+        this.deattachFromContainer();
 
         $("#container")[0].appendChild(this.screen);
     }
@@ -190,7 +190,7 @@ export class Preview {
     /**
      * Deletes this preview from the container.
      */
-    delete(): void {
+    deattachFromContainer(): void {
         $(this.screen).remove();
     }
 
