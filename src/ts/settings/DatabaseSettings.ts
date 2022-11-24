@@ -10,7 +10,7 @@ export let db: IDBDatabase | null = null;
  * Opens the beatmap database.
  */
 export function openDatabase(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         if (db) {
             return resolve();
         }
@@ -30,7 +30,11 @@ export function openDatabase(): Promise<void> {
             db.createObjectStore("beatmaps");
         };
 
-        request.onerror = () => reject(request.error);
+        request.onerror = () => {
+            console.error(request.error);
+
+            resolve();
+        };
     });
 }
 
@@ -49,7 +53,16 @@ export function getBeatmapsetFromDB(
         }
 
         const transaction = db.transaction("beatmaps", "readonly");
-        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => {
+            console.log("Beatmapset storing transaction aborted");
+
+            resolve(null);
+        };
+        transaction.onerror = () => {
+            console.error(transaction.error);
+
+            resolve(null);
+        };
 
         const objectStoreRequest: IDBRequest<Blob> = transaction
             .objectStore("beatmaps")
@@ -67,7 +80,11 @@ export function getBeatmapsetFromDB(
 
             resolve(objectStoreRequest.result ?? null);
         };
-        objectStoreRequest.onerror = () => reject(objectStoreRequest.error);
+        objectStoreRequest.onerror = () => {
+            console.error(objectStoreRequest.error);
+
+            resolve(null);
+        };
     });
 }
 
@@ -92,7 +109,16 @@ export function storeBeatmapsetToDB(
 
             resolve();
         };
-        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => {
+            console.log("Beatmapset storing transaction aborted");
+
+            resolve();
+        };
+        transaction.onerror = () => {
+            console.error(transaction.error);
+
+            resolve();
+        };
 
         const objectStore = transaction.objectStore("beatmaps");
         objectStore.put(file, beatmapsetId);
