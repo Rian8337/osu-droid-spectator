@@ -107,7 +107,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
         const missDt = time - missTime;
         if (missDt <= missAnimationDuration) {
             const missColor = new RGBColor(209, 14, 0);
-            const missMaxFontSize = ctx.canvas.height / 7.5;
+            const missMaxFontSize = ctx.canvas.height / 6;
             let multiplier = 1;
 
             if (missDt <= 1000) {
