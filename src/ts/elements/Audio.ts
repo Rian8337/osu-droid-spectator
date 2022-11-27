@@ -89,7 +89,8 @@ export function resetAudio(resetSrc: boolean): void {
     audio.pause();
 
     if (resetSrc) {
-        audio.removeAttribute("src");
+        URL.revokeObjectURL(audio.src);
+        audio.src = "";
     }
 
     audio.currentTime = 0;

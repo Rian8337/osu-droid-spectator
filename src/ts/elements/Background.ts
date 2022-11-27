@@ -2,7 +2,11 @@ const background = new Image();
 const container = $("#container")[0];
 background.setAttribute("crossOrigin", "anonymous");
 
+let originalImageURL: string = "";
+
 background.addEventListener("load", () => {
+    originalImageURL = background.src;
+
     const canvas = document.createElement("canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -35,7 +39,10 @@ background.addEventListener("error", clearBackground);
  * Clears the current background.
  */
 export function clearBackground(): void {
+    URL.revokeObjectURL(originalImageURL);
+
     container.style.backgroundImage = "none";
+    originalImageURL = "";
 }
 
 export { background };

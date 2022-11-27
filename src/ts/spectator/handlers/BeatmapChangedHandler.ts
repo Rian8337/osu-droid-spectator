@@ -32,11 +32,6 @@ export abstract class BeatmapChangedHandler {
     private static readonly fileNameCleanerRegex = /[^\x00-\x7F]/g;
 
     /**
-     * The abort controller for the current beatmap request.
-     */
-    private static abortController: AbortController | null = null;
-
-    /**
      * Handles a beatmap changed event.
      *
      * Includes logic for reloading of rooms (i.e. for another gameplay with the same beatmap).
