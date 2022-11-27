@@ -89,7 +89,7 @@ export function resetAudio(resetSrc: boolean): void {
     audio.pause();
 
     if (resetSrc) {
-        audio.src = "";
+        audio.removeAttribute("src");
     }
 
     audio.currentTime = 0;
