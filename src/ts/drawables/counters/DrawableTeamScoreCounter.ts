@@ -1,8 +1,11 @@
-import { ModDoubleTime, ModHardRock, ModHidden } from "../../osu-base";
-import { maxScore, parsedBeatmap } from "../../settings/BeatmapSettings";
+import { parsedBeatmap } from "../../settings/BeatmapSettings";
 import { players } from "../../settings/PlayerSettings";
-import { scorePortion } from "../../settings/RoomSettings";
-import { dataProcessor, teamColors } from "../../settings/SpectatorSettings";
+import {
+    calculateScoreV2,
+    dataProcessor,
+    displayScoreV2,
+    teamColors,
+} from "../../settings/SpectatorSettings";
 import { MultiplayerTeam } from "../../spectator/structures/MultiplayerTeam";
 
 /**
@@ -57,70 +60,26 @@ export class DrawableTeamScoreCounter {
                 continue;
             }
 
-            const manager = dataProcessor?.managers.get(player.uid);
+            if (displayScoreV2) {
+                this.score += calculateScoreV2(player.uid, time);
+            } else {
+                const manager = dataProcessor?.managers.get(player.uid);
 
-            if (!manager) {
-                continue;
-            }
-
-            const scoreEvent = manager.events.score.eventAtOrDefault(time);
-            const syncedScoreEvent =
-                manager.events.syncedScore.eventAtOrDefault(time);
-
-            let score = scoreEvent.score;
-            if (syncedScoreEvent.time > scoreEvent.time) {
-                score = syncedScoreEvent.score;
-            }
-
-            let accuracyEvent = manager.events.accuracy.eventAtOrDefault(time);
-            const syncedAccuracyEvent =
-                manager.events.syncedAccuracy.eventAtOrDefault(time);
-
-            if (syncedAccuracyEvent.time > accuracyEvent.time) {
-                accuracyEvent = syncedAccuracyEvent;
-            }
-
-            // Remove original score multiplier from the score first to preserve NoMod scorev1.
-            for (const mod of manager.mods) {
-                if (mod.droidScoreMultiplier > 0) {
-                    score /= mod.droidScoreMultiplier;
+                if (!manager) {
+                    continue;
                 }
+
+                const scoreEvent = manager.events.score.eventAtOrDefault(time);
+                const syncedScoreEvent =
+                    manager.events.syncedScore.eventAtOrDefault(time);
+
+                let score = scoreEvent.score;
+                if (syncedScoreEvent.time > scoreEvent.time) {
+                    score = syncedScoreEvent.score;
+                }
+
+                this.score += score;
             }
-
-            const maxScoreV2 = 1e6;
-            const tempScorePortionScoreV2 =
-                Math.sqrt(score / maxScore) * scorePortion * maxScoreV2;
-            const tempAccPortionScoreV2 =
-                (Math.pow(accuracyEvent.accuracy, 2) *
-                    (1 - scorePortion) *
-                    maxScoreV2 *
-                    (accuracyEvent.objectIndex + 1)) /
-                parsedBeatmap.hitObjects.objects.length;
-
-            const scorePortionScoreV2 =
-                tempScorePortionScoreV2 -
-                this.calculateMissPenalty(player.uid, tempScorePortionScoreV2);
-            const accPortionScoreV2 =
-                tempAccPortionScoreV2 -
-                this.calculateMissPenalty(player.uid, tempAccPortionScoreV2);
-
-            let totalScore =
-                (scorePortionScoreV2 + accPortionScoreV2) *
-                manager.scoreMultiplier;
-
-            if (manager.mods.some((m) => m instanceof ModHardRock)) {
-                totalScore *= 1.1 / new ModHardRock().droidScoreMultiplier;
-            }
-
-            if (
-                manager.mods.filter(
-                    (m) => m instanceof ModHidden || m instanceof ModDoubleTime
-                ).length === 2
-            ) {
-                totalScore /= new ModHidden().droidScoreMultiplier;
-            }
-
-            this.score += Math.max(0, Math.round(totalScore));
         }
     }
 
@@ -158,19 +117,5 @@ export class DrawableTeamScoreCounter {
                 canvas.height / 2 - canvas.height / 7.5
             );
         }
-    }
-
-    /**
-     * Calculates the miss penalty of a player.
-     *
-     * @param uid The uid of the player.
-     * @param tempScoreV2 The temporary score v2 value.
-     * @returns The score v2 value with miss penalty.
-     */
-    private calculateMissPenalty(uid: number, tempScoreV2: number): number {
-        const misses =
-            dataProcessor?.managers.get(uid)?.events.objectData.misses ?? 0;
-
-        return tempScoreV2 * 5e-3 * misses;
     }
 }

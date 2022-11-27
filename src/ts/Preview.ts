@@ -146,7 +146,8 @@ export class Preview {
         );
         this.scoreCounter = new DrawableScoreCounter(
             specDataManager.events.score,
-            specDataManager.events.syncedScore
+            specDataManager.events.syncedScore,
+            specDataManager.uid
         );
         this.hitErrorBar = new DrawableHitErrorBar(
             specDataManager.events.objectData,

@@ -71,13 +71,16 @@ body.h #speed, body.h #control, body.h #title, body.h {
         box-sizing: border-box;
     }
     #progress {
-        width: calc(100% - 200px);
+        width: calc(100% - 232px);
     }
     #volume {
         width: 100px;
     }
     #addBeatmap {
         width: 34px;
+    }
+    #displayScoreV2 {
+        width: 20px;
     }
 
 #title {

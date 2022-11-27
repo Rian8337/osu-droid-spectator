@@ -81,7 +81,10 @@ export class DrawablePlayerInfo implements PlayerInfo {
                 const nestedObject = object.nestedHitObjects[i];
 
                 // Missing the slider tail doesn't reset the player's combo, so we skip it.
-                if (!(nestedObject instanceof SliderTick) && !(nestedObject instanceof SliderRepeat)) {
+                if (
+                    !(nestedObject instanceof SliderTick) &&
+                    !(nestedObject instanceof SliderRepeat)
+                ) {
                     continue;
                 }
 

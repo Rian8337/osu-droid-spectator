@@ -1,5 +1,7 @@
 import { MathUtils } from "../osu-base";
 import { Preview } from "../Preview";
+import { maxScore } from "../settings/BeatmapSettings";
+import { displayScoreV2 } from "../settings/SpectatorSettings";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { DrawableTeamScoreCounter } from "./counters/DrawableTeamScoreCounter";
 
@@ -116,8 +118,19 @@ export class DrawableTeamScoreDisplay {
             this.counters[MultiplayerTeam.blue].score -
             this.counters[MultiplayerTeam.red].score;
         const lineLength = this.screen.width / 2.5;
-        // Cap score difference line at 500000 score.
-        const lineLengthMultiplier = MathUtils.clamp(scoreDiff / 500000, -1, 1);
+
+        let lineLengthMultiplier = 0;
+        if (displayScoreV2) {
+            // Cap score difference line at 800000 score for score V2.
+            lineLengthMultiplier = MathUtils.clamp(scoreDiff / 800000, -1, 1);
+        } else {
+            // Cap score difference line at 50% maximum score for score V1.
+            lineLengthMultiplier = MathUtils.clamp(
+                scoreDiff / (maxScore * 0.5),
+                -1,
+                1
+            );
+        }
 
         this.ctx.translate(
             this.screen.width / 2,
