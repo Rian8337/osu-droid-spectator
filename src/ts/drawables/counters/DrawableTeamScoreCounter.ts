@@ -120,7 +120,7 @@ export class DrawableTeamScoreCounter {
                 totalScore /= new ModHidden().droidScoreMultiplier;
             }
 
-            this.score += Math.round(totalScore);
+            this.score += Math.max(0, Math.round(totalScore));
         }
     }
 
