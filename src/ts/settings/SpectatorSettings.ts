@@ -14,6 +14,11 @@ import { scorePortion, teamMode } from "./RoomSettings";
 export const fayeClient = new FayeClientManager();
 
 /**
+ * Whether the user has interacted with the play button.
+ */
+export let userHasInteracted: boolean = false;
+
+/**
  * The spectator data processor.
  */
 export let dataProcessor: SpectatorDataProcessor | null = null;
@@ -81,6 +86,15 @@ export function initTeamScoreDisplay(): void {
  */
 export function setDisplayScoreV2(value: boolean): void {
     displayScoreV2 = value;
+}
+
+/**
+ * Sets the user has interacted setting value.
+ * 
+ * @param value The new value.
+ */
+export function setUserHasInteracted(value: boolean): void {
+    userHasInteracted = value;
 }
 
 /**

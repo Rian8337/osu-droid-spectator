@@ -7,7 +7,7 @@ const audio = new Audio();
 let firstPlayback = true;
 
 $(audio)
-    .on("play", () => {
+    .on("userinteraction", () => {
         $("#play").removeClass("e");
 
         for (const preview of previews.values()) {
@@ -26,6 +26,7 @@ $(audio)
             const currentTime = audio.currentTime * 1000;
 
             if (audio.src) {
+                // TODO: this plays again after the beatmap is changed for whatever reason...
                 if (dataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
                     await audio.play();
                 } else {

@@ -21,6 +21,7 @@ import { reloadPreview } from "../../settings/PreviewSettings";
 import {
     initProcessor,
     resetProcessor,
+    userHasInteracted,
 } from "../../settings/SpectatorSettings";
 import { PickedBeatmap } from "../rawdata/PickedBeatmap";
 
@@ -116,11 +117,15 @@ export abstract class BeatmapChangedHandler {
 
         background.src = backgroundBlob;
         audioState.audio.src = audioBlob;
+        audioState.audio.load();
 
         $("#title a")
             .prop("href", `//osu.ppy.sh/b/${newBeatmap.id}`)
             .text(newBeatmap.name);
-        $("#play").addClass("e");
+
+        if (!userHasInteracted) {
+            $("#play").addClass("e");
+        }
     }
 
     /**
