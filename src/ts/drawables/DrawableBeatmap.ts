@@ -235,7 +235,7 @@ export class DrawableBeatmap {
      */
     private convertHitObjects(mods: (Mod & IModApplicableToDroid)[]): void {
         let combo = 1;
-        let comboIndex = 0;
+        let comboIndex = -1;
         let setComboIndex = true;
 
         for (const object of this.beatmap.hitObjects.objects) {
@@ -250,7 +250,7 @@ export class DrawableBeatmap {
             } else if (drawableObject.object.isNewCombo || setComboIndex) {
                 combo = 1;
                 comboIndex =
-                    (comboIndex + drawableObject.object.comboOffset) %
+                    (comboIndex + 1 + drawableObject.object.comboOffset) %
                     this.comboColors.length;
                 setComboIndex = false;
             }
