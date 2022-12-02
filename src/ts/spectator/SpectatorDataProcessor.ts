@@ -183,7 +183,7 @@ export class SpectatorDataProcessor {
                 // Check for slider head break.
                 if (
                     objectData.result !== HitResult.miss &&
-                    objectData.accuracy !== manager.maxHitWindow + 13
+                    objectData.accuracy !== Math.floor(manager.maxHitWindow) + 13
                 ) {
                     score += Math.floor(30 * manager.scoreMultiplier);
                     ++combo;
