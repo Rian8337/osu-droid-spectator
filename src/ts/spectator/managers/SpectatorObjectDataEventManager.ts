@@ -19,12 +19,38 @@ export class SpectatorObjectDataEventManager extends SpectatorEventManager<Spect
         }
     );
 
+    override get earliestEventTime(): number | null {
+        for (let i = 0; i < this._events.length; ++i) {
+            if (this._events[i]) {
+                return this._events[i].time;
+            }
+        }
+
+        return null;
+    }
+
+    override get latestEventTime(): number | null {
+        for (let i = this._events.length - 1; i >= 0; --i) {
+            if (this._events[i]) {
+                return this._events[i].time;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * The amount of misses achieved.
      *
      * Used for calculating display score v2.
      */
     misses = 0;
+
+    constructor(objectCount: number) {
+        super();
+
+        this._events = new Array(objectCount);
+    }
 
     override add(...events: SpectatorObjectDataEvent[]): void {
         for (const event of events) {
@@ -38,12 +64,6 @@ export class SpectatorObjectDataEventManager extends SpectatorEventManager<Spect
 
             this._events[event.index] = event;
         }
-    }
-
-    constructor(objectCount: number) {
-        super();
-
-        this._events = new Array(objectCount);
     }
 
     /**
