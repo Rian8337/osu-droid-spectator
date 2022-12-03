@@ -51,7 +51,7 @@ export class SpectatorDataProcessor {
         let latestEventTime = Number.NEGATIVE_INFINITY;
 
         for (const manager of this.managers.values()) {
-            latestEventTime = Math.min(
+            latestEventTime = Math.max(
                 latestEventTime,
                 manager.latestEventTime ?? Number.NEGATIVE_INFINITY
             );

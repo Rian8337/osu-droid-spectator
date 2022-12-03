@@ -117,7 +117,7 @@ export class SpectatorDataManager {
 
         if (latestEventTime === Number.NEGATIVE_INFINITY) {
             for (const eventManager of this.events.cursor) {
-                latestEventTime = Math.min(
+                latestEventTime = Math.max(
                     latestEventTime,
                     eventManager.latestEventTime ?? Number.NEGATIVE_INFINITY
                 );
