@@ -19,7 +19,6 @@ import {
 } from "../../settings/DatabaseSettings";
 import { reloadPreview } from "../../settings/PreviewSettings";
 import {
-    initProcessor,
     resetProcessor,
     userHasInteracted,
 } from "../../settings/SpectatorSettings";
@@ -113,7 +112,6 @@ export abstract class BeatmapChangedHandler {
         setPickedBeatmap(newBeatmap);
         setParsedBeatmap(new BeatmapDecoder().decode(osuFile).result);
         calculateMaxScore();
-        initProcessor();
 
         background.src = backgroundBlob;
         audioState.audio.src = audioBlob;

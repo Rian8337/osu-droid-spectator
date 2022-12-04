@@ -144,11 +144,6 @@ export class SpectatorDataProcessor {
             return false;
         }
 
-        if (!manager.willBeSubmitted) {
-            // Do not process data if the score will not be submitted.
-            return true;
-        }
-
         const { events } = manager;
 
         for (const objectData of data.hitObjectData) {
@@ -183,7 +178,8 @@ export class SpectatorDataProcessor {
                 // Check for slider head break.
                 if (
                     objectData.result !== HitResult.miss &&
-                    objectData.accuracy !== Math.floor(manager.maxHitWindow) + 13
+                    objectData.accuracy !==
+                        Math.floor(manager.maxHitWindow) + 13
                 ) {
                     score += Math.floor(30 * manager.scoreMultiplier);
                     ++combo;

@@ -66,11 +66,6 @@ export class SpectatorDataManager {
     latestDataTime = -1;
 
     /**
-     * Whether this player's score will be submitted to the server should they complete the beatmap.
-     */
-    willBeSubmitted = true;
-
-    /**
      * The maximum hit window of this player.
      */
     get maxHitWindow(): number {

@@ -34,13 +34,12 @@ export abstract class PlayerStartPlayingHandler {
             throw new Error("No preview for player");
         }
 
-        manager.reset();
-
         if (pickedBeatmap?.hash !== beatmapHash) {
-            manager.willBeSubmitted = false;
+            console.log("Player", uid, "played the wrong beatmap");
             return;
         }
 
+        manager.reset();
         manager.applyPlayerSettings(ModUtil.droidStringToMods(mods), forcedAR);
         preview.attachToContainer();
         preview.load(manager);

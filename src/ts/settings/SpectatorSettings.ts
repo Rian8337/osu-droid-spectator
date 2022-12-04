@@ -90,7 +90,7 @@ export function setDisplayScoreV2(value: boolean): void {
 
 /**
  * Sets the user has interacted setting value.
- * 
+ *
  * @param value The new value.
  */
 export function setUserHasInteracted(value: boolean): void {
