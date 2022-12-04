@@ -141,7 +141,7 @@ export function removePreview(uid: number): void {
         return;
     }
 
-    preview.deattachFromContainer();
+    preview.detachFromContainer();
     previews.delete(preview.uid);
     availableAnchors.unshift(preview.anchor);
 

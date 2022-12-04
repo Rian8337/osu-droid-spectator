@@ -99,9 +99,16 @@ export class Preview {
      * Attaches the screen to the container.
      */
     attachToContainer(): void {
-        this.deattachFromContainer();
+        this.detachFromContainer();
 
         $("#container")[0].appendChild(this.screen);
+    }
+
+    /**
+     * Detaches this preview from the container.
+     */
+    detachFromContainer(): void {
+        $(this.screen).remove();
     }
 
     /**
@@ -171,7 +178,7 @@ export class Preview {
         }
 
         this.applyCanvasPosition();
-        this.beatmap?.update(this.ctx);
+        this.beatmap.update(this.ctx);
         this.ctx.save();
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -186,13 +193,6 @@ export class Preview {
         for (const drawableCursor of this.drawableCursors) {
             drawableCursor.draw(this.ctx, time);
         }
-    }
-
-    /**
-     * Deletes this preview from the container.
-     */
-    deattachFromContainer(): void {
-        $(this.screen).remove();
     }
 
     /**
