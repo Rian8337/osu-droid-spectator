@@ -78,18 +78,14 @@ export abstract class DrawableHitObject {
      * The stacked position of the object with mods applied.
      */
     get stackedPosition(): Vector2 {
-        return this.reevaluateStackedPosition(
-            this.object.getStackedPosition(Modes.droid)
-        );
+        return this.reevaluateStackedPosition(this.object.position);
     }
 
     /**
      * The stacked end position of the object with mods applied.
      */
     get stackedEndPosition(): Vector2 {
-        return this.reevaluateStackedPosition(
-            this.object.getStackedEndPosition(Modes.droid)
-        );
+        return this.reevaluateStackedPosition(this.object.endPosition);
     }
 
     /**
@@ -219,8 +215,6 @@ export abstract class DrawableHitObject {
 
         const coordinate = this.object.stackHeight * -6.4 * this.scale;
 
-        return position
-            .subtract(this.object.getStackOffset(Modes.droid))
-            .add(new Vector2(coordinate, coordinate));
+        return position.add(new Vector2(coordinate, coordinate));
     }
 }
