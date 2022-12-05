@@ -66,14 +66,18 @@ export async function downloadBeatmapset(setId: number): Promise<Blob | null> {
     abortController?.abort();
     abortController = new AbortController();
 
-    const downloadResponse = await fetch(
-        `https://txy1.sayobot.cn/beatmaps/download/novideo/${setId}`,
-        { signal: abortController.signal }
-    );
+    try {
+        const downloadResponse = await fetch(
+            `https://txy1.sayobot.cn/beatmaps/download/novideo/${setId}`,
+            { signal: abortController.signal }
+        );
 
-    if (downloadResponse.status >= 400 && downloadResponse.status < 200) {
+        if (downloadResponse.status >= 400 && downloadResponse.status < 200) {
+            return null;
+        }
+
+        return downloadResponse.blob();
+    } catch {
         return null;
     }
-
-    return downloadResponse.blob();
 }
