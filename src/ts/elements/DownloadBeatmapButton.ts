@@ -47,9 +47,16 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
         return;
     }
 
-    const apiResponse = await fetch(
-        `https://api.sayobot.cn/beatmapinfo?1=${beatmapsetId}`
-    );
+    let apiResponse: Response;
+
+    try {
+        apiResponse = await fetch(
+            `https://api.sayobot.cn/beatmapinfo?1=${beatmapsetId}`
+        );
+    } catch {
+        alert("Contact with Sayobot failed.");
+        return;
+    }
 
     if (apiResponse.status >= 400 && apiResponse.status < 200) {
         alert("Contact with Sayobot failed.");
