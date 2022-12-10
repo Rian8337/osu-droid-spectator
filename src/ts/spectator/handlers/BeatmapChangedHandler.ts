@@ -40,6 +40,7 @@ export abstract class BeatmapChangedHandler {
      */
     static async handle(newBeatmap: PickedBeatmap): Promise<void> {
         resetProcessor();
+        setParsedBeatmap(null);
         reloadPreview();
 
         $("#title a").text("Loading...").removeProp("href");
