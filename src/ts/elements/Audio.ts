@@ -29,6 +29,10 @@ $(audio)
                 if (dataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
                     await audio.play();
                 } else {
+                    if (!audio.paused && !audio.ended) {
+                        audioState.audioLastPause = Date.now();
+                    }
+
                     audio.pause();
                 }
 
@@ -38,8 +42,6 @@ $(audio)
                     }
 
                     teamScoreDisplay?.draw(currentTime);
-                } else if (!audio.ended) {
-                    audioState.audioLastPause = Date.now();
                 }
             }
 
