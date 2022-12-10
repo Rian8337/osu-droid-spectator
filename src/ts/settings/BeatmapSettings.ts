@@ -36,7 +36,7 @@ export function setPickedBeatmap(newPickedBeatmap: PickedBeatmap | null): void {
  *
  * @param newParsedBeatmap The parsed beatmap.
  */
-export function setParsedBeatmap(newParsedBeatmap: Beatmap): void {
+export function setParsedBeatmap(newParsedBeatmap: Beatmap | null): void {
     parsedBeatmap = newParsedBeatmap;
 }
 
