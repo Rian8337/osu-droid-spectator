@@ -20,10 +20,9 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
             !beatmapsetLinkOrId.startsWith("https://osu.ppy.sh/") &&
             !beatmapsetLinkOrId.startsWith("https://dev.ppy.sh/")
         ) {
-            alert(
+            return alert(
                 "The provided beatmapset link must be from https://osu.ppy.sh or https://dev.ppy.sh."
             );
-            return;
         }
 
         if (
@@ -32,8 +31,7 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
                 beatmapsetLinkOrId.indexOf("/s/"),
             ].every((v) => v === -1)
         ) {
-            alert("Could not parse a beatmapset ID from the given link.");
-            return;
+            return alert("Could not parse a beatmapset ID from the given link.");
         }
 
         const split = beatmapsetLinkOrId.split("/");
@@ -43,8 +41,7 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
     }
 
     if (isNaN(beatmapsetId)) {
-        alert("Could not parse a beatmapset ID from the given input.");
-        return;
+        return alert("Could not parse a beatmapset ID from the given input.");
     }
 
     let apiResponse: Response;
@@ -54,20 +51,17 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
             `https://api.sayobot.cn/beatmapinfo?1=${beatmapsetId}`
         );
     } catch {
-        alert("Contact with Sayobot failed.");
-        return;
+        return alert("Contact with Sayobot failed.");
     }
 
     if (apiResponse.status >= 400 && apiResponse.status < 200) {
-        alert("Contact with Sayobot failed.");
-        return;
+        return alert("Contact with Sayobot failed.");
     }
 
     const json: SayobotAPIResponse = await apiResponse.json();
 
     if (json.status === -1) {
-        alert("Could not find a beatmap with the given link or ID.");
-        return;
+        return alert("Could not find a beatmap with the given link or ID.");
     }
 
     const { artist, title, creator } = json.data[0];
@@ -82,8 +76,7 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
 
     const blob = await downloadBeatmapset(beatmapsetId);
     if (!blob) {
-        alert(`Failed to pre-download ${beatmapText}. Aborting.`);
-        return;
+        return alert(`Failed to pre-download ${beatmapText}. Aborting.`);
     }
 
     await storeBeatmapsetToDB(beatmapsetId, blob);
