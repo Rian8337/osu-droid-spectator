@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Rian8337",
   "license": "GPL-3.0",
   "devDependencies": {
     "@babel/core": "^7.20.2",
