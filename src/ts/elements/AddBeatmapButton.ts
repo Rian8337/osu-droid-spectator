@@ -19,8 +19,8 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", (e) => {
 
     const beatmapsetId = parseInt(file.name);
 
-    if (!beatmapsetId) {
-        return;
+    if (isNaN(beatmapsetId)) {
+        return alert("Beatmapset files must start with its beatmapset ID.");
     }
 
     const reader = new FileReader();
@@ -30,7 +30,7 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", (e) => {
         const content = readerEvent.target?.result;
 
         if (!content) {
-            return;
+            return alert("Cannot read contents of file.");
         }
 
         await storeBeatmapsetToDB(
@@ -38,10 +38,10 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", (e) => {
             new Blob([content], { type: file.type })
         );
 
-        alert(`Successfully added beatmapset ID ${beatmapsetId} to local.`);
-
         if (!parsedBeatmap && pickedBeatmap) {
             await BeatmapChangedHandler.handle(pickedBeatmap);
         }
+
+        alert(`Successfully added beatmapset ID ${beatmapsetId} to cache.`);
     };
 });
