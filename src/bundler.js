@@ -30,7 +30,5 @@ b
             mkdirSync(dir);
         }
 
-        writeFileSync(`${dir}/index.js`, data, (err) => {
-            if (err) throw err;
-        });
+        writeFileSync(`${dir}/index.js`, data);
     });
