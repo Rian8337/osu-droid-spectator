@@ -44,4 +44,10 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", (e) => {
 
         alert(`Successfully added beatmapset ID ${beatmapsetId} to cache.`);
     };
+
+    reader.onerror = (e) => {
+        console.error(e.target?.error);
+
+        alert("An error was encountered when attempting to load the beatmapset.");
+    };
 });
