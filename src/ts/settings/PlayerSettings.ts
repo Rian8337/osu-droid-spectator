@@ -12,6 +12,10 @@ export const players = new Map<number, MultiplayerPlayer>();
  * @param player The player to add.
  */
 export function addPlayer(player: MultiplayerPlayer): void {
+    if (players.size === 4) {
+        return;
+    }
+
     players.set(player.uid, player);
 }
 
