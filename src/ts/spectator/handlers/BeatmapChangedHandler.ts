@@ -5,7 +5,6 @@ import { JSZipObject } from "../../jszip";
 import { BeatmapDecoder } from "../../osu-base";
 import {
     pickedBeatmap,
-    parsedBeatmap,
     setPickedBeatmap,
     setParsedBeatmap,
     calculateMaxScore,
@@ -47,7 +46,7 @@ export abstract class BeatmapChangedHandler {
 
         let alreadyAttemptDownload = false;
 
-        if (!parsedBeatmap || newBeatmap.setId !== pickedBeatmap?.setId) {
+        if (newBeatmap.setId !== pickedBeatmap?.setId) {
             console.log("Beatmap changed");
 
             resetBeatmapset();
