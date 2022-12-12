@@ -4,8 +4,6 @@ import {
     Playfield,
     RGBColor,
     Slider,
-    SliderRepeat,
-    SliderTick,
     Spinner,
 } from "../osu-base";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
@@ -77,17 +75,9 @@ export class DrawablePlayerInfo implements PlayerInfo {
             }
 
             // Check for misses in slider.
+            // Missing the slider tail doesn't reset the player's combo, so we skip it.
             for (let i = object.nestedHitObjects.length - 1; i > 0; --i) {
                 const nestedObject = object.nestedHitObjects[i];
-
-                // Missing the slider tail doesn't reset the player's combo, so we skip it.
-                if (
-                    !(nestedObject instanceof SliderTick) &&
-                    !(nestedObject instanceof SliderRepeat)
-                ) {
-                    continue;
-                }
-
                 const tickset = event.tickset[i - 1];
 
                 if (!tickset) {
