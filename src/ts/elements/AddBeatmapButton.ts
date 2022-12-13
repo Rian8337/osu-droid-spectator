@@ -1,4 +1,8 @@
-import { parsedBeatmap, pickedBeatmap } from "../settings/BeatmapSettings";
+import {
+    downloadAbortController,
+    parsedBeatmap,
+    pickedBeatmap,
+} from "../settings/BeatmapSettings";
 import { storeBeatmapsetToDB } from "../settings/DatabaseSettings";
 import { BeatmapChangedHandler } from "../spectator/handlers/BeatmapChangedHandler";
 
@@ -39,6 +43,10 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", (e) => {
         );
 
         if (!parsedBeatmap && pickedBeatmap) {
+            if (beatmapsetId === pickedBeatmap.setId) {
+                downloadAbortController?.abort();
+            }
+
             await BeatmapChangedHandler.handle(pickedBeatmap);
         }
 
@@ -48,6 +56,8 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", (e) => {
     reader.onerror = (e) => {
         console.error(e.target?.error);
 
-        alert("An error was encountered when attempting to load the beatmapset.");
+        alert(
+            "An error was encountered when attempting to load the beatmapset."
+        );
     };
 });

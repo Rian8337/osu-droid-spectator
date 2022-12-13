@@ -31,7 +31,9 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
                 beatmapsetLinkOrId.indexOf("/s/"),
             ].every((v) => v === -1)
         ) {
-            return alert("Could not parse a beatmapset ID from the given link.");
+            return alert(
+                "Could not parse a beatmapset ID from the given link."
+            );
         }
 
         const split = beatmapsetLinkOrId.split("/");

@@ -54,7 +54,10 @@ export function resetBeatmapset(): void {
     beatmapset = new JSZip();
 }
 
-let abortController: AbortController | null = null;
+/**
+ * The controller that can be used to abort beatmapset downloads.
+ */
+export let downloadAbortController: AbortController | null = null;
 
 /**
  * Downloads a beatmapset from Sayobot.
@@ -63,21 +66,20 @@ let abortController: AbortController | null = null;
  * @returns The downloaded beatmapset.
  */
 export async function downloadBeatmapset(setId: number): Promise<Blob | null> {
-    abortController?.abort();
-    abortController = new AbortController();
+    downloadAbortController?.abort();
+    downloadAbortController = new AbortController();
 
-    try {
-        const downloadResponse = await fetch(
-            `https://txy1.sayobot.cn/beatmaps/download/novideo/${setId}`,
-            { signal: abortController.signal }
-        );
+    const downloadResponse = await fetch(
+        `https://txy1.sayobot.cn/beatmaps/download/novideo/${setId}`,
+        { signal: downloadAbortController.signal }
+    ).catch(() => null);
 
-        if (downloadResponse.status >= 400 && downloadResponse.status < 200) {
-            return null;
-        }
-
-        return downloadResponse.blob();
-    } catch {
+    if (
+        !downloadResponse ||
+        (downloadResponse.status >= 400 && downloadResponse.status < 200)
+    ) {
         return null;
     }
+
+    return downloadResponse.blob();
 }
