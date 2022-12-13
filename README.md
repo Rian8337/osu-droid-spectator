@@ -8,6 +8,8 @@ Code for previewing beatmap mostly taken from [osu-preview](https://github.com/j
 
 ## Using the client
 
+The client can be accessed [here](https://droidpp.osudroid.moe/spectator).
+
 Please see the [wiki](https://github.com/Rian8337/osu-droid-spectator/wiki) for information about operating the client.
 
 ## Building from source
