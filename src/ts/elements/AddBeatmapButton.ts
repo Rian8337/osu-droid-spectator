@@ -42,11 +42,12 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", (e) => {
             new Blob([content], { type: file.type })
         );
 
-        if (!parsedBeatmap && pickedBeatmap) {
-            if (beatmapsetId === pickedBeatmap.setId) {
-                downloadAbortController?.abort();
-            }
-
+        if (
+            !parsedBeatmap &&
+            pickedBeatmap &&
+            beatmapsetId === pickedBeatmap.setId
+        ) {
+            downloadAbortController?.abort();
             await BeatmapChangedHandler.handle(pickedBeatmap);
         }
 
