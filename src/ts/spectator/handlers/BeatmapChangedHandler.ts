@@ -35,7 +35,7 @@ export abstract class BeatmapChangedHandler {
      *
      * Includes logic for reloading of rooms (i.e. for another gameplay with the same beatmap).
      *
-     * @param newBeatmap The new beatmap, if any.
+     * @param newBeatmap The new beatmap.
      */
     static async handle(newBeatmap: PickedBeatmap): Promise<void> {
         resetProcessor();
