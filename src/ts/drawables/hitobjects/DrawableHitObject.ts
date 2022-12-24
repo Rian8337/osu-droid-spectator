@@ -4,7 +4,9 @@ import {
     MapStats,
     Mod,
     Modes,
+    ModHardRock,
     ObjectTypes,
+    Playfield,
     RGBColor,
     Vector2,
 } from "../../osu-base";
@@ -29,6 +31,11 @@ export abstract class DrawableHitObject {
      * The mods used by the player.
      */
     readonly mods: (Mod & IModApplicableToDroid)[];
+
+    /**
+     * Whether the Hard Rock mod is active.
+     */
+    protected readonly isHardRock: boolean;
 
     /**
      * The duration at which the object fades in, in milliseconds.
@@ -78,14 +85,18 @@ export abstract class DrawableHitObject {
      * The stacked position of the object with mods applied.
      */
     get stackedPosition(): Vector2 {
-        return this.reevaluateStackedPosition(this.object.position);
+        return this.reevaluateStackedPosition(
+            this.flipVertically(this.object.position)
+        );
     }
 
     /**
      * The stacked end position of the object with mods applied.
      */
     get stackedEndPosition(): Vector2 {
-        return this.reevaluateStackedPosition(this.object.endPosition);
+        return this.reevaluateStackedPosition(
+            this.flipVertically(this.object.endPosition)
+        );
     }
 
     /**
@@ -117,6 +128,7 @@ export abstract class DrawableHitObject {
     constructor(object: HitObject, mods: (Mod & IModApplicableToDroid)[]) {
         this.object = object;
         this.mods = mods;
+        this.isHardRock = this.mods.some((m) => m instanceof ModHardRock);
     }
 
     /**
@@ -200,6 +212,22 @@ export abstract class DrawableHitObject {
         ctx.translate(position.x, position.y);
         ctx.fillText(text, 0, 0);
         ctx.restore();
+    }
+
+    /**
+     * Flips a position vertically with respect to the playfield.
+     *
+     * Will return the input if HR mod is inactive.
+     *
+     * @param position The position to flip.
+     * @returns The supposed position based on the method's description.
+     */
+    protected flipVertically(position: Vector2): Vector2 {
+        if (this.isHardRock) {
+            return new Vector2(position.x, Playfield.baseSize.y - position.y);
+        } else {
+            return position;
+        }
     }
 
     /**

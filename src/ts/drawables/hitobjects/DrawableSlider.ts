@@ -4,6 +4,7 @@ import {
     Mod,
     Slider,
     SliderTick,
+    Vector2,
 } from "../../osu-base";
 import { DrawableBeatmap } from "../DrawableBeatmap";
 import { DrawableCircle } from "./DrawableCircle";
@@ -88,21 +89,23 @@ export class DrawableSlider extends DrawableCircle {
 
         ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
 
-        const position = this.flipVertically(this.stackedPosition);
-        const pathEndPosition = this.flipVertically(
-            this.stackedPosition.add(this.object.path.positionAt(1))
+        const position = this.stackedPosition;
+        const pathEndPosition = this.stackedPosition.add(
+            this.flipPathVertically(this.object.path.positionAt(1))
         );
 
         this.drawPath(ctx);
         this.drawCircle(ctx, pathEndPosition);
         this.drawCircle(ctx);
 
-        const { controlPoints } = this.object.path;
+        const { calculatedPath } = this.object.path;
         const repetitions = this.object.repeats + 1;
         const repeat = (-dt * repetitions) / this.object.duration;
         if (repetitions > 1 && repeat + 1 <= (repetitions & ~1)) {
-            const lastPoint = this.flipVertically(controlPoints.at(-1)!);
-            const secondLastPoint = this.flipVertically(controlPoints.at(-2)!);
+            const lastPoint = this.flipPathVertically(calculatedPath.at(-1)!);
+            const secondLastPoint = this.flipPathVertically(
+                calculatedPath.at(-2)!
+            );
 
             this.drawText(
                 ctx,
@@ -116,8 +119,8 @@ export class DrawableSlider extends DrawableCircle {
             repeat > 0 &&
             repeat + 1 <= repetitions - Number(!(repetitions & 1))
         ) {
-            const firstPoint = this.flipVertically(controlPoints[0]);
-            const secondPoint = this.flipVertically(controlPoints[1]);
+            const firstPoint = this.flipPathVertically(calculatedPath[0]);
+            const secondPoint = this.flipPathVertically(calculatedPath[1]);
 
             this.drawText(
                 ctx,
@@ -170,7 +173,7 @@ export class DrawableSlider extends DrawableCircle {
             this.drawFollowCircle(ctx, repeat);
         }
 
-        const endPosition = this.flipVertically(this.stackedEndPosition);
+        const endPosition = this.stackedEndPosition;
 
         if (this.isHit) {
             if (hitData) {
@@ -215,7 +218,7 @@ export class DrawableSlider extends DrawableCircle {
         ctx.save();
 
         // Slider
-        const startPosition = this.flipVertically(this.stackedPosition);
+        const startPosition = this.stackedPosition;
         const radius = this.radius;
 
         ctx.globalAlpha *= DrawableSlider.opacity;
@@ -223,8 +226,8 @@ export class DrawableSlider extends DrawableCircle {
         ctx.moveTo(startPosition.x, startPosition.y);
 
         for (const path of this.object.path.calculatedPath.slice(1)) {
-            const drawPosition = this.flipVertically(
-                this.stackedPosition.add(path)
+            const drawPosition = this.stackedPosition.add(
+                this.flipPathVertically(path)
             );
             ctx.lineTo(drawPosition.x, drawPosition.y);
         }
@@ -259,7 +262,7 @@ export class DrawableSlider extends DrawableCircle {
             return;
         }
 
-        const position = this.flipVertically(tick.stackedPosition);
+        const position = tick.stackedPosition;
         const radius = this.radius;
 
         ctx.save();
@@ -299,8 +302,8 @@ export class DrawableSlider extends DrawableCircle {
             progress = 2 - progress;
         }
 
-        const drawPosition = this.flipVertically(
-            this.stackedPosition.add(this.object.path.positionAt(progress))
+        const drawPosition = this.stackedPosition.add(
+            this.flipPathVertically(this.object.path.positionAt(progress))
         );
 
         ctx.save();
@@ -319,5 +322,21 @@ export class DrawableSlider extends DrawableCircle {
         ctx.lineWidth = this.circleBorder;
         ctx.stroke();
         ctx.restore();
+    }
+
+    /**
+     * Flips a path position vertically.
+     *
+     * Will return the input if HR mod is inactive.
+     *
+     * @param position The position to flip.
+     * @returns The supposed position based on the method's description.
+     */
+    private flipPathVertically(position: Vector2): Vector2 {
+        if (this.isHardRock) {
+            return new Vector2(position.x, -position.y);
+        } else {
+            return position;
+        }
     }
 }

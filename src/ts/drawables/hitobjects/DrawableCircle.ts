@@ -1,10 +1,4 @@
-import {
-    MathUtils,
-    ModHardRock,
-    ModHidden,
-    Playfield,
-    Vector2,
-} from "../../osu-base";
+import { MathUtils, ModHidden, Vector2 } from "../../osu-base";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/structures/HitResult";
 import { DrawableHitObject } from "./DrawableHitObject";
@@ -14,9 +8,6 @@ import { DrawableHitObject } from "./DrawableHitObject";
  */
 export class DrawableCircle extends DrawableHitObject {
     protected readonly isHidden = this.mods.some((m) => m instanceof ModHidden);
-    protected readonly isHardRock = this.mods.some(
-        (m) => m instanceof ModHardRock
-    );
 
     protected override get fadeInTime(): number {
         if (this.isHidden) {
@@ -94,14 +85,14 @@ export class DrawableCircle extends DrawableHitObject {
 
         ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
 
-        this.drawCircle(ctx, this.flipVertically(this.stackedPosition));
+        this.drawCircle(ctx, this.stackedPosition);
         this.drawText(ctx, this.combo.toString());
 
         if (dt >= 0 && !this.isHit && !this.isHidden) {
             this.drawApproach(ctx, dt);
         }
 
-        const endPosition = this.flipVertically(this.stackedEndPosition);
+        const endPosition = this.stackedEndPosition;
 
         if (this.isHit) {
             if (
@@ -143,7 +134,7 @@ export class DrawableCircle extends DrawableHitObject {
      */
     protected drawCircle(
         ctx: CanvasRenderingContext2D,
-        position: Vector2 = this.flipVertically(this.stackedPosition)
+        position: Vector2 = this.stackedPosition
     ): void {
         ctx.save();
 
@@ -180,7 +171,7 @@ export class DrawableCircle extends DrawableHitObject {
     protected drawText(
         ctx: CanvasRenderingContext2D,
         text: string,
-        position: Vector2 = this.flipVertically(this.stackedPosition),
+        position: Vector2 = this.stackedPosition,
         rotation: number = 0
     ): void {
         ctx.save();
@@ -199,7 +190,7 @@ export class DrawableCircle extends DrawableHitObject {
      * @param dt The time between the object's start time and current clock time.
      */
     protected drawApproach(ctx: CanvasRenderingContext2D, dt: number): void {
-        const position = this.flipVertically(this.stackedPosition);
+        const position = this.stackedPosition;
         const scale = 1 + (dt / this.approachTime) * 3;
 
         ctx.save();
@@ -216,21 +207,5 @@ export class DrawableCircle extends DrawableHitObject {
         ctx.lineWidth = (this.circleBorder / 2) * scale;
         ctx.stroke();
         ctx.restore();
-    }
-
-    /**
-     * Flips a position vertically with respect to the playfield.
-     *
-     * Will return the input if HR mod is inactive.
-     *
-     * @param position The position to flip.
-     * @returns The supposed position based on the method's description.
-     */
-    protected flipVertically(position: Vector2): Vector2 {
-        if (this.isHardRock) {
-            return new Vector2(position.x, Playfield.baseSize.y - position.y);
-        } else {
-            return position;
-        }
     }
 }
