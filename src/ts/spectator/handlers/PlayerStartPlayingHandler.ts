@@ -25,7 +25,8 @@ export abstract class PlayerStartPlayingHandler {
         const manager = dataProcessor?.managers.get(uid);
 
         if (!manager) {
-            throw new Error("No manager for player");
+            // Silently return. This should be intended if there are more than 4 players.
+            return;
         }
 
         const preview = previews.get(uid);
