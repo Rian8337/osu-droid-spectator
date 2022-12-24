@@ -132,9 +132,10 @@ export class DrawableSlider extends DrawableCircle {
             this.drawText(ctx, this.combo.toString());
         }
 
-        const spanIndex = Math.max(
+        const spanIndex = MathUtils.clamp(
+            Math.floor(-dt / this.object.spanDuration),
             0,
-            Math.floor(-dt / this.object.spanDuration)
+            this.object.repeats
         );
         const nestedObjects = this.drawableNestedHitObjects.slice();
 
