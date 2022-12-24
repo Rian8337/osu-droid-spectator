@@ -157,7 +157,7 @@ export class DrawableSlider extends DrawableCircle {
 
             if (time >= tickTime && hitData) {
                 const tickset =
-                    hitData.tickset[spanIndex * nestedObjects.length + i];
+                    hitData.tickset[spanIndex * nestedObjects.length + spanIndex + i];
 
                 if (!tickset) {
                     this.drawSliderTick(ctx, tick, fullyOpaqueTicks);
