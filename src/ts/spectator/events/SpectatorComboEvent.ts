@@ -2,8 +2,6 @@ import { SpectatorEvent } from "./SpectatorEvent";
 
 /**
  * Emitted whenever the player's combo changes.
- *
- * This is only used for syncing purposes.
  */
 export class SpectatorComboEvent extends SpectatorEvent {
     /**
