@@ -57,21 +57,6 @@ $(audio)
         $("#progress").val(this.currentTime);
     });
 
-$(document.body).on("mousemove", function () {
-    const self = $(this);
-
-    clearTimeout(self.data("h"));
-
-    self.addClass("h").data(
-        "h",
-        setTimeout(() => {
-            if (!audio.paused) {
-                self.removeClass("h");
-            }
-        }, 3000)
-    );
-});
-
 export const audioState = {
     audio: audio,
     audioLastPause: Date.now(),
