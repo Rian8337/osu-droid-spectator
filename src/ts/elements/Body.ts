@@ -12,7 +12,7 @@ $(document.body).on("mousemove", function (e) {
                 if (!audioState.audio.paused) {
                     self.removeClass("h");
                 }
-            }, 2000)
+            }, 1500)
         );
     }
 });
