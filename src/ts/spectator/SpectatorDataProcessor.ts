@@ -25,7 +25,7 @@ export class SpectatorDataProcessor {
     readonly managers = new Map<number, SpectatorDataManager>();
 
     /**
-     * The time at which the earliest event occurs for this player.
+     * The time at which the earliest event from players occurs.
      *
      * Returns `null` if there are no events yet.
      */
@@ -43,7 +43,7 @@ export class SpectatorDataProcessor {
     }
 
     /**
-     * The time at which the latest event occurs for this player.
+     * The time at which the latest event from players occurs.
      *
      * Returns `null` if there are no events yet.
      */
@@ -93,7 +93,7 @@ export class SpectatorDataProcessor {
     }
 
     /**
-     * Determines whether spectator data is available for all players at the given time.
+     * Determines whether spectator data is available for all players at a given time.
      *
      * @param time The time.
      * @returns Whether spectator data is available for all players at the given time.
@@ -281,7 +281,7 @@ export class SpectatorDataProcessor {
             }
         }
 
-        manager.latestDataTime = data.secPassed * 1000;
+        manager.latestDataTime = manager.latestEventTime ?? 0;
         console.log(
             "Received data from uid",
             manager.uid,

@@ -62,7 +62,7 @@ export const audioState = {
     audioLastPause: Date.now(),
 
     /**
-     * The duration of the pause of the audio.
+     * How long has it been since the audio was paused, in milliseconds.
      */
     get pauseDuration(): number {
         return Date.now() - this.audioLastPause;
