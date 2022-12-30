@@ -1,5 +1,5 @@
 import { players, setPlayerTeam } from "../../settings/PlayerSettings";
-import { addPreview, removePreview } from "../../settings/PreviewSettings";
+import { reloadPreview } from "../../settings/PreviewSettings";
 import { setTeamMode } from "../../settings/RoomSettings";
 import { MultiplayerTeam } from "../structures/MultiplayerTeam";
 import { MultiplayerTeamMode } from "../structures/MultiplayerTeamMode";
@@ -25,8 +25,8 @@ export abstract class TeamModeChangedHandler {
                     ? MultiplayerTeam.red
                     : undefined
             );
-            removePreview(uid);
-            addPreview(uid);
         }
+
+        reloadPreview();
     }
 }
