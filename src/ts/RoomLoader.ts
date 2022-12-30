@@ -16,6 +16,7 @@ import { fayeClient } from "./settings/SpectatorSettings";
 import { BeatmapChangedHandler } from "./spectator/handlers/BeatmapChangedHandler";
 import { SpeedMultiplierChangedHandler } from "./spectator/handlers/SpeedMultiplierChangedHandler";
 import { MultiplayerRoomInfo } from "./spectator/rawdata/MultiplayerRoomInfo";
+import { addPreview } from "./settings/PreviewSettings";
 
 export async function askRoomID(): Promise<void> {
     const message =
@@ -63,6 +64,7 @@ export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
 
     for (const player of roomInfo.players) {
         addPlayer(player);
+        addPreview(player.uid);
     }
 
     setModMultipliers(roomInfo.modMultipliers);
