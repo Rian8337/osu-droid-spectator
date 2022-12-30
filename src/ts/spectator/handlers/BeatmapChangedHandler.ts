@@ -11,6 +11,7 @@ import {
     resetBeatmapset,
     beatmapset,
     downloadBeatmapset,
+    parsedBeatmap,
 } from "../../settings/BeatmapSettings";
 import {
     getBeatmapsetFromDB,
@@ -39,14 +40,13 @@ export abstract class BeatmapChangedHandler {
      */
     static async handle(newBeatmap: PickedBeatmap): Promise<void> {
         resetProcessor();
-        setParsedBeatmap(null);
         reloadPreview();
 
         $("#title a").text("Loading...").removeProp("href");
 
         let alreadyAttemptDownload = false;
 
-        if (newBeatmap.setId !== pickedBeatmap?.setId) {
+        if (!parsedBeatmap || newBeatmap.setId !== pickedBeatmap?.setId) {
             console.log("Beatmap changed");
 
             resetBeatmapset();
@@ -72,6 +72,7 @@ export abstract class BeatmapChangedHandler {
             await beatmapset.loadAsync(beatmapsetBlob);
         }
 
+        setParsedBeatmap(null);
         let entries = Object.values(beatmapset.files);
         let osuFile = await this.getOsuFile(entries, newBeatmap.hash);
 
