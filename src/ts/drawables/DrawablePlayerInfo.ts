@@ -1,6 +1,5 @@
 import {
     MathUtils,
-    ModPrecise,
     Playfield,
     RGBColor,
     Slider,
@@ -88,12 +87,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
 
             if (
                 event.accuracy ===
-                Math.floor(
-                    manager.hitWindow.hitWindowFor50(
-                        manager.mods.some((m) => m instanceof ModPrecise)
-                    )
-                ) +
-                    13
+                Math.floor(manager.maxHitWindow) + 13
             ) {
                 missTime = object.startTime;
                 break;
