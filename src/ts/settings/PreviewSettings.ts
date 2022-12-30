@@ -8,11 +8,7 @@ import { teamMode } from "./RoomSettings";
 /**
  * Supported anchor types for a preview.
  */
-export type PreviewAnchor =
-    | Anchor.topLeft
-    | Anchor.topCenter
-    | Anchor.centerLeft
-    | Anchor.center;
+export type PreviewAnchor = RedPreviewAnchor | BluePreviewAnchor;
 
 /**
  * Supported anchor types for the red team.
