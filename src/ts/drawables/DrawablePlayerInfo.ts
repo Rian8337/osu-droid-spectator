@@ -76,7 +76,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
 
             // Check for misses in slider.
             // Missing the slider tail doesn't reset the player's combo, so we skip it.
-            for (let i = object.nestedHitObjects.length - 1; i > 0; --i) {
+            for (let i = object.nestedHitObjects.length - 2; i > 0; --i) {
                 const nestedObject = object.nestedHitObjects[i];
                 const tickset = event.tickset[i - 1];
 
