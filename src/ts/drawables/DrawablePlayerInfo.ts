@@ -52,6 +52,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
 
         for (
             let event = manager.events.objectData.eventAt(time);
+            Number.isNaN(missTime) &&
             event &&
             event.index >= 0 &&
             time - event.time < missAnimationDuration;
