@@ -1,10 +1,4 @@
-import {
-    MathUtils,
-    Playfield,
-    RGBColor,
-    Slider,
-    Spinner,
-} from "../osu-base";
+import { MathUtils, Playfield, RGBColor, Slider, Spinner } from "../osu-base";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { PlayerInfo } from "../spectator/rawdata/PlayerInfo";
 import { DrawableBeatmap } from "./DrawableBeatmap";
@@ -12,6 +6,7 @@ import { players } from "../settings/PlayerSettings";
 import { dataProcessor, teamColors } from "../settings/SpectatorSettings";
 import { parsedBeatmap } from "../settings/BeatmapSettings";
 import { HitResult } from "../spectator/structures/HitResult";
+import { Interpolation } from "../osu-base/mathutil/Interpolation";
 
 /**
  * Represents player information to be drawn.
@@ -75,10 +70,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
             }
 
             // Check for misses in slider, starting with the slider head.
-            if (
-                event.accuracy ===
-                Math.floor(manager.maxHitWindow) + 13
-            ) {
+            if (event.accuracy === Math.floor(manager.maxHitWindow) + 13) {
                 missTime = object.startTime;
                 break;
             }
@@ -122,11 +114,15 @@ export class DrawablePlayerInfo implements PlayerInfo {
             }
 
             color = new RGBColor(
-                color.r + (missColor.r - color.r) * multiplier,
-                color.g + (missColor.g - color.g) * multiplier,
-                color.b + (missColor.b - color.b) * multiplier
+                Interpolation.lerp(color.r, missColor.r, multiplier),
+                Interpolation.lerp(color.g, missColor.g, multiplier),
+                Interpolation.lerp(color.b, missColor.b, multiplier)
             );
-            fontSize += (missMaxFontSize - fontSize) * multiplier;
+            fontSize = Interpolation.lerp(
+                fontSize,
+                missMaxFontSize,
+                multiplier
+            );
         }
 
         ctx.save();
