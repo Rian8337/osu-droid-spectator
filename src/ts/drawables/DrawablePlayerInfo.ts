@@ -73,9 +73,17 @@ export class DrawablePlayerInfo implements PlayerInfo {
                 continue;
             }
 
-            // Check for misses in slider.
+            // Check for misses in slider, starting with the slider head.
+            if (
+                event.accuracy ===
+                Math.floor(manager.maxHitWindow) + 13
+            ) {
+                missTime = object.startTime;
+                break;
+            }
+
             // Missing the slider tail doesn't reset the player's combo, so we skip it.
-            for (let i = object.nestedHitObjects.length - 2; i > 0; --i) {
+            for (let i = 1; i < object.nestedHitObjects.length - 1; ++i) {
                 const nestedObject = object.nestedHitObjects[i];
                 const tickset = event.tickset[i - 1];
 
@@ -83,14 +91,6 @@ export class DrawablePlayerInfo implements PlayerInfo {
                     missTime = nestedObject.startTime;
                     break;
                 }
-            }
-
-            if (
-                event.accuracy ===
-                Math.floor(manager.maxHitWindow) + 13
-            ) {
-                missTime = object.startTime;
-                break;
             }
         }
 
