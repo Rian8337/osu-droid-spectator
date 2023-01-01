@@ -1,4 +1,3 @@
-import { setAudioPlaybackRate } from "../../elements/Audio";
 import { setSpeedMultiplier } from "../../settings/RoomSettings";
 
 /**
@@ -14,6 +13,5 @@ export abstract class SpeedMultiplierChangedHandler {
         console.log("Speed multiplier changed");
 
         setSpeedMultiplier(speedMultiplier);
-        setAudioPlaybackRate();
     }
 }

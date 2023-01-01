@@ -1,4 +1,3 @@
-import { setAudioPlaybackRate } from "../../elements/Audio";
 import { setRequiredMods } from "../../settings/RoomSettings";
 
 /**
@@ -14,6 +13,5 @@ export abstract class RequiredModsChangedHandler {
         console.log("Required mods changed");
 
         setRequiredMods(mods);
-        setAudioPlaybackRate();
     }
 }

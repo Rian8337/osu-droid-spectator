@@ -1,3 +1,4 @@
+import { setAudioPlaybackRate } from "../elements/Audio";
 import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
 
 /**
@@ -79,6 +80,8 @@ export function setModMultipliers(
  */
 export function setRequiredMods(mods: string): void {
     requiredMods = mods;
+
+    setAudioPlaybackRate();
 }
 
 /**
@@ -88,6 +91,8 @@ export function setRequiredMods(mods: string): void {
  */
 export function setSpeedMultiplier(value: number): void {
     speedMultiplier = value;
+
+    setAudioPlaybackRate();
 }
 
 /**
