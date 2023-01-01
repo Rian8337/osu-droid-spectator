@@ -1,11 +1,10 @@
-import { MathUtils, Playfield, RGBColor, Slider, Spinner } from "../osu-base";
+import { MathUtils, Playfield, RGBColor } from "../osu-base";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { PlayerInfo } from "../spectator/rawdata/PlayerInfo";
 import { DrawableBeatmap } from "./DrawableBeatmap";
 import { players } from "../settings/PlayerSettings";
 import { dataProcessor, teamColors } from "../settings/SpectatorSettings";
 import { parsedBeatmap } from "../settings/BeatmapSettings";
-import { HitResult } from "../spectator/structures/HitResult";
 import { Interpolation } from "../osu-base/mathutil/Interpolation";
 
 /**
@@ -14,6 +13,7 @@ import { Interpolation } from "../osu-base/mathutil/Interpolation";
 export class DrawablePlayerInfo implements PlayerInfo {
     private static readonly paddingX = 15;
     private static readonly paddingY = 35;
+    private static readonly missColor = new RGBColor(209, 14, 0);
 
     readonly uid: number;
     readonly username: string;
@@ -42,49 +42,15 @@ export class DrawablePlayerInfo implements PlayerInfo {
         }
 
         // Animate misses.
-        let missTime = Number.NaN;
         const missAnimationDuration = 2000;
+        let event = manager.events.combo.eventAtOrDefault(time);
 
-        for (
-            let event = manager.events.objectData.eventAt(time);
-            Number.isNaN(missTime) &&
-            event &&
-            event.index >= 0 &&
-            time - event.time < missAnimationDuration;
-            event = manager.events.objectData.eventAtIndex(event.index - 1)
+        while (
+            event.time > 0 &&
+            event.combo > 0 &&
+            time - event.time < missAnimationDuration
         ) {
-            const object = parsedBeatmap.hitObjects.objects[event.index];
-
-            if (event.result === HitResult.miss) {
-                if (object instanceof Spinner) {
-                    missTime = object.endTime;
-                } else {
-                    missTime = object.startTime;
-                }
-
-                break;
-            }
-
-            if (!(object instanceof Slider)) {
-                continue;
-            }
-
-            // Check for misses in slider, starting with the slider head.
-            if (event.accuracy === Math.floor(manager.maxHitWindow) + 13) {
-                missTime = object.startTime;
-                break;
-            }
-
-            // Missing the slider tail doesn't reset the player's combo, so we skip it.
-            for (let i = 1; i < object.nestedHitObjects.length - 1; ++i) {
-                const nestedObject = object.nestedHitObjects[i];
-                const tickset = event.tickset[i - 1];
-
-                if (!tickset) {
-                    missTime = nestedObject.startTime;
-                    break;
-                }
-            }
+            event = manager.events.combo.eventAtOrDefault(event.time - 1);
         }
 
         let color =
@@ -92,9 +58,13 @@ export class DrawablePlayerInfo implements PlayerInfo {
                 ? teamColors[this.team]
                 : new RGBColor(255, 255, 255);
         let fontSize = ctx.canvas.height / 8;
-        const missDt = time - missTime;
-        if (missDt <= missAnimationDuration) {
-            const missColor = new RGBColor(209, 14, 0);
+        const missDt = time - event.time;
+
+        if (
+            event.time > 0 &&
+            event.combo === 0 &&
+            missDt <= missAnimationDuration
+        ) {
             const missMaxFontSize = ctx.canvas.height / 6;
             let multiplier = 1;
 
@@ -113,6 +83,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
                 multiplier = Math.pow(1 - t, 2);
             }
 
+            const { missColor } = DrawablePlayerInfo;
             color = new RGBColor(
                 Interpolation.lerp(color.r, missColor.r, multiplier),
                 Interpolation.lerp(color.g, missColor.g, multiplier),
