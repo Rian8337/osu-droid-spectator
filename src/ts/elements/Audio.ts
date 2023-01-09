@@ -6,51 +6,50 @@ import { dataProcessor, teamScoreDisplay } from "../settings/SpectatorSettings";
 const audio = new Audio();
 
 $(audio)
-    .on("userinteraction", () => {
-        $("#play").removeClass("e");
+    .on("userinteraction", function () {
+        $<HTMLButtonElement>("#play").removeClass("e");
 
         for (const preview of previews.values()) {
             preview.beatmap?.refresh();
         }
 
-        audio.currentTime = dataProcessor?.earliestEventTime ?? 0;
+        this.currentTime = dataProcessor?.earliestEventTime ?? 0;
         audioState.audioLastPause = Date.now();
 
-        requestAnimationFrame(async function foo() {
+        $(this).trigger("play");
+    })
+    .on("play", () => {
+        requestAnimationFrame(function foo() {
             const currentTime = audio.currentTime * 1000;
 
-            if (audio.src) {
-                if (dataProcessor?.isAvailableAt(currentTime) && !audio.ended) {
-                    await audio.play();
-                } else {
-                    if (!audio.paused && !audio.ended) {
-                        audioState.audioLastPause = Date.now();
-                    }
-
-                    audio.pause();
-                }
-
-                if (!audio.paused) {
-                    for (const preview of previews.values()) {
-                        preview.at(currentTime);
-                    }
-
-                    teamScoreDisplay?.draw(currentTime);
-                }
-            } else {
+            if (!dataProcessor?.isAvailableAt(currentTime) || audio.ended) {
                 audio.pause();
+                return;
             }
 
+            for (const preview of previews.values()) {
+                preview.at(currentTime);
+            }
+
+            teamScoreDisplay?.draw(currentTime);
             requestAnimationFrame(foo);
         });
     })
+    .on("pause", function () {
+        audioState.audioLastPause = Date.now();
+
+        const interval = setInterval(() => {
+            if (dataProcessor?.isAvailableAt(this.currentTime * 1000)) {
+                clearInterval(interval);
+                this.play();
+            }
+        }, 1000);
+    })
     .on("durationchange", function () {
-        $("#progress").val(0).prop("max", this.duration);
-        $("#volume").trigger("change");
-        $("#speed .e").trigger("click");
+        $<HTMLInputElement>("#progress").val(0).prop("max", this.duration);
     })
     .on("timeupdate", function () {
-        $("#progress").val(this.currentTime);
+        $<HTMLInputElement>("#progress").val(this.currentTime);
     });
 
 export const audioState = {
