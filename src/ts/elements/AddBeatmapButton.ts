@@ -12,53 +12,68 @@ $<HTMLButtonElement>("#addBeatmapset").on("click", (e) => {
     $("#addBeatmapsetInput").trigger("click");
 });
 
-$<HTMLInputElement>("#addBeatmapsetInput").on("change", (e) => {
+$<HTMLInputElement>("#addBeatmapsetInput").on("change", async (e) => {
     e.preventDefault();
 
-    const file = e.target.files?.[0];
-
-    if (!file) {
+    if (!e.target.files) {
         return;
     }
 
-    const beatmapsetId = parseInt(file.name);
+    const finalMessages: string[] = [];
 
-    if (isNaN(beatmapsetId)) {
-        return alert("Beatmapset files must start with its beatmapset ID.");
+    for (let i = 0; i < e.target.files.length; ++i) {
+        const file = e.target.files[i];
+
+        if (!file) {
+            return;
+        }
+
+        const beatmapsetId = parseInt(file.name);
+
+        if (isNaN(beatmapsetId)) {
+            continue;
+        }
+
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+
+        await new Promise<void>((resolve) => {
+            reader.onload = async (readerEvent) => {
+                const content = readerEvent.target?.result;
+
+                if (!content) {
+                    finalMessages.push(
+                        `Cannot read contents of beatmapset ID ${beatmapsetId}.`
+                    );
+                    return resolve();
+                }
+
+                await storeBeatmapsetToDB(
+                    beatmapsetId,
+                    new Blob([content], { type: file.type })
+                );
+
+                if (!parsedBeatmap && beatmapsetId === pickedBeatmap?.setId) {
+                    downloadAbortController?.abort();
+                    await BeatmapChangedHandler.handle(pickedBeatmap);
+                }
+
+                finalMessages.push(
+                    `Successfully added beatmapset ID ${beatmapsetId} to cache.`
+                );
+                resolve();
+            };
+
+            reader.onerror = (e) => {
+                console.error(e.target?.error);
+
+                finalMessages.push(
+                    `An error was encountered when attempting to load beatmapset ID ${beatmapsetId}.`
+                );
+                resolve();
+            };
+        });
     }
 
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-
-    reader.onload = async (readerEvent) => {
-        const content = readerEvent.target?.result;
-
-        if (!content) {
-            return alert("Cannot read contents of file.");
-        }
-
-        await storeBeatmapsetToDB(
-            beatmapsetId,
-            new Blob([content], { type: file.type })
-        );
-
-        if (
-            !parsedBeatmap &&
-            pickedBeatmap &&
-            beatmapsetId === pickedBeatmap.setId
-        ) {
-            downloadAbortController?.abort();
-            await BeatmapChangedHandler.handle(pickedBeatmap);
-        }
-
-        alert(`Successfully added beatmapset ID ${beatmapsetId} to cache.`);
-    };
-
-    reader.onerror = (e) => {
-        console.error(e.target?.error);
-
-        alert(
-            "An error was encountered when attempting to load the beatmapset."
-        );
-    };
+    alert(finalMessages.join("\n"));
 });
