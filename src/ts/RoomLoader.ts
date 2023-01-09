@@ -17,6 +17,7 @@ import { BeatmapChangedHandler } from "./spectator/handlers/BeatmapChangedHandle
 import { SpeedMultiplierChangedHandler } from "./spectator/handlers/SpeedMultiplierChangedHandler";
 import { MultiplayerRoomInfo } from "./spectator/rawdata/MultiplayerRoomInfo";
 import { addPreview } from "./settings/PreviewSettings";
+import { RoundStartHandler } from "./spectator/handlers/RoundStartHandler";
 
 export async function askRoomID(): Promise<void> {
     const message =
@@ -81,18 +82,9 @@ export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
 
     SpeedMultiplierChangedHandler.handle(roomInfo.speedMultiplier);
 
-    fayeClient.beginSubscription();
+    await fayeClient.beginSubscription();
 
-    // if (roomInfo.isPlaying && roomInfo.beatmap) {
-    //     RoundStartHandler.handle();
-
-    //     for (const player of roomInfo.players) {
-    //         PlayerStartPlayingHandler.handle(
-    //             player.uid,
-    //             player.mods,
-    //             roomInfo.beatmap.hash,
-    //             player.forcedAR
-    //         );
-    //     }
-    // }
+    if (roomInfo.isPlaying) {
+        RoundStartHandler.handle();
+    }
 }
