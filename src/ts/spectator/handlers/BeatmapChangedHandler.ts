@@ -47,7 +47,7 @@ export abstract class BeatmapChangedHandler {
         let alreadyAttemptDownload = false;
 
         if (!parsedBeatmap || newBeatmap.setId !== pickedBeatmap?.setId) {
-            console.log("Beatmap changed");
+            console.log("Beatmap changed to beatmapset ID", newBeatmap.setId);
 
             resetBeatmapset();
             resetAudio(true);

@@ -20,7 +20,7 @@ export abstract class PlayerStartPlayingHandler {
         beatmapHash: string,
         forcedAR?: number
     ): void {
-        console.log("Player starts playing");
+        console.log("Player", uid, "starts playing");
 
         const manager = dataProcessor?.managers.get(uid);
 
@@ -32,7 +32,7 @@ export abstract class PlayerStartPlayingHandler {
         const preview = previews.get(uid);
 
         if (!preview) {
-            throw new Error("No preview for player");
+            throw new Error(`No preview for player ${uid}`);
         }
 
         if (pickedBeatmap?.hash !== beatmapHash) {

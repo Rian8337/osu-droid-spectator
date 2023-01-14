@@ -10,7 +10,7 @@ export abstract class SpeedMultiplierChangedHandler {
      * @param speedMultiplier The new speed multiplier.
      */
     static handle(speedMultiplier: number): void {
-        console.log("Speed multiplier changed");
+        console.log("Custom speed multiplier changed to", speedMultiplier);
 
         setSpeedMultiplier(speedMultiplier);
     }

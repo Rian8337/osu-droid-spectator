@@ -10,7 +10,7 @@ export abstract class RequiredModsChangedHandler {
      * @param mods The new required mods.
      */
     static handle(mods: string): void {
-        console.log("Required mods changed");
+        console.log("Required mods changed to", mods || "NM");
 
         setRequiredMods(mods);
     }

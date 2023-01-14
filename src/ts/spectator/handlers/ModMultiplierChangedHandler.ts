@@ -10,7 +10,7 @@ export abstract class ModMultiplierChangeHandler {
      * @param newMultipliers The new mod multipliers.
      */
     static handle(newMultipliers: Record<string, number>): void {
-        console.log("Mod multiplier changed");
+        console.log("Mod multipliers changed");
 
         setModMultipliers(newMultipliers);
     }

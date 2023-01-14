@@ -14,7 +14,7 @@ export abstract class TeamModeChangedHandler {
      * @param teamMode The team mode.
      */
     static handle(teamMode: MultiplayerTeamMode): void {
-        console.log("Team mode changed");
+        console.log("Team mode changed to", teamMode);
 
         setTeamMode(teamMode);
 

@@ -10,7 +10,7 @@ export abstract class ScorePortionChangedHandler {
      * @param value The new score portion.
      */
     static handle(value: number): void {
-        console.log("Score portion changed");
+        console.log("Score portion changed to", value);
 
         setScorePortion(value);
     }

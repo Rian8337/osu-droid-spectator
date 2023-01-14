@@ -13,7 +13,7 @@ export abstract class PlayerTeamChangedHandler {
      * @param team The team.
      */
     static handle(uid: number, team: MultiplayerTeam): void {
-        console.log("Player team changed");
+        console.log("Player", uid, "team changed to", team);
 
         setPlayerTeam(uid, team);
         removePreview(uid);
