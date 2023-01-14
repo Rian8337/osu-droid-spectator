@@ -1,6 +1,6 @@
 import { openDatabase } from "./settings/DatabaseSettings";
 import { setPickedBeatmap } from "./settings/BeatmapSettings";
-import { addPlayer } from "./settings/PlayerSettings";
+import { addPlayer, players } from "./settings/PlayerSettings";
 import {
     setForceARAllowRule,
     setForceARMaximumValue,
@@ -18,6 +18,7 @@ import { SpeedMultiplierChangedHandler } from "./spectator/handlers/SpeedMultipl
 import { MultiplayerRoomInfo } from "./spectator/rawdata/MultiplayerRoomInfo";
 import { addPreview } from "./settings/PreviewSettings";
 import { RoundStartHandler } from "./spectator/handlers/RoundStartHandler";
+import { PlayerStartPlayingHandler } from "./spectator/handlers/PlayerStartPlayingHandler";
 
 export async function askRoomID(): Promise<void> {
     const message =
@@ -47,7 +48,6 @@ export async function askRoomID(): Promise<void> {
     }
 
     setRoomId(roomId!);
-
     loadRoom(roomInfo);
 }
 
@@ -86,5 +86,14 @@ export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
 
     if (roomInfo.isPlaying) {
         RoundStartHandler.handle();
+
+        for (const player of players.values()) {
+            PlayerStartPlayingHandler.handle(
+                player.uid,
+                player.mods,
+                roomInfo.beatmap!.hash,
+                player.forcedAR
+            );
+        }
     }
 }

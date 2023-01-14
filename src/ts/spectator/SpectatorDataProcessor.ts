@@ -25,7 +25,7 @@ export class SpectatorDataProcessor {
     readonly managers = new Map<number, SpectatorDataManager>();
 
     /**
-     * The time at which the earliest event from players occurs.
+     * The time at which the earliest event from players occurs, in milliseconds.
      *
      * Returns `null` if there are no events yet.
      */
@@ -43,7 +43,7 @@ export class SpectatorDataProcessor {
     }
 
     /**
-     * The time at which the latest event from players occurs.
+     * The time at which the latest event from players occurs, in milliseconds.
      *
      * Returns `null` if there are no events yet.
      */

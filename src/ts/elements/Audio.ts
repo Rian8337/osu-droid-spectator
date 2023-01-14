@@ -13,7 +13,7 @@ $(audio)
             preview.beatmap?.refresh();
         }
 
-        this.currentTime = dataProcessor?.earliestEventTime ?? 0;
+        this.currentTime = (dataProcessor?.earliestEventTime ?? 0) / 1000;
         audioState.audioLastPause = Date.now();
 
         $(this).trigger("play");

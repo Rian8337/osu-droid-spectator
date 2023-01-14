@@ -10,7 +10,7 @@ $<HTMLInputElement>("#progress").on("change", function () {
         // Don't go too behind or too far if spectator data is not available (yet).
         // Cap at earliest and latest event time.
         value = MathUtils.clamp(
-            value,
+            value * 1000,
             dataProcessor.earliestEventTime ?? 0,
             dataProcessor.latestEventTime ?? 0
         );
@@ -18,10 +18,12 @@ $<HTMLInputElement>("#progress").on("change", function () {
 
     audioState.audio.pause();
 
-    this.value = value.toString();
-    audioState.audio.currentTime = value;
+    this.value = (value / 1000).toString();
+    audioState.audio.currentTime = value / 1000;
 
     for (const preview of previews.values()) {
         preview.beatmap?.refresh();
     }
+
+    $(audioState.audio).trigger("play");
 });
