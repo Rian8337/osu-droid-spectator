@@ -38,12 +38,14 @@ $(audio)
     .on("pause", function () {
         audioState.audioLastPause = Date.now();
 
-        const interval = setInterval(() => {
-            if (dataProcessor?.isAvailableAt(this.currentTime * 1000)) {
-                clearInterval(interval);
-                this.play();
-            }
-        }, 1000);
+        if (!audio.ended) {
+            const interval = setInterval(() => {
+                if (dataProcessor?.isAvailableAt(this.currentTime * 1000)) {
+                    clearInterval(interval);
+                    this.play();
+                }
+            }, 1000);
+        }
     })
     .on("durationchange", function () {
         $<HTMLInputElement>("#progress").val(0).prop("max", this.duration);
