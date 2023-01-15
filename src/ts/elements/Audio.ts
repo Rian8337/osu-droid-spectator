@@ -13,10 +13,9 @@ $(audio)
             preview.beatmap?.refresh();
         }
 
-        this.currentTime = (dataProcessor?.earliestEventTime ?? 0) / 1000;
         audioState.audioLastPause = Date.now();
 
-        $(this).trigger("play");
+        $(this).trigger("pause");
     })
     .on("play", () => {
         requestAnimationFrame(function foo() {
@@ -40,6 +39,13 @@ $(audio)
 
         if (!audio.ended) {
             const interval = setInterval(() => {
+                if (
+                    dataProcessor?.earliestEventTime &&
+                    this.currentTime * 1000 < dataProcessor.earliestEventTime
+                ) {
+                    this.currentTime = dataProcessor.earliestEventTime / 1000;
+                }
+
                 if (dataProcessor?.isAvailableAt(this.currentTime * 1000)) {
                     clearInterval(interval);
                     this.play();

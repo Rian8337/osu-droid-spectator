@@ -46,21 +46,7 @@ export abstract class SpectatorEventManager<T extends SpectatorEvent> {
      */
     add(...events: T[]): void {
         for (const event of events) {
-            let existing = this.eventAt(event.time);
-
-            if (existing && event.isRedundant(existing)) {
-                continue;
-            }
-
-            // Remove the existing event if the new event overrides it at the same time.
-            while (existing?.time === event.time) {
-                if (!this.remove(existing)) {
-                    break;
-                }
-
-                existing = this.eventAt(event.time);
-            }
-
+            this.filterExistingEvents(event);
             this._events.splice(this.findInsertionIndex(event.time), 0, event);
         }
     }
@@ -129,26 +115,31 @@ export abstract class SpectatorEventManager<T extends SpectatorEvent> {
      * @returns The event at the given time, `null` if none found.
      */
     eventAt(time: number): T | null {
-        if (this._events.length === 0 || time < this._events[0].time) {
+        if (this.earliestEventTime === null || this.latestEventTime === null) {
             return null;
         }
 
-        if (time >= this._events.at(-1)!.time) {
-            return this._events.at(-1)!;
+        if (this._events.length === 0 || time < this.earliestEventTime) {
+            return null;
         }
 
-        let l: number = 0;
-        let r: number = this._events.length - 2;
+        if (time >= this.latestEventTime) {
+            return this._events.at(-1) ?? null;
+        }
+
+        let l = 0;
+        let r = this._events.length - 2;
 
         while (l <= r) {
-            const pivot: number = l + ((r - l) >> 1);
+            const pivot = l + ((r - l) >> 1);
+            const event = this._events[pivot];
 
-            if (this._events[pivot].time < time) {
+            if (event.time < time) {
                 l = pivot + 1;
-            } else if (this._events[pivot].time > time) {
+            } else if (event.time > time) {
                 r = pivot - 1;
             } else {
-                return this._events[pivot];
+                return event;
             }
         }
 
@@ -157,28 +148,55 @@ export abstract class SpectatorEventManager<T extends SpectatorEvent> {
     }
 
     /**
+     * Removes existing events if the given event overrides them at the same time.
+     *
+     * @param event The event.
+     */
+    protected filterExistingEvents(event: T): void {
+        let existing = this.eventAt(event.time);
+
+        if (existing && event.isRedundant(existing)) {
+            return;
+        }
+
+        // Remove the existing event if the new event overrides it at the same time.
+        while (existing?.time === event.time) {
+            if (!this.remove(existing)) {
+                break;
+            }
+
+            existing = this.eventAt(event.time);
+        }
+    }
+
+    /**
      * Finds the insertion index of an event in a given time.
      *
      * @param time The start time of the event.
      */
     protected findInsertionIndex(time: number): number {
-        if (this._events.length === 0 || time < this._events[0].time) {
+        if (this.earliestEventTime === null || this.latestEventTime === null) {
             return 0;
         }
 
-        if (time >= this._events.at(-1)!.time) {
+        if (this._events.length === 0 || time < this.earliestEventTime) {
+            return 0;
+        }
+
+        if (time >= this.latestEventTime) {
             return this._events.length;
         }
 
-        let l: number = 0;
-        let r: number = this._events.length - 2;
+        let l = 0;
+        let r = this._events.length - 2;
 
         while (l <= r) {
-            const pivot: number = l + ((r - l) >> 1);
+            const pivot = l + ((r - l) >> 1);
+            const event = this._events[pivot];
 
-            if (this._events[pivot].time < time) {
+            if (event.time < time) {
                 l = pivot + 1;
-            } else if (this._events[pivot].time > time) {
+            } else if (event.time > time) {
                 r = pivot - 1;
             } else {
                 return pivot;

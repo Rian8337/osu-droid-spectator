@@ -253,7 +253,7 @@ export class SpectatorDataProcessor {
             new SpectatorSyncedAccuracyEvent(
                 data.secPassed * 1000,
                 data.currentAccuracy,
-                events.accuracy.events.length - 1
+                events.accuracy.latestIndex
             )
         );
 

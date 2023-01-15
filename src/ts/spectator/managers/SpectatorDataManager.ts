@@ -134,9 +134,7 @@ export class SpectatorDataManager {
             accuracy: new SpectatorAccuracyEventManager(),
             combo: new SpectatorComboEventManager(),
             cursor: [],
-            objectData: new SpectatorObjectDataEventManager(
-                parsedBeatmap.hitObjects.objects.length
-            ),
+            objectData: new SpectatorObjectDataEventManager(),
             score: new SpectatorScoreEventManager(),
             syncedAccuracy: new SpectatorSyncedAccuracyEventManager(),
             syncedCombo: new SpectatorSyncedComboEventManager(),
