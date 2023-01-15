@@ -115,36 +115,10 @@ export abstract class SpectatorEventManager<T extends SpectatorEvent> {
      * @returns The event at the given time, `null` if none found.
      */
     eventAt(time: number): T | null {
-        if (this.earliestEventTime === null || this.latestEventTime === null) {
-            return null;
-        }
-
-        if (this._events.length === 0 || time < this.earliestEventTime) {
-            return null;
-        }
-
-        if (time >= this.latestEventTime) {
-            return this._events.at(-1) ?? null;
-        }
-
-        let l = 0;
-        let r = this._events.length - 2;
-
-        while (l <= r) {
-            const pivot = l + ((r - l) >> 1);
-            const event = this._events[pivot];
-
-            if (event.time < time) {
-                l = pivot + 1;
-            } else if (event.time > time) {
-                r = pivot - 1;
-            } else {
-                return event;
-            }
-        }
+        const l = this.findInsertionIndex(time);
 
         // l will be the first event with time > this._events[l].time, but we want the one before it
-        return this._events[l - 1];
+        return this._events[l - 1] ?? null;
     }
 
     /**
