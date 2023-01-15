@@ -7,7 +7,7 @@ import { SpectatorEventManager } from "./SpectatorEventManager";
  * Represents a manager for the cursor spectator event.
  */
 export class SpectatorCursorEventManager extends SpectatorEventManager<SpectatorCursorEvent> {
-    override readonly defaultEvent = new SpectatorCursorEvent(
+    protected override readonly defaultEvent = new SpectatorCursorEvent(
         0,
         new Vector2(-1, -1),
         MovementType.up

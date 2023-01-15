@@ -6,7 +6,7 @@ import { SpectatorIndexedEventManager } from "./SpectatorIndexedEventManager";
  * A manager for object data events.
  */
 export class SpectatorObjectDataEventManager extends SpectatorIndexedEventManager<SpectatorObjectDataEvent> {
-    override readonly defaultEvent = new SpectatorObjectDataEvent(
+    protected override readonly defaultEvent = new SpectatorObjectDataEvent(
         Number.NEGATIVE_INFINITY,
         {
             accuracy: 0,

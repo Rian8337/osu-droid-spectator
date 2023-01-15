@@ -7,7 +7,7 @@ export abstract class SpectatorEventManager<T extends SpectatorEvent> {
     /**
      * The default event of this manager.
      */
-    abstract readonly defaultEvent: T;
+    protected abstract readonly defaultEvent: T;
 
     /**
      * The events associated with this manager.
