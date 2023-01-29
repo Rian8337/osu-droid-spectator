@@ -4,6 +4,7 @@ import { speedMultiplier, requiredMods } from "../settings/RoomSettings";
 import { dataProcessor, teamScoreDisplay } from "../settings/SpectatorSettings";
 
 const audio = new Audio();
+let interval: NodeJS.Timer | null = null;
 
 $(audio)
     .on("userinteraction", function () {
@@ -37,8 +38,11 @@ $(audio)
     .on("pause", function () {
         audioState.audioLastPause = Date.now();
 
-        if (!audio.ended) {
-            const interval = setInterval(() => {
+        $(this).trigger("canplaythrough");
+    })
+    .on("canplaythrough", function () {
+        if (!audio.ended && !interval) {
+            interval = setInterval(() => {
                 if (
                     dataProcessor?.earliestEventTime &&
                     this.currentTime * 1000 < dataProcessor.earliestEventTime
@@ -47,10 +51,11 @@ $(audio)
                 }
 
                 if (dataProcessor?.isAvailableAt(this.currentTime * 1000)) {
-                    clearInterval(interval);
+                    clearInterval(interval!);
+                    interval = null;
                     this.play();
                 }
-            }, 1000);
+            }, 500);
         }
     })
     .on("durationchange", function () {
@@ -86,9 +91,6 @@ export function resetAudio(resetSrc: boolean): void {
     audio.currentTime = 0;
     audio.volume = parseInt(localStorage.getItem("volume") ?? "100") / 100;
     setAudioPlaybackRate();
-
-    // Retrigger pause to enable interval.
-    $(audio).trigger("pause");
 }
 
 /**
