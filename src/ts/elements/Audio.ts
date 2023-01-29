@@ -42,6 +42,8 @@ $(audio)
     })
     .on("canplaythrough", function () {
         if (!audio.ended && !interval) {
+            console.log("Playback time interval started");
+
             interval = setInterval(() => {
                 if (
                     dataProcessor?.earliestEventTime &&
@@ -51,6 +53,7 @@ $(audio)
                 }
 
                 if (dataProcessor?.isAvailableAt(this.currentTime * 1000)) {
+                    console.log("Playback time interval stopped");
                     clearInterval(interval!);
                     interval = null;
                     this.play();
