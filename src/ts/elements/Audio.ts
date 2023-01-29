@@ -84,9 +84,11 @@ export function resetAudio(resetSrc: boolean): void {
     }
 
     audio.currentTime = 0;
-    audioState.audioLastPause = Date.now();
     audio.volume = parseInt(localStorage.getItem("volume") ?? "100") / 100;
     setAudioPlaybackRate();
+
+    // Retrigger pause to enable interval.
+    $(audio).trigger("pause");
 }
 
 /**
