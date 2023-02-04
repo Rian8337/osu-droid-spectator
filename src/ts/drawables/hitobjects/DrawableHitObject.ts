@@ -241,7 +241,7 @@ export abstract class DrawableHitObject {
             return position;
         }
 
-        const coordinate = this.object.stackHeight * -6.4 * this.scale;
+        const coordinate = this.object.stackHeight * -4 * this.scale;
 
         return position.add(new Vector2(coordinate, coordinate));
     }
