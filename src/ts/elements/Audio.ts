@@ -41,11 +41,9 @@ $(audio)
             requestAnimationFrame(foo);
         });
     })
-    .on("pause", function () {
-        audioState.audioLastPause = Date.now();
-    })
     .on("manualpause", function () {
         this.pause();
+        audioState.audioLastPause = Date.now();
 
         if (!audio.ended && !interval) {
             console.log("Playback interval started");
@@ -91,6 +89,7 @@ export const audioState = {
  */
 export function resetAudio(resetSrc: boolean): void {
     audio.pause();
+    audioState.audioLastPause = Date.now();
 
     if (resetSrc) {
         URL.revokeObjectURL(audio.src);
