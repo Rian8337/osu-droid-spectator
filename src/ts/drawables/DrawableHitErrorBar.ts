@@ -74,7 +74,7 @@ export class DrawableHitErrorBar {
         );
 
         ctx.globalAlpha = 1;
-        ctx.lineWidth = ctx.canvas.height / 50;
+        ctx.lineWidth = ctx.canvas.height / 75;
         ctx.strokeStyle = `rgb(${hitResultColors[HitResult.meh]})`;
         ctx.beginPath();
         ctx.moveTo(centerCoordinate.x - drawDistance, centerCoordinate.y);
@@ -95,7 +95,7 @@ export class DrawableHitErrorBar {
         );
 
         ctx.globalAlpha = 1;
-        ctx.lineWidth = ctx.canvas.height / 50;
+        ctx.lineWidth = ctx.canvas.height / 75;
         ctx.strokeStyle = `rgb(${hitResultColors[HitResult.good]})`;
         ctx.beginPath();
         ctx.moveTo(centerCoordinate.x - drawDistance, centerCoordinate.y);
@@ -116,7 +116,7 @@ export class DrawableHitErrorBar {
         );
 
         ctx.globalAlpha = 1;
-        ctx.lineWidth = ctx.canvas.height / 50;
+        ctx.lineWidth = ctx.canvas.height / 75;
         ctx.strokeStyle = `rgb(${hitResultColors[HitResult.great]})`;
         ctx.beginPath();
         ctx.moveTo(centerCoordinate.x - drawDistance, centerCoordinate.y);
@@ -133,7 +133,7 @@ export class DrawableHitErrorBar {
         const { centerCoordinate } = this;
 
         ctx.globalAlpha = 1;
-        ctx.lineWidth = ctx.canvas.width / 80;
+        ctx.lineWidth = ctx.canvas.width / 100;
         ctx.strokeStyle = "#fff";
         ctx.beginPath();
         ctx.moveTo(
@@ -204,7 +204,7 @@ export class DrawableHitErrorBar {
             );
 
             ctx.globalAlpha = opacity;
-            ctx.lineWidth = ctx.canvas.width / 100;
+            ctx.lineWidth = ctx.canvas.width / 125;
             ctx.strokeStyle = `rgb(${hitResultColors[event.result]})`;
             ctx.beginPath();
             ctx.moveTo(
