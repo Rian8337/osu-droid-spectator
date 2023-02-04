@@ -25,5 +25,5 @@ $<HTMLInputElement>("#progress").on("change", function () {
         preview.beatmap?.refresh();
     }
 
-    $(audioState.audio).trigger("play");
+    audioState.audio.play();
 });

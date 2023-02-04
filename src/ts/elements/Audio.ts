@@ -23,8 +23,14 @@ $(audio)
             const currentTime = audio.currentTime * 1000;
 
             if (!dataProcessor?.isAvailableAt(currentTime) || audio.ended) {
-                audio.pause();
+                $(audio).trigger("manualpause");
                 return;
+            }
+
+            if (interval) {
+                console.log("Playback interval automatically stopped");
+                clearInterval(interval);
+                interval = null;
             }
 
             for (const preview of previews.values()) {
@@ -37,12 +43,12 @@ $(audio)
     })
     .on("pause", function () {
         audioState.audioLastPause = Date.now();
-
-        $(this).trigger("canplaythrough");
     })
-    .on("canplaythrough", function () {
+    .on("manualpause", function () {
+        this.pause();
+
         if (!audio.ended && !interval) {
-            console.log("Playback time interval started");
+            console.log("Playback interval started");
 
             interval = setInterval(() => {
                 if (
@@ -53,12 +59,12 @@ $(audio)
                 }
 
                 if (dataProcessor?.isAvailableAt(this.currentTime * 1000)) {
-                    console.log("Playback time interval stopped");
+                    console.log("Playback interval stopped");
                     clearInterval(interval!);
                     interval = null;
                     this.play();
                 }
-            }, 500);
+            }, 250);
         }
     })
     .on("durationchange", function () {

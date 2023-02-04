@@ -104,7 +104,7 @@ export class SpectatorDataProcessor {
         }
 
         // If the time is past the last object, always assume data is available.
-        if (time > parsedBeatmap.hitObjects.objects.at(-1)!.endTime) {
+        if (time >= parsedBeatmap.hitObjects.objects.at(-1)!.endTime) {
             return true;
         }
 

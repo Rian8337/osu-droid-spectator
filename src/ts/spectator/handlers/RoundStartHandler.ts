@@ -1,4 +1,4 @@
-import { resetAudio } from "../../elements/Audio";
+import { audioState, resetAudio } from "../../elements/Audio";
 import { removePreviewsFromScreen } from "../../settings/PreviewSettings";
 import {
     initProcessor,
@@ -16,8 +16,10 @@ export abstract class RoundStartHandler {
         console.log("Round started");
 
         removePreviewsFromScreen();
+        initProcessor();
         resetAudio(false);
         initTeamScoreDisplay();
-        initProcessor();
+
+        $(audioState.audio).trigger("manualpause");
     }
 }
