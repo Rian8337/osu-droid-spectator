@@ -26,7 +26,7 @@ export abstract class SpectatorIndexedEventManager<
     override add(...events: T[]): void {
         for (const event of events) {
             const index = this.getEventIndex(event);
-            this._events.splice(this.findInsertionIndex(index), 0, event);
+            this._events.splice(this.findInsertionIndexBased(index), 0, event);
 
             this.earliestIndex = Math.min(this.earliestIndex, index);
             this.latestIndex = Math.max(this.latestIndex, index);
@@ -40,7 +40,7 @@ export abstract class SpectatorIndexedEventManager<
      * @returns The event at the given time, `null` if none found.
      */
     eventAtIndex(index: number): T | null {
-        const l = this.findInsertionIndex(index);
+        const l = this.findInsertionIndexBased(index);
 
         // l will be the first event with index > this._events[l].index, but we want the one before it
         return this._events[l - 1] ?? null;
@@ -51,7 +51,7 @@ export abstract class SpectatorIndexedEventManager<
      *
      * @param index The event index.
      */
-    protected override findInsertionIndex(index: number): number {
+    protected findInsertionIndexBased(index: number): number {
         if (this.earliestEventTime === null || this.latestEventTime === null) {
             return 0;
         }
