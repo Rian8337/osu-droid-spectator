@@ -122,7 +122,7 @@ export function calculateScoreV2(uid: number, time: number): number {
      * @returns The score V2 value with miss penalty.
      */
     const calculateMissPenalty = (tempScoreV2: number): number => {
-        return tempScoreV2 * 5e-3 * manager.events.objectData.misses;
+        return tempScoreV2 * 5e-3 * (manager.events.objectData.misses ?? 0);
     };
 
     const scoreEvent = manager.events.score.eventAtOrDefault(time);
