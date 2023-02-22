@@ -24,9 +24,11 @@ export class SpectatorObjectDataEventManager extends SpectatorIndexedEventManage
      *
      * Used for calculating display score v2.
      */
-    misses = 0;
+    misses?: number;
 
     override add(...events: SpectatorObjectDataEvent[]): void {
+        this.misses ??= 0;
+
         for (const event of events) {
             if (this._events.at(event.index)?.result === HitResult.miss) {
                 --this.misses;

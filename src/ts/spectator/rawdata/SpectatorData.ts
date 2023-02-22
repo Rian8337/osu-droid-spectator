@@ -38,6 +38,26 @@ export interface SpectatorData {
     readonly currentAccuracy: number;
 
     /**
+     * The current great hits achieved by the player.
+     */
+    readonly currentHit300: number;
+
+    /**
+     * The current good hits achieved by the player.
+     */
+    readonly currentHit100: number;
+
+    /**
+     * The current meh hits achieved by the player.
+     */
+    readonly currentHit50: number;
+
+    /**
+     * The current misses achieved by the player.
+     */
+    readonly currentMisses: number;
+
+    /**
      * The amount of seconds that has passed for the player.
      */
     readonly secPassed: number;

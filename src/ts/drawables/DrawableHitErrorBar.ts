@@ -175,22 +175,17 @@ export class DrawableHitErrorBar {
                 continue;
             }
 
-            let eventTime = event.time;
-
-            // Hit data events occur in object end time + hit accuracy. However, that is not be the case for sliders.
-            if (object instanceof Slider) {
-                // Check for slider head break.
-                if (
-                    event.accuracy ===
+            // Check for slider head break.
+            if (
+                object instanceof Slider &&
+                event.accuracy ===
                     Math.floor(this.hitWindow.hitWindowFor50(this.isPrecise)) +
                         13
-                ) {
-                    continue;
-                }
-
-                eventTime = object.startTime + event.accuracy;
+            ) {
+                continue;
             }
 
+            const eventTime = object.startTime + event.accuracy;
             const dt = time - eventTime;
             if (dt > maxDrawTime) {
                 break;

@@ -146,6 +146,30 @@ export class SpectatorDataProcessor {
 
         const { events } = manager;
 
+        events.syncedScore.add(
+            new SpectatorSyncedScoreEvent(
+                data.secPassed * 1000,
+                data.currentScore
+            )
+        );
+
+        events.syncedAccuracy.add(
+            new SpectatorSyncedAccuracyEvent(
+                data.secPassed * 1000,
+                data.currentAccuracy,
+                events.accuracy.latestIndex
+            )
+        );
+
+        events.syncedCombo.add(
+            new SpectatorSyncedComboEvent(
+                data.secPassed * 1000,
+                data.currentCombo
+            )
+        );
+
+        events.objectData.misses ??= data.currentMisses;
+
         for (const objectData of data.hitObjectData) {
             const object = parsedBeatmap.hitObjects.objects[objectData.index];
             let time = object.endTime;
@@ -241,28 +265,6 @@ export class SpectatorDataProcessor {
                 new SpectatorObjectDataEvent(time, objectData)
             );
         }
-
-        events.syncedScore.add(
-            new SpectatorSyncedScoreEvent(
-                data.secPassed * 1000,
-                data.currentScore
-            )
-        );
-
-        events.syncedAccuracy.add(
-            new SpectatorSyncedAccuracyEvent(
-                data.secPassed * 1000,
-                data.currentAccuracy,
-                events.accuracy.latestIndex
-            )
-        );
-
-        events.syncedCombo.add(
-            new SpectatorSyncedComboEvent(
-                data.secPassed * 1000,
-                data.currentCombo
-            )
-        );
 
         for (let i = 0; i < data.cursorMovement.length; ++i) {
             const cursorMovement = data.cursorMovement[i];
