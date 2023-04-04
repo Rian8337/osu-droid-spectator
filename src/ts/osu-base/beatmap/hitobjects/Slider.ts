@@ -33,24 +33,6 @@ export class Slider extends HitObject {
     readonly tickDistance: number;
 
     /**
-     * The position of the cursor at the point of completion of this slider if it was hit
-     * with as few movements as possible. This is set and used by difficulty calculation.
-     */
-    lazyEndPosition?: Vector2;
-
-    /**
-     * The distance travelled by the cursor upon completion of this slider if it was hit
-     * with as few movements as possible. This is set and used by difficulty calculation.
-     */
-    lazyTravelDistance: number = 0;
-
-    /**
-     * The time taken by the cursor upon completion of this slider if it was hit with
-     * as few movements as possible. This is set and used by difficulty calculation.
-     */
-    lazyTravelTime: number = 0;
-
-    /**
      * The length of one span of this slider.
      */
     readonly spanDuration: number;
@@ -85,12 +67,36 @@ export class Slider extends HitObject {
         return this.repetitions - 1;
     }
 
+    override get stackHeight(): number {
+        return this._stackHeight;
+    }
+
+    override set stackHeight(value: number) {
+        this._stackHeight = value;
+
+        for (const nestedObject of this.nestedHitObjects) {
+            nestedObject.stackHeight = value;
+        }
+    }
+
+    override get scale(): number {
+        return this._scale;
+    }
+
+    override set scale(value: number) {
+        this._scale = value;
+
+        for (const nestedObject of this.nestedHitObjects) {
+            nestedObject.scale = value;
+        }
+    }
+
     /**
      * The repetition amount of the slider. Note that 1 repetition means no repeats (1 loop).
      */
     private readonly repetitions: number;
 
-    static readonly legacyLastTickOffset: number = 36;
+    static readonly legacyLastTickOffset = 36;
 
     constructor(values: {
         startTime: number;
@@ -180,6 +186,7 @@ export class Slider extends HitObject {
                         spanIndex: span,
                         spanStartTime: spanStartTime,
                     });
+
                     sliderTicks.push(sliderTick);
                 }
 
@@ -205,30 +212,13 @@ export class Slider extends HitObject {
             }
         }
 
-        // Okay, I'll level with you. I made a mistake. It was 2007.
-        // Times were simpler. osu! was but in its infancy and sliders were a new concept.
-        // A hack was made, which has unfortunately lived through until this day.
-        //
-        // This legacy tick is used for some calculations and judgements where audio output is not required.
-        // Generally we are keeping this around just for difficulty compatibility.
-        // Optimistically we do not want to ever use this for anything user-facing going forwards.
-        const finalSpanIndex: number = this.repeats;
-        const finalSpanStartTime: number =
-            this.startTime + finalSpanIndex * this.spanDuration;
-        const finalSpanEndTime: number = Math.max(
-            this.startTime + this.duration / 2,
-            finalSpanStartTime + this.spanDuration - Slider.legacyLastTickOffset
-        );
-
         // Slider end
         this.tail = new SliderTail({
             position: this.endPosition,
-            startTime: finalSpanEndTime,
+            startTime: this.endTime,
         });
 
         this.nestedHitObjects.push(this.tail);
-
-        this.nestedHitObjects.sort((a, b) => a.startTime - b.startTime);
     }
 
     override toString(): string {

@@ -3,7 +3,6 @@ import {
     IModApplicableToDroid,
     MapStats,
     Mod,
-    Modes,
     ModHardRock,
     ObjectTypes,
     Playfield,
@@ -48,9 +47,9 @@ export abstract class DrawableHitObject {
     protected abstract get fadeOutTime(): number;
 
     /**
-     * The combo of the object.
+     * The combo number of the object.
      */
-    combo = 1;
+    comboNumber = 1;
 
     /**
      * The color of the object.
@@ -70,16 +69,6 @@ export abstract class DrawableHitObject {
      * This is used to get radius.
      */
     scale = 0;
-
-    /**
-     * The radius of the object with mods applied.
-     */
-    get radius(): number {
-        return (
-            (this.object.getRadius(Modes.droid) / this.object.droidScale) *
-            this.scale
-        );
-    }
 
     /**
      * The stacked position of the object with mods applied.
@@ -103,14 +92,14 @@ export abstract class DrawableHitObject {
      * The thickness of the object's border.
      */
     protected get circleBorder(): number {
-        return this.radius / 8;
+        return this.object.radius / 8;
     }
 
     /**
      * The shadow blur of the object.
      */
     protected get shadowBlur(): number {
-        return this.radius / 16;
+        return this.object.radius / 16;
     }
 
     /**
@@ -241,7 +230,7 @@ export abstract class DrawableHitObject {
             return position;
         }
 
-        const coordinate = this.object.stackHeight * -4 * this.scale;
+        const coordinate = this.object.stackHeight * 4 * this.scale;
 
         return position.add(new Vector2(coordinate, coordinate));
     }

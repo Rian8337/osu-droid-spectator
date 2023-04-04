@@ -5,7 +5,6 @@ import {
     IModApplicableToDroid,
     MapStats,
     Mod,
-    Modes,
     ModUtil,
     Playfield,
     RGBColor,
@@ -46,17 +45,10 @@ export class DrawableBeatmap {
      */
     readonly drawableHitObjects: DrawableHitObject[] = [];
 
-    private readonly objectScale: number;
     private readonly approachTime: number;
 
     private get comboColors(): RGBColor[] {
-        const comboColors = this.beatmap.colors.combo;
-
-        if (comboColors.length > 0) {
-            return comboColors;
-        } else {
-            return DrawableBeatmap.defaultComboColors;
-        }
+        return this.beatmap.colors.combo || DrawableBeatmap.defaultComboColors;
     }
 
     private readonly objectDrawIndexes = {
@@ -102,18 +94,11 @@ export class DrawableBeatmap {
         }
 
         const stats = new MapStats({
-            cs: beatmap.difficulty.cs,
             ar: forcedAR ?? beatmap.difficulty.ar,
-            mods: mods.filter(
-                (v) =>
-                    !ModUtil.speedChangingMods.find(
-                        (m) => m.acronym === v.acronym
-                    )
-            ),
+            mods: ModUtil.removeSpeedChangingMods(mods),
             isForceAR: forcedAR !== undefined,
-        }).calculate({ mode: Modes.droid });
+        }).calculate();
 
-        this.objectScale = (1 - (0.7 * (stats.cs! - 5)) / 5) / 2;
         this.approachTime = MapStats.arToMS(stats.ar!);
         this.convertHitObjects(mods);
     }
@@ -125,7 +110,7 @@ export class DrawableBeatmap {
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `${this.drawableHitObjects[0].radius}px Trebuchet MS, sans-serif`;
+            ctx.font = `${this.drawableHitObjects[0].object.radius}px Trebuchet MS, sans-serif`;
         } catch (e) {
             // Ignore error
         }
@@ -234,8 +219,8 @@ export class DrawableBeatmap {
      * Converts hitobjects to drawable hitobjects.
      */
     private convertHitObjects(mods: (Mod & IModApplicableToDroid)[]): void {
-        let combo = 1;
-        let comboIndex = -1;
+        let comboNumber = 1;
+        let comboColorIndex = -1;
         let setComboIndex = true;
 
         for (const object of this.beatmap.hitObjects.objects) {
@@ -248,17 +233,16 @@ export class DrawableBeatmap {
             if (drawableObject.object instanceof Spinner) {
                 setComboIndex = true;
             } else if (drawableObject.object.isNewCombo || setComboIndex) {
-                combo = 1;
-                comboIndex =
-                    (comboIndex + 1 + drawableObject.object.comboOffset) %
+                comboNumber = 1;
+                comboColorIndex =
+                    (comboColorIndex + 1 + drawableObject.object.comboOffset) %
                     this.comboColors.length;
                 setComboIndex = false;
             }
 
-            drawableObject.scale = this.objectScale;
             drawableObject.approachTime = this.approachTime;
-            drawableObject.combo = combo++;
-            drawableObject.color = this.comboColors[comboIndex];
+            drawableObject.comboNumber = comboNumber++;
+            drawableObject.color = this.comboColors[comboColorIndex];
 
             this.drawableHitObjects.push(drawableObject);
         }

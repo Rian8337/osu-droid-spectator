@@ -1,4 +1,3 @@
-import { Modes } from "../constants/Modes";
 import { DroidHitWindow, OsuHitWindow } from "../utils/HitWindow";
 import { Mod } from "../mods/Mod";
 import { ModDoubleTime } from "../mods/ModDoubleTime";
@@ -7,9 +6,9 @@ import { ModNightCore } from "../mods/ModNightCore";
 import { ModHardRock } from "../mods/ModHardRock";
 import { ModEasy } from "../mods/ModEasy";
 import { ModPrecise } from "../mods/ModPrecise";
-import { ModSmallCircle } from "../mods/ModSmallCircle";
 import { ModReallyEasy } from "../mods/ModReallyEasy";
 import { ModUtil } from "./ModUtil";
+import { CircleSizeCalculator } from "./CircleSizeCalculator";
 
 /**
  * Holds general beatmap statistics for further modifications.
@@ -134,11 +133,6 @@ export class MapStats {
      */
     calculate(params?: {
         /**
-         * The gamemode to calculate for. Defaults to `modes.osu`.
-         */
-        mode?: Modes;
-
-        /**
          * The applied modifications in osu!standard format.
          */
         mods?: string;
@@ -152,6 +146,12 @@ export class MapStats {
          * Whether force AR is turned on.
          */
         isForceAR?: boolean;
+
+        /**
+         * Whether to convert osu!droid OD to osu!standard OD. Defaults to `true`.
+         * Will only be considered when using `Modes.droid` for `mode`.
+         */
+        convertDroidOD?: boolean;
     }): MapStats {
         if (this.calculated) {
             return this;
@@ -187,143 +187,84 @@ export class MapStats {
             statisticsMultiplier *= 0.5;
         }
 
-        switch (params?.mode ?? Modes.osu) {
-            case Modes.droid:
-                // In droid pre-1.6.8, NC speed multiplier is assumed bugged (1.39).
-                if (
-                    this.mods.some((m) => m instanceof ModNightCore) &&
-                    this.oldStatistics
-                ) {
-                    this.speedMultiplier *= 1.39 / 1.5;
-                }
-
-                // CS and OD work differently in droid, therefore it
-                // needs to be computed regardless of map-changing mods
-                // and statistics multiplier.
-                if (this.od !== undefined) {
-                    // Apply EZ or HR to OD.
-                    this.od = Math.min(this.od * statisticsMultiplier, 10);
-
-                    // Convert original OD to droid hit window to take
-                    // droid hit window and the PR mod in mind.
-                    const droidToMS: number =
-                        new DroidHitWindow(this.od).hitWindowFor300(
-                            this.mods.some((m) => m instanceof ModPrecise)
-                        ) / this.speedMultiplier;
-
-                    // Convert droid hit window back to original OD.
-                    this.od = OsuHitWindow.hitWindow300ToOD(droidToMS);
-                }
-
-                // HR and EZ works differently in droid in terms of
-                // CS modification (even CS in itself as well).
-                //
-                // If present mods are found, they need to be removed
-                // from the bitwise enum of mods to prevent double
-                // calculation.
-                if (this.cs !== undefined) {
-                    // https://github.com/osudroid/osu-droid/blob/6306c68e3ffaf671eac794bf45cc95c0f3313a82/src/ru/nsu/ccfit/zuev/osu/Config.java#L258-L272
-                    const width = Math.max(
-                        window.innerWidth,
-                        window.innerHeight
-                    );
-                    const height = Math.min(
-                        window.innerWidth,
-                        window.innerHeight
-                    );
-
-                    const resHeight = (1280 * height) / width;
-
-                    let scale: number =
-                        ((resHeight / 480) * (54.42 - this.cs * 4.48) * 2) /
-                            128 +
-                        (0.5 * (11 - 5.2450170716245195)) / 5;
-
-                    if (this.mods.some((m) => m instanceof ModHardRock)) {
-                        scale -= 0.125;
-                    }
-                    if (this.mods.some((m) => m instanceof ModEasy)) {
-                        scale += 0.125;
-                    }
-                    if (this.mods.some((m) => m instanceof ModReallyEasy)) {
-                        scale += 0.125;
-                    }
-                    if (this.mods.some((m) => m instanceof ModSmallCircle)) {
-                        scale -= ((resHeight / 480) * (4 * 4.48) * 2) / 128;
-                    }
-                    const radius: number =
-                        (64 * Math.max(1e-3, scale)) /
-                        ((resHeight * 0.85) / 384);
-                    this.cs = Math.min(5 + ((1 - radius / 32) * 5) / 0.7, 10);
-                }
-
-                if (this.hp !== undefined) {
-                    if (this.mods.some((m) => m instanceof ModReallyEasy)) {
-                        this.hp /= 2;
-                    }
-                    this.hp = Math.min(this.hp * statisticsMultiplier, 10);
-                }
-
-                if (this.ar !== undefined && !this.isForceAR) {
-                    this.ar *= statisticsMultiplier;
-                    if (this.mods.some((m) => m instanceof ModReallyEasy)) {
-                        if (this.mods.some((m) => m instanceof ModEasy)) {
-                            this.ar *= 2;
-                            this.ar -= 0.5;
-                        }
-                        this.ar -= 0.5;
-                        this.ar -= this.speedMultiplier - 1;
-                    }
-                    this.ar = MapStats.modifyAR(
-                        this.ar,
-                        this.speedMultiplier,
-                        1
-                    );
-                }
-                break;
-            case Modes.osu:
-                if (
-                    !this.mods.some((m) =>
-                        ModUtil.mapChangingMods.find(
-                            (mod) => mod.acronym === m.acronym
-                        )
-                    ) &&
-                    this.speedMultiplier === 1
-                ) {
-                    break;
-                }
-
-                if (this.cs !== undefined) {
-                    if (this.mods.some((m) => m instanceof ModHardRock)) {
-                        this.cs *= 1.3;
-                    }
-                    if (this.mods.some((m) => m instanceof ModEasy)) {
-                        this.cs *= 0.5;
-                    }
-                    this.cs = Math.min(this.cs, 10);
-                }
-
-                if (this.hp !== undefined) {
-                    this.hp = Math.min(this.hp * statisticsMultiplier, 10);
-                }
-
-                if (this.ar !== undefined && !this.isForceAR) {
-                    this.ar = MapStats.modifyAR(
-                        this.ar,
-                        this.speedMultiplier,
-                        statisticsMultiplier
-                    );
-                }
-
-                if (this.od !== undefined) {
-                    this.od = MapStats.modifyOD(
-                        this.od,
-                        this.speedMultiplier,
-                        statisticsMultiplier
-                    );
-                }
-                break;
+        // In droid pre-1.6.8, NC speed multiplier is assumed bugged (1.39).
+        if (
+            this.mods.some((m) => m instanceof ModNightCore) &&
+            this.oldStatistics
+        ) {
+            this.speedMultiplier *= 1.39 / 1.5;
         }
+
+        // CS and OD work differently in droid, therefore it
+        // needs to be computed regardless of map-changing mods
+        // and statistics multiplier.
+        if (this.od !== undefined) {
+            // Apply non-speed changing mods to OD.
+            this.od *= statisticsMultiplier;
+            if (this.mods.some((m) => m instanceof ModReallyEasy)) {
+                this.od /= 2;
+            }
+
+            this.od = Math.min(this.od, 10);
+
+            // Convert original OD to droid hit window to take
+            // droid hit window and the PR mod in mind.
+            // Consider speed multiplier as well.
+            const isPrecise: boolean = this.mods.some(
+                (m) => m instanceof ModPrecise
+            );
+            const droidToMS: number =
+                new DroidHitWindow(this.od).hitWindowFor300(isPrecise) /
+                this.speedMultiplier;
+
+            if (params?.convertDroidOD !== false) {
+                // Convert droid hit window to osu!standard OD.
+                this.od = OsuHitWindow.hitWindow300ToOD(droidToMS);
+            } else {
+                // Convert droid hit window back to original OD.
+                this.od = DroidHitWindow.hitWindow300ToOD(droidToMS, isPrecise);
+            }
+        }
+
+        // HR and EZ works differently in droid in terms of
+        // CS modification (even CS in itself as well).
+        //
+        // If present mods are found, they need to be removed
+        // from the bitwise enum of mods to prevent double
+        // calculation.
+        if (this.cs !== undefined) {
+            const scale: number = CircleSizeCalculator.droidCSToDroidScale(
+                this.cs,
+                this.mods
+            );
+            const radius: number =
+                CircleSizeCalculator.droidScaleToStandardRadius(scale);
+            this.cs = Math.min(
+                CircleSizeCalculator.standardRadiusToStandardCS(radius),
+                10
+            );
+        }
+
+        if (this.hp !== undefined) {
+            if (this.mods.some((m) => m instanceof ModReallyEasy)) {
+                this.hp /= 2;
+            }
+            this.hp = Math.min(this.hp * statisticsMultiplier, 10);
+        }
+
+        if (this.ar !== undefined && !this.isForceAR) {
+            this.ar *= statisticsMultiplier;
+            if (this.mods.some((m) => m instanceof ModReallyEasy)) {
+                if (this.mods.some((m) => m instanceof ModEasy)) {
+                    this.ar *= 2;
+                    this.ar -= 0.5;
+                }
+                this.ar -= 0.5;
+                this.ar -= this.speedMultiplier - 1;
+            }
+            this.ar = MapStats.modifyAR(this.ar, this.speedMultiplier, 1);
+        }
+
         return this;
     }
 
@@ -370,25 +311,5 @@ export class MapStats {
         return ar < 5.0
             ? this.AR0_MS - this.AR_MS_STEP1 * ar
             : this.AR5_MS - this.AR_MS_STEP2 * (ar - 5);
-    }
-
-    /**
-     * Utility function to apply speed and flat multipliers to stats where speed changes apply for OD.
-     *
-     * @param baseOD The base OD value.
-     * @param speedMultiplier The speed multiplier to calculate.
-     * @param statisticsMultiplier The statistics multiplier to calculate from map-changing nonspeed-changing mods.
-     */
-    static modifyOD(
-        baseOD: number,
-        speedMultiplier: number,
-        statisticsMultiplier: number
-    ): number {
-        const hitWindowGreat: number =
-            new OsuHitWindow(
-                Math.min(10, baseOD * statisticsMultiplier)
-            ).hitWindowFor300() / speedMultiplier;
-
-        return (this.OD0_MS - hitWindowGreat) / this.OD_MS_STEP;
     }
 }

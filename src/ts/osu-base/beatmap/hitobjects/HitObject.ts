@@ -1,4 +1,3 @@
-import { Modes } from "../../constants/Modes";
 import { ObjectTypes } from "../../constants/ObjectTypes";
 import { Vector2 } from "../../mathutil/Vector2";
 import { HitSampleInfo } from "./HitSampleInfo";
@@ -7,6 +6,11 @@ import { HitSampleInfo } from "./HitSampleInfo";
  * Represents a hitobject in a beatmap.
  */
 export abstract class HitObject {
+    /**
+     * The base radius of all hitobjects.
+     */
+    static readonly baseRadius = 64;
+
     /**
      * The start time of the hitobject in milliseconds.
      */
@@ -60,17 +64,70 @@ export abstract class HitObject {
     /**
      * The stack height of the hitobject.
      */
-    stackHeight: number = 0;
+    protected _stackHeight = 0;
 
     /**
-     * The osu!droid scale used to calculate stacked position and radius.
+     * The stack height of the hitobject.
      */
-    droidScale: number = 1;
+    get stackHeight(): number {
+        return this._stackHeight;
+    }
 
     /**
-     * The osu!standard scale used to calculate stacked position and radius.
+     * The stack height of the hitobject.
      */
-    osuScale: number = 1;
+    set stackHeight(value: number) {
+        this._stackHeight = value;
+    }
+
+    /**
+     * The scale used to calculate stacked position and radius.
+     */
+    protected _scale = 1;
+
+    /**
+     * The scale used to calculate stacked position and radius.
+     */
+    get scale(): number {
+        return this._scale;
+    }
+
+    /**
+     * The scale used to calculate stacked position.
+     */
+    set scale(value: number) {
+        this._scale = value;
+    }
+
+    /**
+     * The radius of the hitobject.
+     */
+    get radius(): number {
+        return HitObject.baseRadius * this._scale;
+    }
+
+    /**
+     * The stack offset of the hitobject.
+     */
+    get stackOffset(): Vector2 {
+        const coordinate = this._stackHeight * this._scale * 4;
+
+        return new Vector2(coordinate, coordinate);
+    }
+
+    /**
+     * The stacked position of the hitobject.
+     */
+    get stackedPosition(): Vector2 {
+        return this.position.add(this.stackOffset);
+    }
+
+    /**
+     * The stacked end position of the hitobject.
+     */
+    get stackedEndPosition(): Vector2 {
+        return this.endPosition.add(this.stackOffset);
+    }
 
     constructor(values: {
         startTime: number;
@@ -91,103 +148,7 @@ export abstract class HitObject {
     }
 
     /**
-     * Evaluates the radius of the hitobject.
-     *
-     * @param mode The gamemode to evaluate for.
-     * @returns The radius of the hitobject with respect to the gamemode.
-     */
-    getRadius(mode: Modes): number {
-        let radius: number = 64;
-
-        switch (mode) {
-            case Modes.droid:
-                radius *= this.droidScale;
-                break;
-            case Modes.osu:
-                radius *= this.osuScale;
-                break;
-        }
-
-        return radius;
-    }
-
-    /**
-     * Evaluates the stack offset vector of the hitobject.
-     *
-     * This is used to calculate offset for stacked positions.
-     *
-     * @param mode The gamemode to evaluate for.
-     * @returns The stack offset with respect to the gamemode.
-     */
-    getStackOffset(mode: Modes): Vector2 {
-        let coordinate: number = this.stackHeight;
-
-        switch (mode) {
-            case Modes.droid:
-                coordinate *= this.droidScale * -4;
-                break;
-            case Modes.osu:
-                coordinate *= this.osuScale * -6.4;
-                break;
-        }
-
-        return new Vector2(coordinate, coordinate);
-    }
-
-    /**
-     * Evaluates the stacked position of the hitobject.
-     *
-     * @param mode The gamemode to evaluate for.
-     * @returns The stacked position with respect to the gamemode.
-     */
-    getStackedPosition(mode: Modes): Vector2 {
-        return this.evaluateStackedPosition(this.position, mode);
-    }
-
-    /**
-     * Evaluates the stacked end position of the hitobject.
-     *
-     * @param mode The gamemode to evaluate for.
-     * @returns The stacked end position with respect to the gamemode.
-     */
-    getStackedEndPosition(mode: Modes): Vector2 {
-        return this.evaluateStackedPosition(this.endPosition, mode);
-    }
-
-    /**
-     * Returns the hitobject type.
-     */
-    typeStr(): string {
-        let res = "";
-        if (this.type & ObjectTypes.circle) {
-            res += "circle | ";
-        }
-        if (this.type & ObjectTypes.slider) {
-            res += "slider | ";
-        }
-        if (this.type & ObjectTypes.spinner) {
-            res += "spinner | ";
-        }
-        return res.substring(0, Math.max(0, res.length - 3));
-    }
-
-    /**
      * Returns the string representative of the class.
      */
     abstract toString(): string;
-
-    /**
-     * Evaluates the stacked position of the specified position.
-     *
-     * @param position The position to evaluate.
-     * @param mode The gamemode to evaluate for.
-     * @returns The stacked position.
-     */
-    private evaluateStackedPosition(position: Vector2, mode: Modes): Vector2 {
-        if (this.type & ObjectTypes.spinner) {
-            return position;
-        }
-
-        return position.add(this.getStackOffset(mode));
-    }
 }

@@ -86,7 +86,7 @@ export class DrawableCircle extends DrawableHitObject {
         ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
 
         this.drawCircle(ctx, this.stackedPosition);
-        this.drawText(ctx, this.combo.toString());
+        this.drawText(ctx, this.comboNumber.toString());
 
         if (dt >= 0 && !this.isHit && !this.isHidden) {
             this.drawApproach(ctx, dt);
@@ -143,7 +143,7 @@ export class DrawableCircle extends DrawableHitObject {
         ctx.arc(
             position.x,
             position.y,
-            this.radius - this.circleBorder / 2,
+            this.object.radius - this.circleBorder / 2,
             -Math.PI,
             Math.PI
         );
@@ -198,7 +198,7 @@ export class DrawableCircle extends DrawableHitObject {
         ctx.arc(
             position.x,
             position.y,
-            this.radius * scale - this.circleBorder / 2,
+            this.object.radius * scale - this.circleBorder / 2,
             -Math.PI,
             Math.PI
         );

@@ -1,5 +1,4 @@
 import { Beatmap } from "./Beatmap";
-import { Slider } from "./hitobjects/Slider";
 import { MapStats } from "../utils/MapStats";
 import { Mod } from "../mods/Mod";
 import { BeatmapHitObjectsDecoder } from "./decoder/beatmap/BeatmapHitObjectsDecoder";
@@ -14,7 +13,8 @@ import { BeatmapSection } from "../constants/BeatmapSection";
 import { Decoder } from "./Decoder";
 import { SectionDecoder } from "./decoder/SectionDecoder";
 import { StoryboardDecoder } from "./StoryboardDecoder";
-import { Modes } from "../constants/Modes";
+import { HitObjectStackEvaluator } from "../utils/HitObjectStackEvaluator";
+import { CircleSizeCalculator } from "../utils/CircleSizeCalculator";
 
 /**
  * A beatmap decoder.
@@ -51,42 +51,21 @@ export class BeatmapDecoder extends Decoder<Beatmap, SectionDecoder<Beatmap>> {
             }
         }
 
-        const hitObjectsDecoder: BeatmapHitObjectsDecoder = <
-            BeatmapHitObjectsDecoder
-        >this.decoders[BeatmapSection.hitObjects];
-
-        if (this.formatVersion >= 6) {
-            hitObjectsDecoder.applyStacking(
-                0,
-                this.finalResult.hitObjects.objects.length - 1
-            );
-        } else {
-            hitObjectsDecoder.applyStackingOld();
-        }
-
-        const droidCircleSize: number = new MapStats({
+        const circleSize: number = new MapStats({
             cs: this.finalResult.difficulty.cs,
             mods,
-        }).calculate({ mode: Modes.droid }).cs!;
-        const droidScale: number = (1 - (0.7 * (droidCircleSize - 5)) / 5) / 2;
-
-        const osuCircleSize: number = new MapStats({
-            cs: this.finalResult.difficulty.cs,
-            mods,
-        }).calculate({ mode: Modes.osu }).cs!;
-        const osuScale: number = (1 - (0.7 * (osuCircleSize - 5)) / 5) / 2;
+        }).calculate().cs!;
+        const scale: number =
+            CircleSizeCalculator.standardCSToDroidScale(circleSize);
 
         this.finalResult.hitObjects.objects.forEach((h) => {
-            h.droidScale = droidScale;
-            h.osuScale = osuScale;
-
-            if (h instanceof Slider) {
-                h.nestedHitObjects.forEach((n) => {
-                    n.droidScale = droidScale;
-                    n.osuScale = osuScale;
-                });
-            }
+            h.scale = scale;
         });
+
+        HitObjectStackEvaluator.applyDroidStacking(
+            this.finalResult.hitObjects.objects,
+            this.finalResult.general.stackLeniency
+        );
 
         return this;
     }

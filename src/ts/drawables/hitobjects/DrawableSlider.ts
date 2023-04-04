@@ -44,7 +44,7 @@ export class DrawableSlider extends DrawableCircle {
 
             drawableNestedObject.scale = this.scale;
             drawableNestedObject.approachTime = this.approachTime;
-            drawableNestedObject.combo = this.combo;
+            drawableNestedObject.comboNumber = this.comboNumber;
             drawableNestedObject.color = this.color;
 
             this.drawableNestedHitObjects.push(drawableNestedObject);
@@ -129,7 +129,7 @@ export class DrawableSlider extends DrawableCircle {
                 firstPoint.getAngle(secondPoint)
             );
         } else if (dt >= 0) {
-            this.drawText(ctx, this.combo.toString());
+            this.drawText(ctx, this.comboNumber.toString());
         }
 
         const spanIndex = MathUtils.clamp(
@@ -222,7 +222,7 @@ export class DrawableSlider extends DrawableCircle {
 
         // Slider
         const startPosition = this.stackedPosition;
-        const radius = this.radius;
+        const radius = this.object.radius;
 
         ctx.globalAlpha *= DrawableSlider.opacity;
         ctx.beginPath();
@@ -266,7 +266,7 @@ export class DrawableSlider extends DrawableCircle {
         }
 
         const position = tick.stackedPosition;
-        const radius = this.radius;
+        const { radius } = this.object;
 
         ctx.save();
 
@@ -316,7 +316,7 @@ export class DrawableSlider extends DrawableCircle {
         ctx.arc(
             drawPosition.x,
             drawPosition.y,
-            this.radius - this.circleBorder / 2,
+            this.object.radius - this.circleBorder / 2,
             -Math.PI,
             Math.PI
         );
