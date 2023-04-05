@@ -93,7 +93,7 @@ export abstract class HitObject {
     }
 
     /**
-     * The scale used to calculate stacked position.
+     * The scale used to calculate stacked position and radius.
      */
     set scale(value: number) {
         this._scale = value;

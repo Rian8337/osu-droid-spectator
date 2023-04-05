@@ -95,7 +95,7 @@ export abstract class CircleSizeCalculator {
      * Converts osu!standard circle size to osu!droid scale.
      *
      * @param cs The osu!standard circle size to convert.
-     * @returns The osu!droid scale of the given osu!droid scale.
+     * @returns The osu!droid scale of the given osu!standard circle size.
      */
     static standardCSToDroidScale(cs: number): number {
         return this.standardScaleToDroidScale(
