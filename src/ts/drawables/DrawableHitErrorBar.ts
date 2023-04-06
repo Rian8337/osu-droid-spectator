@@ -40,6 +40,8 @@ export class DrawableHitErrorBar {
         );
     }
 
+    private readonly maxDrawTime = 3000;
+
     constructor(
         manager: SpectatorObjectDataEventManager,
         hitWindow: DroidHitWindow,
@@ -155,7 +157,6 @@ export class DrawableHitErrorBar {
             throw new Error("No beatmaps have been parsed yet");
         }
 
-        const maxDrawTime = 3000;
         const { centerCoordinate } = this;
 
         ctx.save();
@@ -187,11 +188,15 @@ export class DrawableHitErrorBar {
 
             const eventTime = object.startTime + event.accuracy;
             const dt = time - eventTime;
-            if (dt > maxDrawTime) {
+            if (dt > this.maxDrawTime) {
                 break;
             }
 
-            const opacity = MathUtils.clamp((maxDrawTime - dt) / 1000, 0, 0.8);
+            const opacity = MathUtils.clamp(
+                (this.maxDrawTime - dt) / 1000,
+                0,
+                0.8
+            );
 
             const distanceFromCenter = this.calculateDrawDistance(
                 ctx,
