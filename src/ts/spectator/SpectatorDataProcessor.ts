@@ -166,17 +166,11 @@ export class SpectatorDataProcessor {
 
             if (object instanceof Slider) {
                 // Infer combo and score from hit accuracy and tickset.
-                let score = 0;
-                let combo = 0;
-
-                if (objectData.index > 0) {
-                    const event = events.objectData.eventAtIndex(
-                        objectData.index - 1
-                    );
-
-                    score = event?.currentScore ?? 0;
-                    combo = event?.currentCombo ?? 0;
-                }
+                const prevEvent = events.objectData.eventAtIndex(
+                    objectData.index - 1
+                );
+                let score = prevEvent?.currentScore ?? 0;
+                let combo = prevEvent?.currentCombo ?? 0;
 
                 // Check for slider head break.
                 if (

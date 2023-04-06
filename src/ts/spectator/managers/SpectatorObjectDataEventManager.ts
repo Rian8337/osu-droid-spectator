@@ -30,7 +30,10 @@ export class SpectatorObjectDataEventManager extends SpectatorIndexedEventManage
         this.misses ??= 0;
 
         for (const event of events) {
-            if (this._events.at(event.index)?.result === HitResult.miss) {
+            if (
+                this._events.at(this.findInsertionIndexBased(event.index))
+                    ?.result === HitResult.miss
+            ) {
                 --this.misses;
             }
 
