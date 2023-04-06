@@ -168,6 +168,7 @@ export class SpectatorDataProcessor {
             )
         );
 
+        // In the case of mid-gameplay spectating, set current misses to misses from spectator data.
         events.objectData.misses ??= data.currentMisses;
 
         for (const objectData of data.hitObjectData) {
