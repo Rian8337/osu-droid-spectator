@@ -9,9 +9,7 @@ import { ModSmallCircle } from "../mods/ModSmallCircle";
  * A utility class for calculating circle sizes across all modes (rimu! and osu!standard).
  */
 export abstract class CircleSizeCalculator {
-    private static readonly height: number =
-        (1280 * Math.min(window.innerWidth, window.innerHeight)) /
-        Math.max(window.innerWidth);
+    private static readonly assumedDroidHeight: number = 681;
 
     /**
      * Converts osu!droid CS to osu!droid scale.
@@ -22,7 +20,7 @@ export abstract class CircleSizeCalculator {
      */
     static droidCSToDroidScale(cs: number, mods: Mod[] = []): number {
         let scale: number =
-            ((this.height / 480) * (54.42 - cs * 4.48) * 2) / 128 +
+            ((this.assumedDroidHeight / 480) * (54.42 - cs * 4.48) * 2) / 128 +
             (0.5 * (11 - 5.2450170716245195)) / 5;
 
         if (mods.some((m) => m instanceof ModHardRock)) {
@@ -35,7 +33,7 @@ export abstract class CircleSizeCalculator {
             scale += 0.125;
         }
         if (mods.some((m) => m instanceof ModSmallCircle)) {
-            scale -= ((this.height / 480) * (4 * 4.48) * 2) / 128;
+            scale -= ((this.assumedDroidHeight / 480) * (4 * 4.48) * 2) / 128;
         }
 
         return Math.max(scale, 1e-3);
@@ -48,7 +46,10 @@ export abstract class CircleSizeCalculator {
      * @returns The osu!standard radius of the given osu!droid scale.
      */
     static droidScaleToStandardRadius(scale: number): number {
-        return (64 * Math.max(1e-3, scale)) / ((this.height * 0.85) / 384);
+        return (
+            (64 * Math.max(1e-3, scale)) /
+            ((this.assumedDroidHeight * 0.85) / 384)
+        );
     }
 
     /**
@@ -58,7 +59,10 @@ export abstract class CircleSizeCalculator {
      * @returns The osu!droid scale of the given osu!standard radius.
      */
     static standardRadiusToDroidScale(radius: number): number {
-        return (radius * ((this.height * 0.85) / 384)) / HitObject.baseRadius;
+        return (
+            (radius * ((this.assumedDroidHeight * 0.85) / 384)) /
+            HitObject.baseRadius
+        );
     }
 
     /**
@@ -95,7 +99,7 @@ export abstract class CircleSizeCalculator {
      * Converts osu!standard circle size to osu!droid scale.
      *
      * @param cs The osu!standard circle size to convert.
-     * @returns The osu!droid scale of the given osu!standard circle size.
+     * @returns The osu!droid scale of the given osu!droid scale.
      */
     static standardCSToDroidScale(cs: number): number {
         return this.standardScaleToDroidScale(
