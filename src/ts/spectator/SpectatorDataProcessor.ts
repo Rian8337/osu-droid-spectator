@@ -146,28 +146,6 @@ export class SpectatorDataProcessor {
 
         const { events } = manager;
 
-        events.syncedScore.add(
-            new SpectatorSyncedScoreEvent(
-                data.secPassed * 1000,
-                data.currentScore
-            )
-        );
-
-        events.syncedAccuracy.add(
-            new SpectatorSyncedAccuracyEvent(
-                data.secPassed * 1000,
-                data.currentAccuracy,
-                events.accuracy.latestIndex
-            )
-        );
-
-        events.syncedCombo.add(
-            new SpectatorSyncedComboEvent(
-                data.secPassed * 1000,
-                data.currentCombo
-            )
-        );
-
         // In the case of mid-gameplay spectating, set current misses to misses from spectator data.
         events.objectData.misses ??= data.currentMisses;
 
@@ -283,6 +261,28 @@ export class SpectatorDataProcessor {
                 );
             }
         }
+
+        events.syncedScore.add(
+            new SpectatorSyncedScoreEvent(
+                data.secPassed * 1000,
+                data.currentScore
+            )
+        );
+
+        events.syncedAccuracy.add(
+            new SpectatorSyncedAccuracyEvent(
+                data.secPassed * 1000,
+                data.currentAccuracy,
+                events.accuracy.latestIndex
+            )
+        );
+
+        events.syncedCombo.add(
+            new SpectatorSyncedComboEvent(
+                data.secPassed * 1000,
+                data.currentCombo
+            )
+        );
 
         manager.latestDataTime = manager.latestEventTime ?? 0;
         console.log(
