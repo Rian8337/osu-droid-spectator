@@ -6,7 +6,7 @@ import { SpectatorEventManager } from "./SpectatorEventManager";
  */
 export class SpectatorSyncedScoreEventManager extends SpectatorEventManager<SpectatorSyncedScoreEvent> {
     protected override readonly defaultEvent = new SpectatorSyncedScoreEvent(
-        0,
+        Number.NEGATIVE_INFINITY,
         0
     );
 }

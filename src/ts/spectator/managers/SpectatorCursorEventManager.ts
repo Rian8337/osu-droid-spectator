@@ -8,7 +8,7 @@ import { SpectatorEventManager } from "./SpectatorEventManager";
  */
 export class SpectatorCursorEventManager extends SpectatorEventManager<SpectatorCursorEvent> {
     protected override readonly defaultEvent = new SpectatorCursorEvent(
-        0,
+        Number.NEGATIVE_INFINITY,
         new Vector2(-1, -1),
         MovementType.up
     );
