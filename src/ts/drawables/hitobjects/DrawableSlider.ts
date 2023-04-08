@@ -42,7 +42,6 @@ export class DrawableSlider extends DrawableCircle {
             const drawableNestedObject =
                 DrawableBeatmap.convertHitObjectToDrawable(nestedObject, mods);
 
-            drawableNestedObject.scale = this.scale;
             drawableNestedObject.approachTime = this.approachTime;
             drawableNestedObject.comboNumber = this.comboNumber;
             drawableNestedObject.color = this.color;

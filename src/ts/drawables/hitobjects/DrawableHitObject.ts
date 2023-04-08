@@ -64,13 +64,6 @@ export abstract class DrawableHitObject {
     approachTime = MapStats.arToMS(5);
 
     /**
-     * The scale of the object.
-     *
-     * This is used to get radius.
-     */
-    scale = 0;
-
-    /**
      * The stacked position of the object with mods applied.
      */
     get stackedPosition(): Vector2 {
@@ -230,7 +223,7 @@ export abstract class DrawableHitObject {
             return position;
         }
 
-        const coordinate = this.object.stackHeight * 4 * this.scale;
+        const coordinate = this.object.stackHeight * 4 * this.object.scale;
 
         return position.add(new Vector2(coordinate, coordinate));
     }
