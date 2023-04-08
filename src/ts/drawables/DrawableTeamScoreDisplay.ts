@@ -65,7 +65,7 @@ export class DrawableTeamScoreDisplay {
         this.screen.style.position = "absolute";
         this.screen.style.left = "0px";
         this.screen.style.top = `${
-            window.innerHeight - Preview.heightPadding
+            window.innerHeight - Preview.heightPadding * 2
         }px`;
     }
 
@@ -132,11 +132,6 @@ export class DrawableTeamScoreDisplay {
             );
         }
 
-        this.ctx.translate(
-            this.screen.width / 2,
-            this.screen.height / 2 + this.screen.height / 5
-        );
-
         const gradient = this.ctx.createLinearGradient(
             0,
             0,
@@ -151,6 +146,7 @@ export class DrawableTeamScoreDisplay {
         this.ctx.lineWidth = this.screen.height / 15;
         this.ctx.strokeStyle = gradient;
 
+        this.ctx.translate(this.screen.width / 2, this.ctx.lineWidth / 2);
         this.ctx.beginPath();
         this.ctx.moveTo(0, 0);
         this.ctx.lineTo(lineLength * lineLengthMultiplier, 0);
