@@ -48,12 +48,12 @@ export class SpectatorDataProcessor {
      * Returns `null` if there are no events yet.
      */
     get latestEventTime(): number | null {
-        let latestEventTime = Number.NEGATIVE_INFINITY;
+        let latestEventTime = Number.POSITIVE_INFINITY;
 
         for (const manager of this.managers.values()) {
-            latestEventTime = Math.max(
+            latestEventTime = Math.min(
                 latestEventTime,
-                manager.latestEventTime ?? Number.NEGATIVE_INFINITY
+                manager.latestEventTime ?? Number.POSITIVE_INFINITY
             );
         }
 
@@ -278,7 +278,7 @@ export class SpectatorDataProcessor {
             )
         );
 
-        manager.latestDataTime = manager.latestEventTime ?? 0;
+        manager.latestDataTime = manager.latestEventTime ?? -1;
         console.log(
             "Received data from uid",
             manager.uid,

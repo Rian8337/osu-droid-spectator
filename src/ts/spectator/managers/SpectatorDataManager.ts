@@ -103,18 +103,18 @@ export class SpectatorDataManager {
      * The time at which the latest event occurs for this player.
      */
     get latestEventTime(): number | null {
-        let latestEventTime = Math.max(
-            this.events.accuracy.latestEventTime ?? Number.NEGATIVE_INFINITY,
-            this.events.combo.latestEventTime ?? Number.NEGATIVE_INFINITY,
-            this.events.score.latestEventTime ?? Number.NEGATIVE_INFINITY,
-            this.events.objectData.latestEventTime ?? Number.NEGATIVE_INFINITY
+        let latestEventTime = Math.min(
+            this.events.accuracy.latestEventTime ?? Number.POSITIVE_INFINITY,
+            this.events.combo.latestEventTime ?? Number.POSITIVE_INFINITY,
+            this.events.score.latestEventTime ?? Number.POSITIVE_INFINITY,
+            this.events.objectData.latestEventTime ?? Number.POSITIVE_INFINITY
         );
 
-        if (latestEventTime === Number.NEGATIVE_INFINITY) {
+        if (latestEventTime === Number.POSITIVE_INFINITY) {
             for (const eventManager of this.events.cursor) {
-                latestEventTime = Math.max(
+                latestEventTime = Math.min(
                     latestEventTime,
-                    eventManager.latestEventTime ?? Number.NEGATIVE_INFINITY
+                    eventManager.latestEventTime ?? Number.POSITIVE_INFINITY
                 );
             }
         }
