@@ -217,13 +217,13 @@ export class Preview {
             case Anchor.centerLeft:
                 this.screen.style.left = "0px";
                 this.screen.style.top = `${
-                    window.innerHeight / 2 + Preview.heightPadding
+                    window.innerHeight / 2 - Preview.heightPadding
                 }px`;
                 break;
             case Anchor.center:
                 this.screen.style.left = `${window.innerWidth / 2}px`;
                 this.screen.style.top = `${
-                    window.innerHeight / 2 + Preview.heightPadding
+                    window.innerHeight / 2 - Preview.heightPadding
                 }px`;
                 break;
         }

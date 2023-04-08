@@ -65,7 +65,7 @@ export class DrawableTeamScoreDisplay {
         this.screen.style.position = "absolute";
         this.screen.style.left = "0px";
         this.screen.style.top = `${
-            window.innerHeight / 2 - Preview.heightPadding
+            window.innerHeight - Preview.heightPadding
         }px`;
     }
 
