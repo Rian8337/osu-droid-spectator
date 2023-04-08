@@ -82,7 +82,7 @@ export class Preview {
      * The height padding with respect to team mode.
      */
     static get heightPadding(): number {
-        return teamMode === MultiplayerTeamMode.teamVS ? 40 : 0;
+        return teamMode === MultiplayerTeamMode.teamVS ? 50 : 0;
     }
 
     constructor(uid: number, anchor: PreviewAnchor) {

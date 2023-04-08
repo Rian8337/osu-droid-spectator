@@ -95,7 +95,7 @@ export class DrawableTeamScoreCounter {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
             ctx.font = `${boldText ? "bold " : ""}${
-                canvas.height / 2
+                canvas.height / 2.5
             }px Trebuchet MS, sans-serif`;
         } catch (e) {
             // Ignore error
