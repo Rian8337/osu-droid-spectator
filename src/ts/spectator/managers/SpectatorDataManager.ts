@@ -189,13 +189,8 @@ export class SpectatorDataManager {
             this.hitWindow = new DroidHitWindow(
                 new MapStats({
                     od: parsedBeatmap.difficulty.od,
-                    mods: mods.filter(
-                        (v) =>
-                            !ModUtil.speedChangingMods.find(
-                                (m) => m.acronym === v.acronym
-                            )
-                    ),
-                }).calculate().od!
+                    mods: ModUtil.removeSpeedChangingMods(mods),
+                }).calculate({ convertDroidOD: false }).od!
             );
         }
 
