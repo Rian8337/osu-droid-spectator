@@ -59,12 +59,12 @@ export class DrawableCursor {
         const x = MathUtils.clamp(
             position.x,
             -zeroCoordinate.x,
-            window.innerWidth
+            ctx.canvas.width
         );
         const y = MathUtils.clamp(
             position.y,
             -zeroCoordinate.y,
-            window.innerHeight
+            ctx.canvas.height
         );
 
         const radius = 15;
