@@ -8,12 +8,12 @@ background.addEventListener("load", () => {
     originalImageURL = background.src;
 
     const canvas = document.createElement("canvas");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
     const ctx = canvas.getContext("2d")!;
 
     // background-size: cover height
-    const sWidth = background.height * (window.innerWidth / window.innerHeight);
+    const sWidth = background.height * (innerWidth / innerHeight);
     ctx.drawImage(
         background,
         (background.width - sWidth) / 2,
@@ -22,13 +22,13 @@ background.addEventListener("load", () => {
         background.height,
         0,
         0,
-        window.innerWidth,
-        window.innerHeight
+        innerWidth,
+        innerHeight
     );
 
     // background dim
     ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
 
     container.style.backgroundImage = `url(${canvas.toDataURL()})`;
 });

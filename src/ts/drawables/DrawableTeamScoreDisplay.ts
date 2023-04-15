@@ -59,14 +59,12 @@ export class DrawableTeamScoreDisplay {
     }
 
     private applyCanvasConfig(): void {
-        this.screen.width = window.innerWidth;
+        this.screen.width = innerWidth;
         this.screen.height = Preview.heightPadding * 2;
 
         this.screen.style.position = "absolute";
         this.screen.style.left = "0px";
-        this.screen.style.top = `${
-            window.innerHeight - Preview.heightPadding * 2
-        }px`;
+        this.screen.style.top = `${innerHeight - Preview.heightPadding * 2}px`;
     }
 
     private drawBackground(): void {

@@ -10,8 +10,7 @@ import { ModSmallCircle } from "../mods/ModSmallCircle";
  */
 export abstract class CircleSizeCalculator {
     private static readonly height: number =
-        (1280 * Math.min(window.innerWidth, window.innerHeight)) /
-        Math.max(window.innerWidth);
+        (1280 * Math.min(innerWidth, innerHeight)) / Math.max(innerWidth);
 
     /**
      * Converts osu!droid CS to osu!droid scale.

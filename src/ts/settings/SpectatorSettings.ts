@@ -59,8 +59,8 @@ export const hitResultColors: Record<HitResult, RGBColor> = {
 export const backgroundDim = document.createElement("canvas");
 
 backgroundDim.id = "backgroundDim";
-backgroundDim.width = window.innerWidth;
-backgroundDim.height = window.innerHeight;
+backgroundDim.width = innerWidth;
+backgroundDim.height = innerHeight;
 
 const backgroundDimContext = backgroundDim.getContext("2d")!;
 backgroundDimContext.fillStyle = "#000000";

@@ -181,7 +181,7 @@ export class Preview {
         this.beatmap.update(this.ctx);
         this.ctx.save();
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-        this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        this.ctx.clearRect(0, 0, innerWidth, innerHeight);
         this.ctx.restore();
         this.playerInfo?.draw(this.ctx, time);
         this.accuracyCounter?.draw(this.ctx, time);
@@ -199,8 +199,8 @@ export class Preview {
      * Applies the canvas position with respect to the window size.
      */
     private applyCanvasPosition(): void {
-        this.screen.width = window.innerWidth / 2;
-        this.screen.height = window.innerHeight / 2 - Preview.heightPadding;
+        this.screen.width = innerWidth / 2;
+        this.screen.height = innerHeight / 2 - Preview.heightPadding;
 
         this.ctx.scale(0.5, 0.5);
         this.screen.style.position = "absolute";
@@ -211,19 +211,19 @@ export class Preview {
                 this.screen.style.top = "0px";
                 break;
             case Anchor.topCenter:
-                this.screen.style.left = `${window.innerWidth / 2}px`;
+                this.screen.style.left = `${innerWidth / 2}px`;
                 this.screen.style.top = "0px";
                 break;
             case Anchor.centerLeft:
                 this.screen.style.left = "0px";
                 this.screen.style.top = `${
-                    window.innerHeight / 2 - Preview.heightPadding
+                    innerHeight / 2 - Preview.heightPadding
                 }px`;
                 break;
             case Anchor.center:
-                this.screen.style.left = `${window.innerWidth / 2}px`;
+                this.screen.style.left = `${innerWidth / 2}px`;
                 this.screen.style.top = `${
-                    window.innerHeight / 2 - Preview.heightPadding
+                    innerHeight / 2 - Preview.heightPadding
                 }px`;
                 break;
         }

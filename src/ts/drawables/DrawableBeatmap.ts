@@ -29,9 +29,8 @@ export class DrawableBeatmap {
      */
     static get zeroCoordinate(): Vector2 {
         return new Vector2(
-            (window.innerWidth - Playfield.baseSize.x) / 2,
-            (window.innerHeight - Playfield.baseSize.y) / 2 -
-                Preview.heightPadding
+            (innerWidth - Playfield.baseSize.x) / 2,
+            (innerHeight - Playfield.baseSize.y) / 2 - Preview.heightPadding
         );
     }
 
