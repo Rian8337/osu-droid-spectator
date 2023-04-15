@@ -16,6 +16,7 @@ export class SpectatorComboEvent extends SpectatorEvent {
     }
 
     override isRedundant(existing: SpectatorComboEvent): boolean {
-        return this.combo === existing.combo;
+        // Combo is only redundant if it's not 0, as 0 combo indicates a miss from the player.
+        return this.combo > 0 && this.combo === existing.combo;
     }
 }
