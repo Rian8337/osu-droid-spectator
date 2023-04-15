@@ -54,6 +54,20 @@ export const hitResultColors: Record<HitResult, RGBColor> = {
 };
 
 /**
+ * The canvas that is used to dim the background if no spectator data is available.
+ */
+export const backgroundDim = document.createElement("canvas");
+
+backgroundDim.id = "backgroundDim";
+backgroundDim.width = window.innerWidth;
+backgroundDim.height = window.innerHeight;
+
+const backgroundDimContext = backgroundDim.getContext("2d")!;
+backgroundDimContext.fillStyle = "#000000";
+backgroundDimContext.globalAlpha = 0.9;
+backgroundDimContext.fillRect(0, 0, backgroundDim.width, backgroundDim.height);
+
+/**
  * Resets the spectator data processor.
  */
 export function resetProcessor(): void {

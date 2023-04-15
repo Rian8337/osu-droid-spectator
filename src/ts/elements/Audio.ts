@@ -1,7 +1,11 @@
 import { MapStats, ModUtil } from "../osu-base";
 import { previews } from "../settings/PreviewSettings";
 import { speedMultiplier, requiredMods } from "../settings/RoomSettings";
-import { dataProcessor, teamScoreDisplay } from "../settings/SpectatorSettings";
+import {
+    backgroundDim,
+    dataProcessor,
+    teamScoreDisplay,
+} from "../settings/SpectatorSettings";
 
 const audio = new Audio();
 let interval: NodeJS.Timer | null = null;
@@ -45,6 +49,9 @@ $(audio)
         this.pause();
         audioState.audioLastPause = Date.now();
 
+        const container = $("#container")[0];
+        container.prepend(backgroundDim);
+
         if (!audio.ended && !interval) {
             console.log("Playback interval started");
 
@@ -60,6 +67,7 @@ $(audio)
                     console.log("Playback interval stopped");
                     clearInterval(interval!);
                     interval = null;
+                    $(backgroundDim).remove();
                     this.play();
                 }
             }, 250);
