@@ -110,7 +110,7 @@ export class SpectatorDataProcessor {
 
         let isAvailable = true;
         // Use pause duration to check the need to continue playing despite the lack of data.
-        const playDespiteData = audioState.pauseDuration >= 20 * 1000;
+        const playDespiteData = audioState.pauseDuration >= 15 * 1000;
 
         for (const manager of this.managers.values()) {
             if (!manager.isAvailableAt(time)) {
