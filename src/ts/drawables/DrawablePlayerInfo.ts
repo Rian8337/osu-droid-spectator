@@ -29,6 +29,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
      * Draws the player information to the canvas.
      *
      * @param ctx The canvas context.
+     * @param time The time to draw the player information at.
      */
     draw(ctx: CanvasRenderingContext2D, time: number): void {
         if (!parsedBeatmap) {
@@ -48,7 +49,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
         while (
             event.time > 0 &&
             event.combo > 0 &&
-            time - event.time < missAnimationDuration
+            time - event.time <= missAnimationDuration
         ) {
             event = manager.events.combo.eventAtOrDefault(event.time - 1);
         }
@@ -60,11 +61,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
         let fontSize = ctx.canvas.height / 8;
         const missDt = time - event.time;
 
-        if (
-            event.time > 0 &&
-            event.combo === 0 &&
-            missDt <= missAnimationDuration
-        ) {
+        if (event.combo === 0 && missDt <= missAnimationDuration) {
             const missMaxFontSize = ctx.canvas.height / 6;
             let multiplier = 1;
 
