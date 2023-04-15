@@ -33,6 +33,11 @@ export class SpectatorDataProcessor {
         let earliestEventTime = Number.POSITIVE_INFINITY;
 
         for (const manager of this.managers.values()) {
+            // Skip managers that want to have their data presence ignored.
+            if (manager.ignoreDataPresence) {
+                continue;
+            }
+
             earliestEventTime = Math.min(
                 earliestEventTime,
                 manager.earliestEventTime ?? Number.POSITIVE_INFINITY
@@ -51,6 +56,11 @@ export class SpectatorDataProcessor {
         let latestEventTime = Number.POSITIVE_INFINITY;
 
         for (const manager of this.managers.values()) {
+            // Skip managers that want to have their data presence ignored.
+            if (manager.ignoreDataPresence) {
+                continue;
+            }
+
             latestEventTime = Math.min(
                 latestEventTime,
                 manager.latestEventTime ?? Number.POSITIVE_INFINITY
