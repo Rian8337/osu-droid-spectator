@@ -50,7 +50,7 @@ $(audio)
         audioState.audioLastPause = Date.now();
 
         const container = $("#container")[0];
-        container.prepend(backgroundDim);
+        container.append(backgroundDim);
 
         if (!audio.ended && !interval) {
             console.log("Playback interval started");
