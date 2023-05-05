@@ -80,7 +80,7 @@ export class SpectatorDataManager {
      * When this is `true`, audio playback should be continued regardless of data availability.
      */
     get ignoreDataPresence(): boolean {
-        return Number.isFinite(this.latestDataTime);
+        return !Number.isFinite(this.latestDataTime);
     }
 
     /**
