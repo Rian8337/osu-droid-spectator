@@ -64,7 +64,7 @@ backgroundDim.height = innerHeight;
 
 const backgroundDimContext = backgroundDim.getContext("2d")!;
 backgroundDimContext.fillStyle = "#000000";
-backgroundDimContext.globalAlpha = 0.2;
+backgroundDimContext.globalAlpha = 0.35;
 backgroundDimContext.fillRect(0, 0, backgroundDim.width, backgroundDim.height);
 
 /**
