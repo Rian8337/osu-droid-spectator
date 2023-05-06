@@ -57,7 +57,8 @@ $(audio)
 
             interval = setInterval(() => {
                 if (
-                    dataProcessor?.earliestEventTime &&
+                    dataProcessor?.earliestEventTime !== null &&
+                    dataProcessor?.earliestEventTime !== undefined &&
                     this.currentTime * 1000 < dataProcessor.earliestEventTime
                 ) {
                     this.currentTime = dataProcessor.earliestEventTime / 1000;
