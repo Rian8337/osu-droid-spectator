@@ -27,7 +27,11 @@ export class DrawableSlider extends DrawableCircle {
     readonly drawableNestedHitObjects: DrawableHitObject[] = [];
 
     protected override get fadeOutTime(): number {
-        return 150;
+        if (this.isHidden) {
+            return this.object.duration + this.approachTime - this.fadeInTime;
+        } else {
+            return 240;
+        }
     }
 
     constructor(object: Slider, mods: (Mod & IModApplicableToDroid)[]) {
@@ -67,23 +71,34 @@ export class DrawableSlider extends DrawableCircle {
         const dt = this.object.startTime - time;
         let opacity = 1;
 
-        if (dt >= 0 && !this.isHit) {
-            opacity = (this.approachTime - dt) / this.fadeInTime;
-        } else {
+        // When the object is still in time
+        if (time < this.object.endTime) {
             if (this.isHidden) {
-                // Sliders apply quad out easing with HD (https://easings.net/#easeOutQuad).
-                opacity =
-                    1 -
-                    (1 -
-                        Math.pow(
-                            1 -
-                                MathUtils.clamp(-dt, 0, this.object.duration) /
-                                    this.object.duration,
-                            2
-                        ));
+                let timeElapsed =
+                    this.object.duration + this.approachTime - time;
+
+                if (timeElapsed <= this.fadeInTime) {
+                    opacity = timeElapsed / this.fadeInTime;
+                } else {
+                    timeElapsed -= this.fadeInTime;
+
+                    const t =
+                        MathUtils.clamp(
+                            this.fadeOutTime - timeElapsed,
+                            0,
+                            this.fadeOutTime
+                        ) / this.fadeOutTime;
+
+                    // Sliders apply quad out easing with HD (https://easings.net/#easeOutQuad).
+                    opacity = -t * (t - 2);
+                }
             } else {
-                opacity = 1 - (time - this.object.endTime) / this.fadeOutTime;
+                opacity = (this.approachTime - dt) / this.fadeInTime;
             }
+        } else if (this.isHidden) {
+            opacity = 0;
+        } else {
+            opacity = 1 - (time - this.object.endTime) / this.fadeOutTime;
         }
 
         ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);

@@ -1,4 +1,4 @@
-import { MathUtils, ModHidden, Vector2 } from "../../osu-base";
+import { MapStats, MathUtils, ModHidden, Vector2 } from "../../osu-base";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/structures/HitResult";
 import { DrawableHitObject } from "./DrawableHitObject";
@@ -11,15 +11,19 @@ export class DrawableCircle extends DrawableHitObject {
 
     protected override get fadeInTime(): number {
         if (this.isHidden) {
-            return this.approachTime / 4;
+            return this.approachTime * ModHidden.fadeInDurationMultiplier;
         } else {
-            return 400;
+            // Preempt time can go below 450ms. Normally, this is achieved via the DT mod which uniformly speeds up all animations game wide regardless of AR.
+            // This uniform speedup is hard to match 1:1, however we can at least make AR>10 (via mods) feel good by extending the upper linear function above.
+            // Note that this doesn't exactly match the AR>10 visuals as they're classically known, but it feels good.
+            // This adjustment is necessary for AR>10, otherwise TimePreempt can become smaller leading to hitcircles not fully fading in.
+            return 400 * Math.min(1, this.approachTime / MapStats.arToMS(10));
         }
     }
 
     protected override get fadeOutTime(): number {
         if (this.isHidden) {
-            return this.approachTime * 0.35;
+            return this.approachTime * ModHidden.fadeOutDurationMultiplier;
         } else {
             return 150;
         }
