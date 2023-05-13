@@ -75,7 +75,7 @@ export class DrawableSlider extends DrawableCircle {
         if (time < this.object.endTime) {
             if (this.isHidden) {
                 let timeElapsed =
-                    this.object.duration + this.approachTime - time;
+                    time - (this.object.startTime - this.approachTime);
 
                 if (timeElapsed <= this.fadeInTime) {
                     opacity = timeElapsed / this.fadeInTime;
