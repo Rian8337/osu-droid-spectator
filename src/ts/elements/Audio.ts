@@ -64,7 +64,10 @@ $(audio)
                     this.currentTime = dataProcessor.earliestEventTime / 1000;
                 }
 
-                if (dataProcessor?.isAvailableAt(this.currentTime * 1000)) {
+                if (
+                    dataProcessor?.isAvailableAt(this.currentTime * 1000) &&
+                    this.src
+                ) {
                     console.log("Playback interval stopped");
                     clearInterval(interval!);
                     interval = null;
