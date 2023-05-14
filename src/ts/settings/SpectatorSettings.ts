@@ -192,5 +192,6 @@ export function calculateScoreV2(uid: number, time: number): number {
         totalScore /= new ModHidden().droidScoreMultiplier;
     }
 
-    return Math.max(0, Math.round(totalScore));
+    // TODO: Investigate why score can be NaN
+    return Math.max(0, Math.round(totalScore || 0));
 }
