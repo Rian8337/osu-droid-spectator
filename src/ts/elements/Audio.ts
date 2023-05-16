@@ -56,6 +56,10 @@ $(audio)
             console.log("Playback interval started");
 
             interval = setInterval(() => {
+                if ($<HTMLButtonElement>("#play").hasClass("e")) {
+                    return;
+                }
+
                 if (
                     dataProcessor?.earliestEventTime !== null &&
                     dataProcessor?.earliestEventTime !== undefined &&
