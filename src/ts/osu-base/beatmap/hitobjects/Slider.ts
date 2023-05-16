@@ -96,8 +96,6 @@ export class Slider extends HitObject {
      */
     private readonly repetitions: number;
 
-    static readonly legacyLastTickOffset = 36;
-
     constructor(values: {
         startTime: number;
         type: number;
