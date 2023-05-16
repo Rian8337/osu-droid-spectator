@@ -266,29 +266,25 @@ export class SpectatorDataProcessor {
             }
         }
 
+        const mSecPassed = data.secPassed * 1000;
+
         events.syncedScore.add(
-            new SpectatorSyncedScoreEvent(
-                data.secPassed * 1000,
-                data.currentScore
-            )
+            new SpectatorSyncedScoreEvent(mSecPassed, data.currentScore)
         );
 
         events.syncedAccuracy.add(
             new SpectatorSyncedAccuracyEvent(
-                data.secPassed * 1000,
+                mSecPassed,
                 data.currentAccuracy,
                 events.accuracy.latestIndex
             )
         );
 
         events.syncedCombo.add(
-            new SpectatorSyncedComboEvent(
-                data.secPassed * 1000,
-                data.currentCombo
-            )
+            new SpectatorSyncedComboEvent(mSecPassed, data.currentCombo)
         );
 
-        manager.latestDataTime = manager.latestEventTime ?? -1;
+        manager.latestDataTime = data.secPassed * 1000;
         console.log(
             "Received data from uid",
             manager.uid,
