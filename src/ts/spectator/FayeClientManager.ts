@@ -115,6 +115,8 @@ export class FayeClientManager {
             },
             undefined
         );
+
+        console.log("WebSocket connection established");
     }
 
     /**
@@ -123,6 +125,7 @@ export class FayeClientManager {
     async endSubscription(): Promise<void> {
         if (this.subscription) {
             await this.subscription.cancel();
+            console.log("WebSocket connection dropped");
         }
     }
 }
