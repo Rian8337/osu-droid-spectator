@@ -40,11 +40,36 @@ export abstract class SpectatorIndexedEventManager<
      * @returns The event at the given time, `null` if none found.
      */
     eventAtIndex(index: number): T | null {
-        if (index < 0) {
+        if (this.earliestEventTime === null || this.latestEventTime === null) {
             return null;
         }
 
-        return this._events[this.findInsertionIndexBased(index)] ?? null;
+        if (this._events.length === 0 || index < this.earliestIndex) {
+            return null;
+        }
+
+        if (index > this.latestIndex) {
+            return this._events[this._events.length];
+        }
+
+        let l = 0;
+        let r = this._events.length - 2;
+
+        while (l <= r) {
+            const pivot = l + ((r - l) >> 1);
+            const event = this._events[pivot];
+            const eventIndex = this.getEventIndex(event);
+
+            if (eventIndex < index) {
+                l = pivot + 1;
+            } else if (eventIndex > index) {
+                r = pivot - 1;
+            } else {
+                return this._events[pivot];
+            }
+        }
+
+        return this._events[l];
     }
 
     /**
