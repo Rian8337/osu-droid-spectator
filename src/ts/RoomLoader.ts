@@ -57,6 +57,8 @@ export async function askRoomID(): Promise<void> {
  * @param roomInfo The room info.
  */
 export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
+    await fayeClient.beginSubscription();
+
     setPickedBeatmap(roomInfo.beatmap);
     setRequiredMods(roomInfo.requiredMods);
     setTeamMode(roomInfo.teamMode);
@@ -81,8 +83,6 @@ export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
     }
 
     SpeedMultiplierChangedHandler.handle(roomInfo.speedMultiplier);
-
-    await fayeClient.beginSubscription();
 
     if (roomInfo.isPlaying) {
         RoundStartHandler.handle();
