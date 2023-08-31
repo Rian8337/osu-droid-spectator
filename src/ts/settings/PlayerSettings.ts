@@ -73,6 +73,7 @@ export function decrementPlayerCount(): void {
  * @param name The name of the room.
  */
 export function setIgnoredPlayersFromRoomName(name: string): void {
+    console.log("Resetting list of ignored players");
     ignoredPlayers.clear();
 
     const match = name.match(/Ref:\d+(?:[ \t]*,[ \t]*\d+)+/);
@@ -87,5 +88,6 @@ export function setIgnoredPlayersFromRoomName(name: string): void {
 
     for (const uid of uids) {
         ignoredPlayers.add(uid);
+        console.log("Added uid", uid, "to the list of ignored players");
     }
 }
