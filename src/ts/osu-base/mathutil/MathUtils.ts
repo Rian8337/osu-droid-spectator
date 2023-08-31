@@ -37,7 +37,7 @@ export abstract class MathUtils {
 
         return Math.sqrt(
             data.reduce((acc, value) => acc + Math.pow(value - mean, 2), 0) /
-                data.length
+                data.length,
         );
     }
 

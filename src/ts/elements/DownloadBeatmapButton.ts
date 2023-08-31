@@ -6,7 +6,7 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
     e.preventDefault();
 
     const beatmapsetLinkOrId = prompt(
-        "Enter the beatmapset link or ID that you want to pre-download."
+        "Enter the beatmapset link or ID that you want to pre-download.",
     );
 
     if (!beatmapsetLinkOrId) {
@@ -21,7 +21,7 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
             !beatmapsetLinkOrId.startsWith("https://dev.ppy.sh/")
         ) {
             return alert(
-                "The provided beatmapset link must be from https://osu.ppy.sh or https://dev.ppy.sh."
+                "The provided beatmapset link must be from https://osu.ppy.sh or https://dev.ppy.sh.",
             );
         }
 
@@ -32,7 +32,7 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
             ].every((v) => v === -1)
         ) {
             return alert(
-                "Could not parse a beatmapset ID from the given link."
+                "Could not parse a beatmapset ID from the given link.",
             );
         }
 
@@ -50,7 +50,7 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
 
     try {
         apiResponse = await fetch(
-            `https://api.sayobot.cn/beatmapinfo?1=${beatmapsetId}`
+            `https://api.sayobot.cn/beatmapinfo?1=${beatmapsetId}`,
         );
     } catch {
         return alert("Contact with Sayobot failed.");
@@ -69,7 +69,7 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
     const { artist, title, creator } = json.data[0];
     const beatmapText = `"${artist} - ${title}" by ${creator}`;
     const confirmation = confirm(
-        `Downloading ${beatmapText}.\n\nPress OK to start the pre-download process.`
+        `Downloading ${beatmapText}.\n\nPress OK to start the pre-download process.`,
     );
 
     if (!confirmation) {

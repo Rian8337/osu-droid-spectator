@@ -1,7 +1,4 @@
-import { addPlayer } from "../../settings/PlayerSettings";
-import { addPreview } from "../../settings/PreviewSettings";
-import { dataProcessor } from "../../settings/SpectatorSettings";
-import { MultiplayerPlayer } from "../structures/MultiplayerPlayer";
+import { incrementPlayerCount } from "../../settings/PlayerSettings";
 
 /**
  * A handler responsible for handling player join events.
@@ -12,12 +9,9 @@ export abstract class PlayerJoinedHandler {
      *
      * @param player The player.
      */
-    static handle(player: MultiplayerPlayer) {
-        console.log("Player", player.uid, "joined room");
+    static handle(uid: number) {
+        console.log("Player", uid, "joined room");
 
-        addPlayer(player);
-        addPreview(player.uid);
-
-        dataProcessor?.addPlayer(player);
+        incrementPlayerCount();
     }
 }

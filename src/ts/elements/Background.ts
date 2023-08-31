@@ -23,7 +23,7 @@ background.addEventListener("load", () => {
         0,
         0,
         innerWidth,
-        innerHeight
+        innerHeight,
     );
 
     // background dim

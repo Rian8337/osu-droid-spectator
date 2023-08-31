@@ -1,6 +1,7 @@
 import JSZip from "../jszip";
 import { Beatmap, MapStats } from "../osu-base";
 import { PickedBeatmap } from "../spectator/rawdata/PickedBeatmap";
+import { mods, speedMultiplier } from "./RoomSettings";
 
 /**
  * The parsed beatmap from beatmap decoder.
@@ -44,7 +45,10 @@ export function setParsedBeatmap(newParsedBeatmap: Beatmap | null): void {
  * Calculates the maximum osu!droid score of the currently picked beatmap.
  */
 export function calculateMaxScore(): void {
-    maxScore = parsedBeatmap?.maxDroidScore(new MapStats()) ?? 0;
+    maxScore =
+        parsedBeatmap?.maxDroidScore(
+            new MapStats({ speedMultiplier: speedMultiplier, mods: mods }),
+        ) ?? 0;
 }
 
 /**
@@ -66,12 +70,12 @@ export let downloadAbortController: AbortController | null = null;
  * @returns The downloaded beatmapset.
  */
 export async function downloadBeatmapset(setId: number): Promise<Blob | null> {
-    downloadAbortController?.abort();
+    cancelBeatmapsetDownload();
     downloadAbortController = new AbortController();
 
     const downloadResponse = await fetch(
         `https://txy1.sayobot.cn/beatmaps/download/novideo/${setId}`,
-        { signal: downloadAbortController.signal }
+        { signal: downloadAbortController.signal },
     ).catch(() => null);
 
     if (
@@ -82,4 +86,11 @@ export async function downloadBeatmapset(setId: number): Promise<Blob | null> {
     }
 
     return downloadResponse.blob();
+}
+
+/**
+ * Cancels the current beatmapset download.
+ */
+export function cancelBeatmapsetDownload(): void {
+    downloadAbortController?.abort();
 }

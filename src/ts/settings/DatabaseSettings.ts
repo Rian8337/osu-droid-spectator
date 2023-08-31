@@ -45,7 +45,7 @@ export function openDatabase(): Promise<void> {
  * @returns The beatmapset in Blob, `null` if not found.
  */
 export function getBeatmapsetFromDB(
-    beatmapsetId: number
+    beatmapsetId: number,
 ): Promise<Blob | null> {
     return new Promise((resolve, reject) => {
         if (!db) {
@@ -70,11 +70,11 @@ export function getBeatmapsetFromDB(
         objectStoreRequest.onsuccess = () => {
             if (objectStoreRequest.result) {
                 console.log(
-                    `Beatmapset with ID ${beatmapsetId} retrieved from database`
+                    `Beatmapset with ID ${beatmapsetId} retrieved from database`,
                 );
             } else {
                 console.log(
-                    `Beatmapset with ID ${beatmapsetId} not found in database`
+                    `Beatmapset with ID ${beatmapsetId} not found in database`,
                 );
             }
 
@@ -96,7 +96,7 @@ export function getBeatmapsetFromDB(
  */
 export function storeBeatmapsetToDB(
     beatmapsetId: number,
-    file: Blob
+    file: Blob,
 ): Promise<void> {
     return new Promise((resolve, reject) => {
         if (!db) {
@@ -106,14 +106,14 @@ export function storeBeatmapsetToDB(
         const transaction = db.transaction("beatmaps", "readwrite");
         transaction.oncomplete = () => {
             console.log(
-                `Beatmapset with ID ${beatmapsetId} stored into database`
+                `Beatmapset with ID ${beatmapsetId} stored into database`,
             );
 
             resolve();
         };
         transaction.onabort = () => {
             console.log(
-                `Beatmapset storing transaction aborted, was storing ID ${beatmapsetId}`
+                `Beatmapset storing transaction aborted, was storing ID ${beatmapsetId}`,
             );
 
             resolve();

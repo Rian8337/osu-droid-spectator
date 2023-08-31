@@ -15,7 +15,7 @@ export class BeatmapColorDecoder extends SectionDecoder<Beatmap> {
 
         if (s.length !== 3 && s.length !== 4) {
             throw new TypeError(
-                "Color specified in incorrect format (should be R,G,B or R,G,B,A)"
+                "Color specified in incorrect format (should be R,G,B or R,G,B,A)",
             );
         }
 

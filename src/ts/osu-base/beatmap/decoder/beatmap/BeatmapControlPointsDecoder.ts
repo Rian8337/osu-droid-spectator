@@ -19,7 +19,7 @@ export class BeatmapControlPointsDecoder extends SectionDecoder<Beatmap> {
         }
 
         const time: number = this.target.getOffsetTime(
-            this.tryParseFloat(this.setPosition(s[0]))
+            this.tryParseFloat(this.setPosition(s[0])),
         );
 
         // msPerBeat is allowed to be NaN to handle an edge case in which some
@@ -28,7 +28,7 @@ export class BeatmapControlPointsDecoder extends SectionDecoder<Beatmap> {
             this.setPosition(s[1]),
             undefined,
             undefined,
-            true
+            true,
         );
 
         let timeSignature: number = 4;
@@ -38,7 +38,7 @@ export class BeatmapControlPointsDecoder extends SectionDecoder<Beatmap> {
 
         if (timeSignature < 1) {
             throw new RangeError(
-                "The numerator of a time signature must be positive"
+                "The numerator of a time signature must be positive",
             );
         }
 
@@ -62,7 +62,7 @@ export class BeatmapControlPointsDecoder extends SectionDecoder<Beatmap> {
 
         if (s.length >= 8) {
             const effectBitFlags: number = this.tryParseInt(
-                this.setPosition(s[7])
+                this.setPosition(s[7]),
             );
             kiaiMode = !!(effectBitFlags & EffectFlags.kiai);
             omitFirstBarSignature = !!(
@@ -78,7 +78,7 @@ export class BeatmapControlPointsDecoder extends SectionDecoder<Beatmap> {
         if (timingChange) {
             if (Number.isNaN(msPerBeat)) {
                 throw new Error(
-                    "Beat length cannot be NaN in a timing control point"
+                    "Beat length cannot be NaN in a timing control point",
                 );
             }
 
@@ -87,7 +87,7 @@ export class BeatmapControlPointsDecoder extends SectionDecoder<Beatmap> {
                     time: time,
                     msPerBeat: msPerBeat,
                     timeSignature: timeSignature,
-                })
+                }),
             );
         }
 
@@ -97,7 +97,7 @@ export class BeatmapControlPointsDecoder extends SectionDecoder<Beatmap> {
                 // If msPerBeat is NaN, speedMultiplier should still be 1 because all comparisons against NaN are false.
                 speedMultiplier: msPerBeat < 0 ? 100 / -msPerBeat : 1,
                 generateTicks: !Number.isNaN(msPerBeat),
-            })
+            }),
         );
 
         this.target.controlPoints.effect.add(
@@ -105,7 +105,7 @@ export class BeatmapControlPointsDecoder extends SectionDecoder<Beatmap> {
                 time: time,
                 isKiai: kiaiMode,
                 omitFirstBarLine: omitFirstBarSignature,
-            })
+            }),
         );
 
         this.target.controlPoints.sample.add(
@@ -114,7 +114,7 @@ export class BeatmapControlPointsDecoder extends SectionDecoder<Beatmap> {
                 sampleBank: sampleSet,
                 sampleVolume: sampleVolume,
                 customSampleBank: customSampleBank,
-            })
+            }),
         );
     }
 }

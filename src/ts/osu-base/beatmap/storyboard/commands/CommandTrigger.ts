@@ -28,7 +28,7 @@ export class CommandTrigger extends CommandTimelineGroup {
         triggerName: string,
         startTime: number,
         endTime: number,
-        groupNumber: number
+        groupNumber: number,
     ) {
         super();
 

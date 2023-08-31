@@ -36,7 +36,7 @@ export class BeatmapEvents {
             this.storyboard
                 ?.getLayer(StoryboardLayerType.background)
                 .elements.some(
-                    (e) => e.path.toLowerCase() === this.background?.filename
+                    (e) => e.path.toLowerCase() === this.background?.filename,
                 ) ?? false
         );
     }

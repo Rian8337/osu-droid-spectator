@@ -1,5 +1,5 @@
 import { audioState } from "../elements/Audio";
-import { Circle, Slider, SliderTick, Vector2 } from "../osu-base";
+import { Vector2 } from "../osu-base";
 import { parsedBeatmap } from "../settings/BeatmapSettings";
 import { players } from "../settings/PlayerSettings";
 import { SpectatorAccuracyEvent } from "./events/SpectatorAccuracyEvent";
@@ -7,7 +7,6 @@ import { SpectatorComboEvent } from "./events/SpectatorComboEvent";
 import { SpectatorCursorEvent } from "./events/SpectatorCursorEvent";
 import { SpectatorObjectDataEvent } from "./events/SpectatorObjectDataEvent";
 import { SpectatorScoreEvent } from "./events/SpectatorScoreEvent";
-import { HitResult } from "./structures/HitResult";
 import { MultiplayerPlayer } from "./structures/MultiplayerPlayer";
 import { SpectatorData } from "./rawdata/SpectatorData";
 import { SpectatorDataManager } from "./managers/SpectatorDataManager";
@@ -40,7 +39,7 @@ export class SpectatorDataProcessor {
 
             earliestEventTime = Math.min(
                 earliestEventTime,
-                manager.earliestEventTime ?? Number.POSITIVE_INFINITY
+                manager.earliestEventTime ?? Number.POSITIVE_INFINITY,
             );
         }
 
@@ -63,7 +62,7 @@ export class SpectatorDataProcessor {
 
             latestEventTime = Math.min(
                 latestEventTime,
-                manager.latestEventTime ?? Number.POSITIVE_INFINITY
+                manager.latestEventTime ?? Number.POSITIVE_INFINITY,
             );
         }
 
@@ -71,10 +70,6 @@ export class SpectatorDataProcessor {
     }
 
     constructor() {
-        if (!parsedBeatmap) {
-            throw new Error("No beatmaps have been loaded yet");
-        }
-
         for (const player of players.values()) {
             this.addPlayer(player);
         }
@@ -144,10 +139,6 @@ export class SpectatorDataProcessor {
      * @returns Whether the data addition was successful.
      */
     processData(data: SpectatorData): boolean {
-        if (!parsedBeatmap) {
-            throw new Error("No beatmaps have been loaded yet");
-        }
-
         const manager = this.managers.get(data.uid);
 
         if (!manager) {
@@ -156,97 +147,8 @@ export class SpectatorDataProcessor {
 
         const { events } = manager;
 
-        // In the case of mid-gameplay spectating, set current misses to misses from spectator data.
-        events.objectData.misses ??= data.currentMisses;
-
         for (const objectData of data.hitObjectData) {
-            const object = parsedBeatmap.hitObjects.objects[objectData.index];
-            let time = object.endTime;
-
-            if (object instanceof Circle) {
-                if (
-                    objectData.result !== HitResult.miss ||
-                    objectData.accuracy !== 1e4
-                ) {
-                    time += objectData.accuracy;
-                } else {
-                    time += manager.maxHitWindow;
-                }
-            }
-
-            if (object instanceof Slider) {
-                // Infer combo and score from hit accuracy and tickset.
-                const prevEvent = events.objectData.eventAtIndex(
-                    objectData.index - 1
-                );
-                let score = prevEvent?.currentScore ?? 0;
-                let combo = prevEvent?.currentCombo ?? 0;
-
-                // Check for slider head break.
-                if (
-                    objectData.result !== HitResult.miss &&
-                    objectData.accuracy !==
-                        Math.floor(manager.maxHitWindow) + 13
-                ) {
-                    score += Math.floor(30 * manager.scoreMultiplier);
-                    ++combo;
-                } else {
-                    combo = 0;
-                }
-
-                events.combo.add(
-                    new SpectatorComboEvent(object.startTime, combo)
-                );
-                events.score.add(
-                    new SpectatorScoreEvent(object.startTime, score)
-                );
-
-                // We don't need to include slider end since that's already accounted below.
-                for (let i = 1; i < object.nestedHitObjects.length - 1; ++i) {
-                    const nestedObject = object.nestedHitObjects[i];
-                    const tickset = objectData.tickset[i - 1];
-
-                    if (tickset) {
-                        ++combo;
-
-                        if (nestedObject instanceof SliderTick) {
-                            score += Math.floor(10 * manager.scoreMultiplier);
-                        } else {
-                            // This must be a slider repeat.
-                            score += Math.floor(30 * manager.scoreMultiplier);
-                        }
-                    } else {
-                        combo = 0;
-                    }
-
-                    events.combo.add(
-                        new SpectatorComboEvent(nestedObject.startTime, combo)
-                    );
-                    events.score.add(
-                        new SpectatorScoreEvent(nestedObject.startTime, score)
-                    );
-                }
-            }
-
-            events.accuracy.add(
-                new SpectatorAccuracyEvent(
-                    time,
-                    objectData.currentAccuracy,
-                    objectData.index
-                )
-            );
-
-            events.combo.add(
-                new SpectatorComboEvent(time, objectData.currentCombo)
-            );
-
-            events.score.add(
-                new SpectatorScoreEvent(time, objectData.currentScore)
-            );
-
-            events.objectData.add(
-                new SpectatorObjectDataEvent(time, objectData)
-            );
+            events.objectData.add(new SpectatorObjectDataEvent(objectData));
         }
 
         for (let i = 0; i < data.cursorMovement.length; ++i) {
@@ -258,30 +160,34 @@ export class SpectatorDataProcessor {
                         cursorData.time,
                         new Vector2(
                             cursorData.position.x,
-                            cursorData.position.y
+                            cursorData.position.y,
                         ),
-                        cursorData.id
-                    )
+                        cursorData.id,
+                    ),
                 );
             }
+        }
+
+        for (const event of data.events) {
+            events.score.add(new SpectatorScoreEvent(event.time, event.score));
+            events.accuracy.add(
+                new SpectatorAccuracyEvent(event.time, event.accuracy),
+            );
+            events.combo.add(new SpectatorComboEvent(event.time, event.combo));
         }
 
         const mSecPassed = data.secPassed * 1000;
 
         events.syncedScore.add(
-            new SpectatorSyncedScoreEvent(mSecPassed, data.currentScore)
+            new SpectatorSyncedScoreEvent(mSecPassed, data.currentScore),
         );
 
         events.syncedAccuracy.add(
-            new SpectatorSyncedAccuracyEvent(
-                mSecPassed,
-                data.currentAccuracy,
-                events.accuracy.latestIndex
-            )
+            new SpectatorSyncedAccuracyEvent(mSecPassed, data.currentAccuracy),
         );
 
         events.syncedCombo.add(
-            new SpectatorSyncedComboEvent(mSecPassed, data.currentCombo)
+            new SpectatorSyncedComboEvent(mSecPassed, data.currentCombo),
         );
 
         manager.latestDataTime = data.secPassed * 1000;
@@ -289,7 +195,7 @@ export class SpectatorDataProcessor {
             "Received data from uid",
             manager.uid,
             "latest data time is set to",
-            manager.latestDataTime
+            manager.latestDataTime,
         );
         return true;
     }

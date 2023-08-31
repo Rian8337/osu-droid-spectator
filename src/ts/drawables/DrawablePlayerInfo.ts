@@ -1,28 +1,30 @@
 import { MathUtils, Playfield, RGBColor } from "../osu-base";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
-import { PlayerInfo } from "../spectator/rawdata/PlayerInfo";
 import { DrawableBeatmap } from "./DrawableBeatmap";
 import { players } from "../settings/PlayerSettings";
 import { dataProcessor, teamColors } from "../settings/SpectatorSettings";
 import { parsedBeatmap } from "../settings/BeatmapSettings";
 import { Interpolation } from "../osu-base/mathutil/Interpolation";
+import { MultiplayerPlayer } from "../spectator/structures/MultiplayerPlayer";
 
 /**
  * Represents player information to be drawn.
  */
-export class DrawablePlayerInfo implements PlayerInfo {
+export class DrawablePlayerInfo
+    implements Pick<MultiplayerPlayer, "uid" | "username" | "team">
+{
     private static readonly paddingX = 15;
     private static readonly paddingY = 35;
     private static readonly missColor = new RGBColor(209, 14, 0);
 
     readonly uid: number;
     readonly username: string;
-    readonly team?: MultiplayerTeam;
+    readonly team: MultiplayerTeam | null;
 
     constructor(uid: number, username: string) {
         this.uid = uid;
         this.username = username;
-        this.team = players.get(this.uid)?.team;
+        this.team = players.get(this.uid)?.team ?? null;
     }
 
     /**
@@ -55,7 +57,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
         }
 
         let color =
-            this.team !== undefined
+            this.team !== null
                 ? teamColors[this.team]
                 : new RGBColor(255, 255, 255);
         let fontSize = ctx.canvas.height / 8;
@@ -73,7 +75,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
                 const t = MathUtils.clamp(
                     (missDt - 1000) / (missAnimationDuration - 1000),
                     0,
-                    1
+                    1,
                 );
                 // Use a reverse ease quad out (https://easings.net/#easeOutQuad) for a
                 // more pleasant animation.
@@ -84,12 +86,12 @@ export class DrawablePlayerInfo implements PlayerInfo {
             color = new RGBColor(
                 Interpolation.lerp(color.r, missColor.r, multiplier),
                 Interpolation.lerp(color.g, missColor.g, multiplier),
-                Interpolation.lerp(color.b, missColor.b, multiplier)
+                Interpolation.lerp(color.b, missColor.b, multiplier),
             );
             fontSize = Interpolation.lerp(
                 fontSize,
                 missMaxFontSize,
-                multiplier
+                multiplier,
             );
         }
 
@@ -119,7 +121,7 @@ export class DrawablePlayerInfo implements PlayerInfo {
                 DrawablePlayerInfo.paddingX,
             Playfield.baseSize.y +
                 zeroCoordinate.y -
-                DrawablePlayerInfo.paddingY
+                DrawablePlayerInfo.paddingY,
         );
         ctx.restore();
     }

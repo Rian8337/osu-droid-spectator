@@ -7,6 +7,6 @@ import { SpectatorEventManager } from "./SpectatorEventManager";
 export class SpectatorSyncedComboEventManager extends SpectatorEventManager<SpectatorSyncedComboEvent> {
     protected override readonly defaultEvent = new SpectatorSyncedComboEvent(
         Number.NEGATIVE_INFINITY,
-        0
+        0,
     );
 }

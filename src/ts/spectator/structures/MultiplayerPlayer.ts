@@ -14,15 +14,15 @@ export interface MultiplayerPlayer {
     /**
      * The mods used by the player, in droid mod string.
      */
-    readonly mods: string;
+    readonly mods: string | null;
 
     /**
      * The team this player is at, if in Team VS team mode.
      */
-    team?: MultiplayerTeam;
+    team: MultiplayerTeam | null;
 
     /**
      * The forced AR setting used by the player.
      */
-    forcedAR?: number;
+    forcedAR?: number | null;
 }

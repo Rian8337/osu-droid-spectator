@@ -85,7 +85,7 @@ export class BeatmapHitObjects {
             this._objects.splice(
                 this.findInsertionIndex(object.startTime),
                 0,
-                object
+                object,
             );
 
             if (object instanceof Circle) {

@@ -15,7 +15,7 @@ export class Storyboard {
         Foreground: new StoryboardLayer(StoryboardLayerType.foreground, 0),
         Overlay: new StoryboardLayer(
             StoryboardLayerType.overlay,
-            Number.MIN_SAFE_INTEGER
+            Number.MIN_SAFE_INTEGER,
         ),
     };
 
@@ -74,7 +74,7 @@ export class Storyboard {
      */
     getLayer(
         type: StoryboardLayerType,
-        createIfNotAvailable?: boolean
+        createIfNotAvailable?: boolean,
     ): StoryboardLayer;
 
     /**
@@ -86,12 +86,12 @@ export class Storyboard {
      */
     getLayer(
         type: StoryboardLayerType,
-        createIfNotAvailable: false
+        createIfNotAvailable: false,
     ): StoryboardLayer | null;
 
     getLayer(
         type: StoryboardLayerType,
-        createIfNotAvailable: boolean = true
+        createIfNotAvailable: boolean = true,
     ): StoryboardLayer | null {
         let layer: StoryboardLayer | undefined = this.layers[type];
 

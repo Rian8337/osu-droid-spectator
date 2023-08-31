@@ -15,7 +15,7 @@ export class TimingControlPointManager extends ControlPointManager<TimingControl
     override controlPointAt(time: number): TimingControlPoint {
         return this.binarySearchWithFallback(
             time,
-            this.points[0] ?? this.defaultControlPoint
+            this.points[0] ?? this.defaultControlPoint,
         );
     }
 }

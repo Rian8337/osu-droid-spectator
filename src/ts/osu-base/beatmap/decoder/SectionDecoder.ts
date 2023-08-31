@@ -88,7 +88,7 @@ export abstract class SectionDecoder<T> {
         str: string,
         min: number = -ParserConstants.MAX_PARSE_VALUE,
         max: number = ParserConstants.MAX_PARSE_VALUE,
-        allowNaN: boolean = false
+        allowNaN: boolean = false,
     ): number {
         const num: number = parseInt(str);
 
@@ -122,7 +122,7 @@ export abstract class SectionDecoder<T> {
         str: string,
         min: number = -ParserConstants.MAX_PARSE_VALUE,
         max: number = ParserConstants.MAX_PARSE_VALUE,
-        allowNaN: boolean = false
+        allowNaN: boolean = false,
     ): number {
         const num: number = parseFloat(str);
 
@@ -151,7 +151,7 @@ export abstract class SectionDecoder<T> {
     protected isNumberValid(
         num: number,
         min: number = -ParserConstants.MAX_PARSE_VALUE,
-        max: number = ParserConstants.MAX_PARSE_VALUE
+        max: number = ParserConstants.MAX_PARSE_VALUE,
     ): boolean {
         return num >= min && num <= max;
     }

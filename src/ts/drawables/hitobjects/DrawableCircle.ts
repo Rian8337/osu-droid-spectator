@@ -33,19 +33,10 @@ export class DrawableCircle extends DrawableHitObject {
         ctx: CanvasRenderingContext2D,
         time: number,
         hitData: SpectatorObjectDataEvent | null,
-        maxHitWindow: number
+        maxHitWindow: number,
     ): void {
         const maxHitTime = this.object.startTime + maxHitWindow;
-
-        if (hitData) {
-            if (hitData.result !== HitResult.miss || hitData.accuracy !== 1e4) {
-                this.isHit = time >= this.object.startTime + hitData.accuracy;
-            } else {
-                this.isHit = time >= maxHitTime;
-            }
-        } else {
-            this.isHit = time >= maxHitTime;
-        }
+        this.isHit = time >= (hitData?.time ?? maxHitTime);
 
         const dt = this.object.startTime - time;
         let opacity = 0;
@@ -60,29 +51,20 @@ export class DrawableCircle extends DrawableHitObject {
                     MathUtils.clamp(
                         (time - fadeInStartTime) / this.fadeInTime,
                         0,
-                        1
+                        1,
                     ),
                     1 -
                         MathUtils.clamp(
                             (time - fadeOutStartTime) / this.fadeOutTime,
                             0,
-                            1
-                        )
+                            1,
+                        ),
                 );
             } else {
                 opacity = (this.approachTime - dt) / this.fadeInTime;
             }
         } else if (!this.isHidden) {
-            let fadeDt = dt;
-
-            if (
-                hitData &&
-                (hitData.result !== HitResult.miss || hitData.accuracy !== 1e4)
-            ) {
-                fadeDt += hitData.accuracy;
-            } else {
-                fadeDt += maxHitWindow;
-            }
+            const fadeDt = hitData ? hitData.time - time : dt + maxHitWindow;
 
             opacity = 1 + fadeDt / this.fadeOutTime;
         }
@@ -96,38 +78,13 @@ export class DrawableCircle extends DrawableHitObject {
             this.drawApproach(ctx, dt);
         }
 
-        const endPosition = this.stackedEndPosition;
-
-        if (this.isHit) {
-            if (
-                hitData &&
-                (hitData.result !== HitResult.miss || hitData.accuracy !== 1e4)
-            ) {
-                this.drawHitResult(
-                    ctx,
-                    time,
-                    endPosition,
-                    hitData.time,
-                    hitData.result
-                );
-            } else {
-                this.drawHitResult(
-                    ctx,
-                    time,
-                    endPosition,
-                    maxHitTime,
-                    HitResult.miss
-                );
-            }
-        } else {
-            this.drawHitResult(
-                ctx,
-                time,
-                endPosition,
-                maxHitTime,
-                HitResult.miss
-            );
-        }
+        this.drawHitResult(
+            ctx,
+            time,
+            this.stackedEndPosition,
+            hitData?.time ?? maxHitTime,
+            hitData?.result ?? HitResult.miss,
+        );
     }
 
     /**
@@ -138,7 +95,7 @@ export class DrawableCircle extends DrawableHitObject {
      */
     protected drawCircle(
         ctx: CanvasRenderingContext2D,
-        position: Vector2 = this.stackedPosition
+        position: Vector2 = this.stackedPosition,
     ): void {
         ctx.save();
 
@@ -149,7 +106,7 @@ export class DrawableCircle extends DrawableHitObject {
             position.y,
             this.object.radius - this.circleBorder / 2,
             -Math.PI,
-            Math.PI
+            Math.PI,
         );
         ctx.shadowBlur = 0;
         ctx.fillStyle = this.canvasColor;
@@ -176,7 +133,7 @@ export class DrawableCircle extends DrawableHitObject {
         ctx: CanvasRenderingContext2D,
         text: string,
         position: Vector2 = this.stackedPosition,
-        rotation: number = 0
+        rotation: number = 0,
     ): void {
         ctx.save();
         ctx.shadowBlur = this.shadowBlur;
@@ -204,7 +161,7 @@ export class DrawableCircle extends DrawableHitObject {
             position.y,
             this.object.radius * scale - this.circleBorder / 2,
             -Math.PI,
-            Math.PI
+            Math.PI,
         );
         ctx.shadowBlur = 0;
         ctx.strokeStyle = this.canvasColor;

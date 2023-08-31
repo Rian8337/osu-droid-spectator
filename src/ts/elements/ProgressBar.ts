@@ -12,7 +12,7 @@ $<HTMLInputElement>("#progress").on("change", function () {
         value = MathUtils.clamp(
             value * 1000,
             dataProcessor.earliestEventTime ?? 0,
-            dataProcessor.latestEventTime ?? 0
+            dataProcessor.latestEventTime ?? 0,
         );
     }
 

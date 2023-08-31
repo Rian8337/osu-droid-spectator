@@ -57,7 +57,7 @@ export class DrawableSlider extends DrawableCircle {
     override draw(
         ctx: CanvasRenderingContext2D,
         time: number,
-        hitData: SpectatorObjectDataEvent | null
+        hitData: SpectatorObjectDataEvent | null,
     ): void {
         // Allow TypeScript to type narrow.
         if (!(this.object instanceof Slider)) {
@@ -86,7 +86,7 @@ export class DrawableSlider extends DrawableCircle {
                         MathUtils.clamp(
                             this.fadeOutTime - timeElapsed,
                             0,
-                            this.fadeOutTime
+                            this.fadeOutTime,
                         ) / this.fadeOutTime;
 
                     // Sliders apply quad out easing with HD (https://easings.net/#easeOutQuad).
@@ -105,7 +105,7 @@ export class DrawableSlider extends DrawableCircle {
 
         const position = this.stackedPosition;
         const pathEndPosition = this.stackedPosition.add(
-            this.flipPathVertically(this.object.path.positionAt(1))
+            this.flipPathVertically(this.object.path.positionAt(1)),
         );
 
         this.drawPath(ctx);
@@ -118,14 +118,14 @@ export class DrawableSlider extends DrawableCircle {
         if (repetitions > 1 && repeat + 1 <= (repetitions & ~1)) {
             const lastPoint = this.flipPathVertically(calculatedPath.at(-1)!);
             const secondLastPoint = this.flipPathVertically(
-                calculatedPath.at(-2)!
+                calculatedPath.at(-2)!,
             );
 
             this.drawText(
                 ctx,
                 DrawableSlider.reverseArrow,
                 pathEndPosition,
-                lastPoint.getAngle(secondLastPoint)
+                lastPoint.getAngle(secondLastPoint),
             );
         }
 
@@ -140,7 +140,7 @@ export class DrawableSlider extends DrawableCircle {
                 ctx,
                 DrawableSlider.reverseArrow,
                 position,
-                firstPoint.getAngle(secondPoint)
+                firstPoint.getAngle(secondPoint),
             );
         } else if (dt >= 0) {
             this.drawText(ctx, this.comboNumber.toString());
@@ -149,7 +149,7 @@ export class DrawableSlider extends DrawableCircle {
         const spanIndex = MathUtils.clamp(
             Math.floor(-dt / this.object.spanDuration),
             0,
-            this.object.repeats
+            this.object.repeats,
         );
         const nestedObjects = this.drawableNestedHitObjects.slice();
 
@@ -190,35 +190,13 @@ export class DrawableSlider extends DrawableCircle {
             this.drawFollowCircle(ctx, repeat);
         }
 
-        const endPosition = this.stackedEndPosition;
-
-        if (this.isHit) {
-            if (hitData) {
-                this.drawHitResult(
-                    ctx,
-                    time,
-                    endPosition,
-                    hitData.time,
-                    hitData.result
-                );
-            } else {
-                this.drawHitResult(
-                    ctx,
-                    time,
-                    endPosition,
-                    this.object.endTime,
-                    HitResult.miss
-                );
-            }
-        } else {
-            this.drawHitResult(
-                ctx,
-                time,
-                endPosition,
-                this.object.endTime,
-                HitResult.miss
-            );
-        }
+        this.drawHitResult(
+            ctx,
+            time,
+            this.stackedEndPosition,
+            hitData?.time ?? this.object.endTime,
+            hitData?.result ?? HitResult.miss,
+        );
     }
 
     /**
@@ -244,7 +222,7 @@ export class DrawableSlider extends DrawableCircle {
 
         for (const path of this.object.path.calculatedPath.slice(1)) {
             const drawPosition = this.stackedPosition.add(
-                this.flipPathVertically(path)
+                this.flipPathVertically(path),
             );
             ctx.lineTo(drawPosition.x, drawPosition.y);
         }
@@ -273,7 +251,7 @@ export class DrawableSlider extends DrawableCircle {
     private drawSliderTick(
         ctx: CanvasRenderingContext2D,
         tick: DrawableHitObject,
-        fullyOpaque: boolean
+        fullyOpaque: boolean,
     ): void {
         if (!(tick.object instanceof SliderTick)) {
             return;
@@ -306,7 +284,7 @@ export class DrawableSlider extends DrawableCircle {
      */
     private drawFollowCircle(
         ctx: CanvasRenderingContext2D,
-        progress: number
+        progress: number,
     ): void {
         // Allow TypeScript to type narrow.
         if (!(this.object instanceof Slider)) {
@@ -320,7 +298,7 @@ export class DrawableSlider extends DrawableCircle {
         }
 
         const drawPosition = this.stackedPosition.add(
-            this.flipPathVertically(this.object.path.positionAt(progress))
+            this.flipPathVertically(this.object.path.positionAt(progress)),
         );
 
         ctx.save();
@@ -332,7 +310,7 @@ export class DrawableSlider extends DrawableCircle {
             drawPosition.y,
             this.object.radius - this.circleBorder / 2,
             -Math.PI,
-            Math.PI
+            Math.PI,
         );
         ctx.shadowBlur = this.shadowBlur;
         ctx.strokeStyle = "#fff";

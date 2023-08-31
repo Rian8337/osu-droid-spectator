@@ -52,21 +52,6 @@ export const blueAvailableAnchors: BluePreviewAnchor[] = [
 export const previews = new Map<number, Preview>();
 
 /**
- * Reloads the preview with a list of new players.
- */
-export function reloadPreview(): void {
-    removePreviewsFromScreen();
-
-    for (const uid of previews.keys()) {
-        removePreview(uid);
-    }
-
-    for (const uid of players.keys()) {
-        addPreview(uid);
-    }
-}
-
-/**
  * Removes all previews from the container.
  */
 export function removePreviewsFromScreen(): void {
@@ -77,13 +62,13 @@ export function removePreviewsFromScreen(): void {
  * Adds a preview to the screen.
  *
  * @param uid The uid of the player in the preview.
- * @returns Whether the preview was successfully added.
+ * @returns The preview that was added, `null` if the addition was failed.
  */
-export function addPreview(uid: number): boolean {
+export function addPreview(uid: number): Preview | null {
     const player = players.get(uid);
 
     if (!player) {
-        return false;
+        return null;
     }
 
     let anchor: PreviewAnchor | undefined;
@@ -95,7 +80,7 @@ export function addPreview(uid: number): boolean {
                 redAvailableAnchors.shift() ?? blueAvailableAnchors.shift();
 
             if (!anchor) {
-                return false;
+                return null;
             }
 
             availableAnchors.splice(availableAnchors.indexOf(anchor), 1);
@@ -106,7 +91,7 @@ export function addPreview(uid: number): boolean {
                 blueAvailableAnchors.shift() ?? redAvailableAnchors.shift();
 
             if (!anchor) {
-                return false;
+                return null;
             }
 
             availableAnchors.splice(availableAnchors.indexOf(anchor), 1);
@@ -116,12 +101,13 @@ export function addPreview(uid: number): boolean {
     }
 
     if (!anchor) {
-        return false;
+        return null;
     }
 
-    previews.set(uid, new Preview(uid, anchor));
+    const preview = new Preview(uid, anchor);
+    previews.set(uid, preview);
 
-    return true;
+    return preview;
 }
 
 /**

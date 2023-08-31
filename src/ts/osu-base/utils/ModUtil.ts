@@ -103,15 +103,15 @@ export abstract class ModUtil {
      */
     static droidStringToMods(
         str: string,
-        options?: ModParseOptions
+        options?: ModParseOptions,
     ): (Mod & IModApplicableToDroid)[] {
         return <(Mod & IModApplicableToDroid)[]>this.processParsingOptions(
             this.allMods.filter(
                 (m) =>
                     m.isApplicableToDroid() &&
-                    str.toLowerCase().includes(m.droidString)
+                    str.toLowerCase().includes(m.droidString),
             ),
-            options
+            options,
         );
     }
 
@@ -123,13 +123,13 @@ export abstract class ModUtil {
      */
     static pcModbitsToMods(
         modbits: number,
-        options?: ModParseOptions
+        options?: ModParseOptions,
     ): (Mod & IModApplicableToOsu)[] {
         return <(Mod & IModApplicableToOsu)[]>this.processParsingOptions(
             this.allMods.filter(
-                (m) => m.isApplicableToOsu() && m.bitwise & modbits
+                (m) => m.isApplicableToOsu() && m.bitwise & modbits,
             ),
-            options
+            options,
         );
     }
 
@@ -180,12 +180,12 @@ export abstract class ModUtil {
     static checkIncompatibleMods(mods: Mod[]): Mod[] {
         for (const incompatibleMod of this.incompatibleMods) {
             const fulfilledMods: Mod[] = mods.filter((m) =>
-                incompatibleMod.some((v) => m.acronym === v.acronym)
+                incompatibleMod.some((v) => m.acronym === v.acronym),
             );
 
             if (fulfilledMods.length > 1) {
                 mods = mods.filter((m) =>
-                    incompatibleMod.every((v) => m.acronym !== v.acronym)
+                    incompatibleMod.every((v) => m.acronym !== v.acronym),
                 );
                 // Keep the first selected mod
                 mods.push(fulfilledMods[0]);
@@ -206,7 +206,9 @@ export abstract class ModUtil {
             .slice()
             .filter(
                 (m) =>
-                    !this.speedChangingMods.some((v) => m.acronym === v.acronym)
+                    !this.speedChangingMods.some(
+                        (v) => m.acronym === v.acronym,
+                    ),
             );
     }
 
@@ -219,7 +221,7 @@ export abstract class ModUtil {
      */
     private static processParsingOptions(
         mods: Mod[],
-        options?: ModParseOptions
+        options?: ModParseOptions,
     ): Mod[] {
         if (options?.checkDuplicate !== false) {
             mods = this.checkDuplicateMods(mods);

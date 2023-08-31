@@ -33,7 +33,7 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
         }
 
         const time: number = this.target.getOffsetTime(
-            this.tryParseFloat(this.setPosition(s[2]))
+            this.tryParseFloat(this.setPosition(s[2])),
         );
 
         const type: number = this.tryParseInt(this.setPosition(s[3]));
@@ -50,13 +50,13 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
             this.tryParseFloat(
                 this.setPosition(s[0]),
                 -ParserConstants.MAX_COORDINATE_VALUE,
-                ParserConstants.MAX_COORDINATE_VALUE
+                ParserConstants.MAX_COORDINATE_VALUE,
             ),
             this.tryParseFloat(
                 this.setPosition(s[1]),
                 -ParserConstants.MAX_COORDINATE_VALUE,
-                ParserConstants.MAX_COORDINATE_VALUE
-            )
+                ParserConstants.MAX_COORDINATE_VALUE,
+            ),
         );
 
         const soundType: HitSoundType = <HitSoundType>this.tryParseInt(s[4]);
@@ -93,13 +93,13 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
                 this.tryParseInt(
                     this.setPosition(s[6]),
                     -ParserConstants.MAX_PARSE_VALUE,
-                    ParserConstants.MAX_REPETITIONS_VALUE
-                )
+                    ParserConstants.MAX_REPETITIONS_VALUE,
+                ),
             );
 
             const distance: number = Math.max(
                 0,
-                this.tryParseFloat(this.setPosition(s[7]))
+                this.tryParseFloat(this.setPosition(s[7])),
             );
 
             const difficultyControlPoint: DifficultyControlPoint =
@@ -117,13 +117,13 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
                     this.tryParseFloat(
                         temp[0],
                         -ParserConstants.MAX_COORDINATE_VALUE,
-                        ParserConstants.MAX_COORDINATE_VALUE
+                        ParserConstants.MAX_COORDINATE_VALUE,
                     ),
                     this.tryParseFloat(
                         temp[1],
                         -ParserConstants.MAX_COORDINATE_VALUE,
-                        ParserConstants.MAX_COORDINATE_VALUE
-                    )
+                        ParserConstants.MAX_COORDINATE_VALUE,
+                    ),
                 );
 
                 points.push(vec.subtract(position));
@@ -145,7 +145,7 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
                         (points[1].y - points[0].y) *
                             (points[2].x - points[0].x) -
                             (points[1].x - points[0].x) *
-                                (points[2].y - points[0].y)
+                                (points[2].y - points[0].y),
                     )
                 ) {
                     // osu-stable special-cased colinear perfect curves to a linear path
@@ -200,7 +200,7 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
             const nodeSamples: HitSampleInfo[][] = [];
             for (let i = 0; i < nodes; ++i) {
                 nodeSamples.push(
-                    this.convertSoundType(nodeSoundTypes[i], nodeBankInfos[i])
+                    this.convertSoundType(nodeSoundTypes[i], nodeBankInfos[i]),
                 );
             }
 
@@ -217,7 +217,7 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
                     this.isNumberValid(
                         timingControlPoint.msPerBeat,
                         ParserConstants.MIN_MSPERBEAT_VALUE,
-                        ParserConstants.MAX_MSPERBEAT_VALUE
+                        ParserConstants.MAX_MSPERBEAT_VALUE,
                     )
                 ) {
                     // Prior to v8, speed multipliers don't adjust for how many ticks are generated over the same distance.
@@ -246,7 +246,7 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
                 speedMultiplier: MathUtils.clamp(
                     difficultyControlPoint.speedMultiplier,
                     ParserConstants.MIN_SPEEDMULTIPLIER_VALUE,
-                    ParserConstants.MAX_SPEEDMULTIPLIER_VALUE
+                    ParserConstants.MAX_SPEEDMULTIPLIER_VALUE,
                 ),
                 msPerBeat: timingControlPoint.msPerBeat,
                 mapSliderVelocity: this.target.difficulty.sliderMultiplier,
@@ -263,7 +263,7 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
                 startTime: time,
                 type: type,
                 endTime: this.target.getOffsetTime(
-                    this.tryParseInt(this.setPosition(s[5]))
+                    this.tryParseInt(this.setPosition(s[5])),
                 ),
             });
 
@@ -289,7 +289,7 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
      */
     private convertSoundType(
         type: HitSoundType,
-        bankInfo: SampleBankInfo
+        bankInfo: SampleBankInfo,
     ): HitSampleInfo[] {
         if (bankInfo.filename) {
             return [
@@ -297,7 +297,7 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
                     bankInfo.filename,
                     undefined,
                     bankInfo.customSampleBank,
-                    bankInfo.volume
+                    bankInfo.volume,
                 ),
             ];
         }
@@ -310,7 +310,7 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
                 bankInfo.volume,
                 // If the sound type doesn't have the Normal flag set, attach it anyway as a layered sample.
                 // None also counts as a normal non-layered sample: https://osu.ppy.sh/help/wiki/osu!_File_Formats/Osu_(file_format)#hitsounds
-                type !== HitSoundType.none && !(type & HitSoundType.normal)
+                type !== HitSoundType.none && !(type & HitSoundType.normal),
             ),
         ];
 
@@ -320,8 +320,8 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
                     HitSampleInfo.HIT_FINISH,
                     bankInfo.add,
                     bankInfo.customSampleBank,
-                    bankInfo.volume
-                )
+                    bankInfo.volume,
+                ),
             );
         }
 
@@ -331,8 +331,8 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
                     HitSampleInfo.HIT_WHISTLE,
                     bankInfo.add,
                     bankInfo.customSampleBank,
-                    bankInfo.volume
-                )
+                    bankInfo.volume,
+                ),
             );
         }
 
@@ -342,8 +342,8 @@ export class BeatmapHitObjectsDecoder extends SectionDecoder<Beatmap> {
                     HitSampleInfo.HIT_CLAP,
                     bankInfo.add,
                     bankInfo.customSampleBank,
-                    bankInfo.volume
-                )
+                    bankInfo.volume,
+                ),
             );
         }
 

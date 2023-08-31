@@ -1,4 +1,3 @@
-import { MultiplayerPlayer } from "../structures/MultiplayerPlayer";
 import { BroadcastedMessage } from "./BroadcastedMessage";
 import { MultiplayerState } from "../structures/MultiplayerState";
 
@@ -8,9 +7,9 @@ import { MultiplayerState } from "../structures/MultiplayerState";
 export interface PlayerJoinedMessage
     extends BroadcastedMessage<MultiplayerState.playerJoined> {
     /**
-     * The player who joined.
+     * The uid of the player who joined.
      */
-    readonly player: MultiplayerPlayer;
+    readonly uid: number;
 }
 
 /**
@@ -19,7 +18,7 @@ export interface PlayerJoinedMessage
  * @param message The message.
  */
 export function isPlayerJoinedMessage(
-    message: BroadcastedMessage
+    message: BroadcastedMessage,
 ): message is PlayerJoinedMessage {
     return message.state === MultiplayerState.playerJoined;
 }

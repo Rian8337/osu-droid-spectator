@@ -97,11 +97,11 @@ declare namespace JSZip {
          */
         async<T extends OutputType>(
             type: T,
-            onUpdate?: OnUpdateCallback
+            onUpdate?: OnUpdateCallback,
         ): Promise<OutputByType[T]>;
         nodeStream(
             type?: "nodebuffer",
-            onUpdate?: OnUpdateCallback
+            onUpdate?: OnUpdateCallback,
         ): NodeJS.ReadableStream;
     }
 
@@ -197,7 +197,7 @@ declare namespace JSZip {
          * @return A Promise of the full content
          */
         accumulate(
-            updateCallback?: (metadata: JSZipMetadata) => void
+            updateCallback?: (metadata: JSZipMetadata) => void,
         ): Promise<T>;
 
         /**
@@ -246,12 +246,12 @@ interface JSZip {
     file<T extends JSZip.InputType>(
         path: string,
         data: InputByType[T] | Promise<InputByType[T]>,
-        options?: JSZip.JSZipFileOptions
+        options?: JSZip.JSZipFileOptions,
     ): this;
     file<T extends JSZip.InputType>(
         path: string,
         data: null,
-        options?: JSZip.JSZipFileOptions & { dir: true }
+        options?: JSZip.JSZipFileOptions & { dir: true },
     ): this;
 
     /**
@@ -276,7 +276,7 @@ interface JSZip {
      * @param callback function
      */
     forEach(
-        callback: (relativePath: string, file: JSZip.JSZipObject) => void
+        callback: (relativePath: string, file: JSZip.JSZipObject) => void,
     ): void;
 
     /**
@@ -286,7 +286,7 @@ interface JSZip {
      * @return Array of matched elements
      */
     filter(
-        predicate: (relativePath: string, file: JSZip.JSZipObject) => boolean
+        predicate: (relativePath: string, file: JSZip.JSZipObject) => boolean,
     ): JSZip.JSZipObject[];
 
     /**
@@ -306,7 +306,7 @@ interface JSZip {
      */
     generateAsync<T extends JSZip.OutputType>(
         options?: JSZip.JSZipGeneratorOptions<T>,
-        onUpdate?: JSZip.OnUpdateCallback
+        onUpdate?: JSZip.OnUpdateCallback,
     ): Promise<OutputByType[T]>;
 
     /**
@@ -318,7 +318,7 @@ interface JSZip {
      */
     generateNodeStream(
         options?: JSZip.JSZipGeneratorOptions<"nodebuffer">,
-        onUpdate?: JSZip.OnUpdateCallback
+        onUpdate?: JSZip.OnUpdateCallback,
     ): NodeJS.ReadableStream;
 
     /**
@@ -328,7 +328,7 @@ interface JSZip {
      * @return a StreamHelper
      */
     generateInternalStream<T extends JSZip.OutputType>(
-        options?: JSZip.JSZipGeneratorOptions<T>
+        options?: JSZip.JSZipGeneratorOptions<T>,
     ): JSZip.JSZipStreamHelper<OutputByType[T]>;
 
     /**
@@ -340,7 +340,7 @@ interface JSZip {
      */
     loadAsync(
         data: InputFileFormat,
-        options?: JSZip.JSZipLoadOptions
+        options?: JSZip.JSZipLoadOptions,
     ): Promise<JSZip>;
 
     /**

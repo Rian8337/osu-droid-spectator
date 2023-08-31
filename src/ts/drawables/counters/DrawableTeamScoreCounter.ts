@@ -1,11 +1,6 @@
 import { parsedBeatmap } from "../../settings/BeatmapSettings";
 import { players } from "../../settings/PlayerSettings";
-import {
-    calculateScoreV2,
-    dataProcessor,
-    displayScoreV2,
-    teamColors,
-} from "../../settings/SpectatorSettings";
+import { dataProcessor, teamColors } from "../../settings/SpectatorSettings";
 import { MultiplayerTeam } from "../../spectator/structures/MultiplayerTeam";
 
 /**
@@ -60,32 +55,28 @@ export class DrawableTeamScoreCounter {
                 continue;
             }
 
-            if (displayScoreV2) {
-                this.score += calculateScoreV2(player.uid, time);
-            } else {
-                const manager = dataProcessor?.managers.get(player.uid);
+            const manager = dataProcessor?.managers.get(player.uid);
 
-                if (!manager) {
-                    continue;
-                }
-
-                const scoreEvent = manager.events.score.eventAtOrDefault(time);
-                const syncedScoreEvent =
-                    manager.events.syncedScore.eventAtOrDefault(time);
-
-                let score = scoreEvent.score;
-                if (syncedScoreEvent.time > scoreEvent.time) {
-                    score = syncedScoreEvent.score;
-                }
-
-                this.score += score;
+            if (!manager) {
+                continue;
             }
+
+            const scoreEvent = manager.events.score.eventAtOrDefault(time);
+            const syncedScoreEvent =
+                manager.events.syncedScore.eventAtOrDefault(time);
+
+            let score = scoreEvent.score;
+            if (syncedScoreEvent.time > scoreEvent.time) {
+                score = syncedScoreEvent.score;
+            }
+
+            this.score += score;
         }
     }
 
     private applyCanvasConfig(
         ctx: CanvasRenderingContext2D,
-        boldText: boolean
+        boldText: boolean,
     ): void {
         ctx.save();
 
@@ -108,13 +99,13 @@ export class DrawableTeamScoreCounter {
             ctx.textAlign = "right";
             ctx.translate(
                 canvas.width / 2 - canvas.width / 25,
-                canvas.height / 2 - canvas.height / 7.5
+                canvas.height / 2 - canvas.height / 7.5,
             );
         } else {
             ctx.textAlign = "left";
             ctx.translate(
                 canvas.width / 2 + canvas.width / 25,
-                canvas.height / 2 - canvas.height / 7.5
+                canvas.height / 2 - canvas.height / 7.5,
             );
         }
     }

@@ -34,7 +34,7 @@ export class StoryboardLayer {
         name: StoryboardLayerType,
         depth: number,
         visibleWhenPassing: boolean = true,
-        visibleWhenFailing: boolean = true
+        visibleWhenFailing: boolean = true,
     ) {
         this.name = name;
         this.depth = depth;

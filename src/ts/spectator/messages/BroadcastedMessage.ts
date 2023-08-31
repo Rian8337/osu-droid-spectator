@@ -4,7 +4,7 @@ import { MultiplayerState } from "../structures/MultiplayerState";
  * A broadcast message received from the server.
  */
 export interface BroadcastedMessage<
-    State extends MultiplayerState = MultiplayerState
+    State extends MultiplayerState = MultiplayerState,
 > {
     /**
      * The state that changed.

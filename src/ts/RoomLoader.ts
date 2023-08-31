@@ -1,24 +1,11 @@
 import { openDatabase } from "./settings/DatabaseSettings";
 import { setPickedBeatmap } from "./settings/BeatmapSettings";
-import { addPlayer, players } from "./settings/PlayerSettings";
-import {
-    setForceARAllowRule,
-    setForceARMaximumValue,
-    setForceARMinimumValue,
-    setModMultipliers,
-    setRequiredMods,
-    setRoomId,
-    setScorePortion,
-    setSpeedMultiplier,
-    setTeamMode,
-} from "./settings/RoomSettings";
+import { setRoomId } from "./settings/RoomSettings";
 import { fayeClient } from "./settings/SpectatorSettings";
 import { BeatmapChangedHandler } from "./spectator/handlers/BeatmapChangedHandler";
-import { SpeedMultiplierChangedHandler } from "./spectator/handlers/SpeedMultiplierChangedHandler";
-import { MultiplayerRoomInfo } from "./spectator/rawdata/MultiplayerRoomInfo";
-import { addPreview } from "./settings/PreviewSettings";
+import { MultiplayerRoom } from "./spectator/rawdata/MultiplayerRoom";
 import { RoundStartHandler } from "./spectator/handlers/RoundStartHandler";
-import { PlayerStartPlayingHandler } from "./spectator/handlers/PlayerStartPlayingHandler";
+import { setPlayerCount } from "./settings/PlayerSettings";
 
 export async function askRoomID(): Promise<void> {
     const message =
@@ -30,22 +17,26 @@ export async function askRoomID(): Promise<void> {
     }
 
     let roomInfoRequest = await fetch(
-        `https://droidpp.osudroid.moe/api/droid/getRoomInfo?id=${roomId}`
+        `https://droidpp.osudroid.moe/api/droid/getRoomInfo?roomId=${roomId}`,
     );
-    let roomInfo: MultiplayerRoomInfo = await roomInfoRequest.json();
+    let roomInfo: MultiplayerRoom = await roomInfoRequest.json();
 
     while (roomInfoRequest.status !== 200) {
         roomId = prompt(
-            (roomInfo?.message ??
-                "You are being rate limited. Please try again later") +
-                `.\n\n${message}`
+            (roomInfoRequest.status === 404
+                ? "Room not found"
+                : "You are being rate limited. Please try again later") +
+                `.\n\n${message}`,
         );
 
         roomInfoRequest = await fetch(
-            `https://droidpp.osudroid.moe/api/droid/getRoomInfo?id=${roomId}`
+            `https://droidpp.osudroid.moe/api/droid/getRoomInfo?roomId=${roomId}`,
         );
         roomInfo = await roomInfoRequest.json();
     }
+
+    console.log("Room info received:");
+    console.log(roomInfo);
 
     setRoomId(roomId!);
     loadRoom(roomInfo);
@@ -56,24 +47,12 @@ export async function askRoomID(): Promise<void> {
  *
  * @param roomInfo The room info.
  */
-export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
+export async function loadRoom(roomInfo: MultiplayerRoom): Promise<void> {
     await fayeClient.beginSubscription();
 
     setPickedBeatmap(roomInfo.beatmap);
-    setRequiredMods(roomInfo.requiredMods);
-    setTeamMode(roomInfo.teamMode);
-    setSpeedMultiplier(roomInfo.speedMultiplier);
-    setScorePortion(roomInfo.scorePortion);
+    setPlayerCount(roomInfo.playerCount);
 
-    for (const player of roomInfo.players) {
-        addPlayer(player);
-        addPreview(player.uid);
-    }
-
-    setModMultipliers(roomInfo.modMultipliers);
-    setForceARAllowRule(roomInfo.forcedAR.allowed);
-    setForceARMinimumValue(roomInfo.forcedAR.minValue);
-    setForceARMaximumValue(roomInfo.forcedAR.maxValue);
     await openDatabase();
 
     if (roomInfo.beatmap) {
@@ -82,18 +61,7 @@ export async function loadRoom(roomInfo: MultiplayerRoomInfo): Promise<void> {
         $("#title a").text("No beatmaps selected yet");
     }
 
-    SpeedMultiplierChangedHandler.handle(roomInfo.speedMultiplier);
-
     if (roomInfo.isPlaying) {
-        RoundStartHandler.handle();
-
-        for (const player of players.values()) {
-            PlayerStartPlayingHandler.handle(
-                player.uid,
-                player.mods,
-                roomInfo.beatmap!.hash,
-                player.forcedAR
-            );
-        }
+        RoundStartHandler.handle(roomInfo);
     }
 }

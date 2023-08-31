@@ -10,6 +10,7 @@ import { BeatmapControlPoints } from "./sections/BeatmapControlPoints";
 import { BeatmapColor } from "./sections/BeatmapColor";
 import { BeatmapHitObjects } from "./sections/BeatmapHitObjects";
 import { MathUtils } from "../mathutil/MathUtils";
+import { ModScoreV2 } from "../mods/ModScoreV2";
 
 /**
  * Represents a beatmap with advanced information.
@@ -145,6 +146,10 @@ export class Beatmap {
             scoreMultiplier *= Math.pow(0.3, (1 - speedMultiplier) * 4);
         }
 
+        if (stats.mods.some((m) => m instanceof ModScoreV2)) {
+            return 7e5 * scoreMultiplier + 3e5;
+        }
+
         const difficultyMultiplier: number =
             1 +
             this.difficulty.od / 10 +
@@ -157,7 +162,7 @@ export class Beatmap {
         for (const object of this.hitObjects.objects) {
             if (!(object instanceof Slider)) {
                 score += Math.floor(
-                    300 + (300 * combo * difficultyMultiplier) / 25
+                    300 + (300 * combo * difficultyMultiplier) / 25,
                 );
                 ++combo;
                 continue;
@@ -179,7 +184,7 @@ export class Beatmap {
 
             // Apply slider end.
             score += Math.floor(
-                300 + (300 * combo * difficultyMultiplier) / 25
+                300 + (300 * combo * difficultyMultiplier) / 25,
             );
             ++combo;
         }
@@ -231,7 +236,7 @@ export class Beatmap {
                 score += Math.floor(
                     300 +
                         (300 * combo * difficultyMultiplier * scoreMultiplier) /
-                            25
+                            25,
                 );
                 ++combo;
                 continue;
@@ -254,7 +259,7 @@ export class Beatmap {
             // Apply slider end.
             score += Math.floor(
                 300 +
-                    (300 * combo * difficultyMultiplier * scoreMultiplier) / 25
+                    (300 * combo * difficultyMultiplier * scoreMultiplier) / 25,
             );
             ++combo;
         }

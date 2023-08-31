@@ -43,23 +43,26 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", async (e) => {
 
                 if (!content) {
                     finalMessages.push(
-                        `Cannot read contents of beatmapset ID ${beatmapsetId}.`
+                        `Cannot read contents of beatmapset ID ${beatmapsetId}.`,
                     );
                     return resolve();
                 }
 
                 await storeBeatmapsetToDB(
                     beatmapsetId,
-                    new Blob([content], { type: file.type })
+                    new Blob([content], { type: file.type }),
                 );
 
-                if (!parsedBeatmap && beatmapsetId === pickedBeatmap?.setId) {
+                if (
+                    !parsedBeatmap &&
+                    beatmapsetId === pickedBeatmap?.beatmapSetId
+                ) {
                     downloadAbortController?.abort();
                     await BeatmapChangedHandler.handle(pickedBeatmap);
                 }
 
                 finalMessages.push(
-                    `Successfully added beatmapset ID ${beatmapsetId} to cache.`
+                    `Successfully added beatmapset ID ${beatmapsetId} to cache.`,
                 );
                 resolve();
             };
@@ -68,7 +71,7 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", async (e) => {
                 console.error(e.target?.error);
 
                 finalMessages.push(
-                    `An error was encountered when attempting to load beatmapset ID ${beatmapsetId}.`
+                    `An error was encountered when attempting to load beatmapset ID ${beatmapsetId}.`,
                 );
                 resolve();
             };

@@ -1,30 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="robots" content="nofollow, noindex, noarchive">
-        <meta name="creator" content="https://github.com/Rian8337/osu-droid-spectator">
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        <meta name="robots" content="nofollow, noindex, noarchive" />
+        <meta
+            name="creator"
+            content="https://github.com/Rian8337/osu-droid-spectator"
+        />
         <title>osu!droid Spectator</title>
-        <link rel="icon" sizes="any" href="./icon.svg">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link rel="stylesheet" href="css/style.css">
+        <link rel="icon" sizes="any" href="./icon.svg" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        />
+        <link rel="stylesheet" href="css/style.css" />
     </head>
 
     <body class="h">
         <div id="container" class="x-viewbox"></div>
         <button type="button" id="play" class="material-icons">&#xE037;</button>
         <div id="control">
-            <input id="progress" type="range" min="0" max="0" value="0">
-            <input id="volume" type="range" min="0" max="100" value="100">
-            <button type="button" title="Add local beatmapset" id="addBeatmapset" class="material-icons">unarchive</button>
-            <input type="file" accept=".osz" multiple id="addBeatmapsetInput">
-            <button type="button" title="Pre-download beatmapset" id="downloadBeatmapset" class="material-icons">archive</button>
-            <input type="checkbox" title="Display Score V2" id="displayScoreV2">
-            <button type="button" id="fullscreen" class="material-icons">&#xE5D0;</button>
+            <input id="progress" type="range" min="0" max="0" value="0" />
+            <input id="volume" type="range" min="0" max="100" value="100" />
+            <button
+                type="button"
+                title="Add local beatmapset"
+                id="addBeatmapset"
+                class="material-icons"
+            >
+                unarchive
+            </button>
+            <input type="file" accept=".osz" multiple id="addBeatmapsetInput" />
+            <button
+                type="button"
+                title="Pre-download beatmapset"
+                id="downloadBeatmapset"
+                class="material-icons"
+            >
+                archive
+            </button>
+            <button type="button" id="fullscreen" class="material-icons">
+                &#xE5D0;
+            </button>
         </div>
         <div id="title">
-            <img src="./_data/BloodCat.svg" width="20" height="30" alt="아까네코 종이모형">
+            <img
+                src="./_data/BloodCat.svg"
+                width="20"
+                height="30"
+                alt="아까네코 종이모형"
+            />
             <a target="_blank">Loading...</a>
         </div>
 

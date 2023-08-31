@@ -15,26 +15,25 @@ export class DrawableComboCounter extends DrawableCounter<
     private static readonly paddingY = 30;
 
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
-        const event = this.manager.eventAtOrDefault(time);
-        const syncedEvent = this.syncedManager.eventAtOrDefault(time);
-
-        let combo = event.combo;
-        if (syncedEvent.time > event.time) {
-            combo = syncedEvent.combo;
-        }
-
         const { zeroCoordinate } = DrawableBeatmap;
 
         this.setupContext(ctx, 70);
 
         ctx.textAlign = "left";
         ctx.fillText(
-            `${combo}x`,
+            `${this.getValueAt(time)}x`,
             DrawableComboCounter.paddingX - zeroCoordinate.x,
             Playfield.baseSize.y +
                 zeroCoordinate.y -
-                DrawableComboCounter.paddingY
+                DrawableComboCounter.paddingY,
         );
         ctx.restore();
+    }
+
+    protected override getValueAt(time: number): number {
+        const event = this.manager.eventAtOrDefault(time);
+        const syncedEvent = this.syncedManager.eventAtOrDefault(time);
+
+        return (syncedEvent.time > event.time ? syncedEvent : event).combo;
     }
 }

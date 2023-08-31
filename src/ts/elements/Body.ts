@@ -15,6 +15,6 @@ $(document.body).on("mousemove", function (e) {
             if (!audioState.audio.paused) {
                 self.removeClass("h");
             }
-        }, 1500)
+        }, 1500),
     );
 });

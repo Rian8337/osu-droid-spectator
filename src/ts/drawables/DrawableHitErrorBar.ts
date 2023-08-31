@@ -36,7 +36,7 @@ export class DrawableHitErrorBar {
 
         return new Vector2(
             zeroCoordinate.x / 2,
-            Playfield.baseSize.y + zeroCoordinate.y / 1.75
+            Playfield.baseSize.y + zeroCoordinate.y / 1.75,
         );
     }
 
@@ -45,7 +45,7 @@ export class DrawableHitErrorBar {
     constructor(
         manager: SpectatorObjectDataEventManager,
         hitWindow: DroidHitWindow,
-        isPrecise: boolean
+        isPrecise: boolean,
     ) {
         this.manager = manager;
         this.hitWindow = hitWindow;
@@ -72,7 +72,7 @@ export class DrawableHitErrorBar {
         const { centerCoordinate } = this;
         const drawDistance = this.calculateDrawDistance(
             ctx,
-            this.hitWindow.hitWindowFor50(this.isPrecise)
+            this.hitWindow.hitWindowFor50(this.isPrecise),
         );
 
         ctx.globalAlpha = 1;
@@ -93,7 +93,7 @@ export class DrawableHitErrorBar {
         const { centerCoordinate } = this;
         const drawDistance = this.calculateDrawDistance(
             ctx,
-            this.hitWindow.hitWindowFor100(this.isPrecise)
+            this.hitWindow.hitWindowFor100(this.isPrecise),
         );
 
         ctx.globalAlpha = 1;
@@ -114,7 +114,7 @@ export class DrawableHitErrorBar {
         const { centerCoordinate } = this;
         const drawDistance = this.calculateDrawDistance(
             ctx,
-            this.hitWindow.hitWindowFor300(this.isPrecise)
+            this.hitWindow.hitWindowFor300(this.isPrecise),
         );
 
         ctx.globalAlpha = 1;
@@ -140,11 +140,11 @@ export class DrawableHitErrorBar {
         ctx.beginPath();
         ctx.moveTo(
             centerCoordinate.x,
-            centerCoordinate.y - ctx.canvas.height / 20
+            centerCoordinate.y - ctx.canvas.height / 20,
         );
         ctx.lineTo(
             centerCoordinate.x,
-            centerCoordinate.y + ctx.canvas.height / 20
+            centerCoordinate.y + ctx.canvas.height / 20,
         );
         ctx.stroke();
         ctx.closePath();
@@ -186,6 +186,10 @@ export class DrawableHitErrorBar {
                 continue;
             }
 
+            // For hit error, we use the object start time rather than the event time. This is because event
+            // times are based on objects' end time, and in sliders, the hit error is drawn when the player
+            // hits the slider head rather than after the slider ends. As such, using the event time here
+            // would result in an inaccurate hit error bar.
             const eventTime = object.startTime + event.accuracy;
             const dt = time - eventTime;
             if (dt > this.maxDrawTime) {
@@ -195,12 +199,12 @@ export class DrawableHitErrorBar {
             const opacity = MathUtils.clamp(
                 (this.maxDrawTime - dt) / 1000,
                 0,
-                0.8
+                0.8,
             );
 
             const distanceFromCenter = this.calculateDrawDistance(
                 ctx,
-                event.accuracy
+                event.accuracy,
             );
 
             ctx.globalAlpha = opacity;
@@ -209,11 +213,11 @@ export class DrawableHitErrorBar {
             ctx.beginPath();
             ctx.moveTo(
                 centerCoordinate.x + distanceFromCenter,
-                centerCoordinate.y - ctx.canvas.height / 30
+                centerCoordinate.y - ctx.canvas.height / 30,
             );
             ctx.lineTo(
                 centerCoordinate.x + distanceFromCenter,
-                centerCoordinate.y + ctx.canvas.height / 30
+                centerCoordinate.y + ctx.canvas.height / 30,
             );
             ctx.stroke();
             ctx.closePath();
@@ -224,7 +228,7 @@ export class DrawableHitErrorBar {
 
     private calculateDrawDistance(
         ctx: CanvasRenderingContext2D,
-        ms: number
+        ms: number,
     ): number {
         const maxDistance = ctx.canvas.width / 2;
         // The highest hit window the player can achieve with mods.

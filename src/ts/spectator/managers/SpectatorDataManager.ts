@@ -7,8 +7,7 @@ import {
     ModUtil,
 } from "../../osu-base";
 import { parsedBeatmap } from "../../settings/BeatmapSettings";
-import { modMultipliers, speedMultiplier } from "../../settings/RoomSettings";
-import { PlayerInfo } from "../rawdata/PlayerInfo";
+import { MultiplayerPlayer } from "../structures/MultiplayerPlayer";
 import { SpectatorAccuracyEventManager } from "./SpectatorAccuracyEventManager";
 import { SpectatorComboEventManager } from "./SpectatorComboEventManager";
 import { SpectatorCursorEventManager } from "./SpectatorCursorEventManager";
@@ -34,14 +33,9 @@ export class SpectatorDataManager {
     readonly username: string;
 
     /**
-     * The mods the player uses to play.
+     * The mods this player uses to play.
      */
-    mods: (Mod & IModApplicableToDroid)[] = [];
-
-    /**
-     * The force AR value the player uses to play.
-     */
-    forcedAR?: number;
+    readonly mods: (Mod & IModApplicableToDroid)[];
 
     /**
      * Managers for spectator events of this player.
@@ -51,12 +45,7 @@ export class SpectatorDataManager {
     /**
      * The hit window of this player.
      */
-    hitWindow = new DroidHitWindow(5);
-
-    /**
-     * The score multiplier of this player.
-     */
-    scoreMultiplier = 1;
+    readonly hitWindow: DroidHitWindow;
 
     /**
      * The duration at which the preview can use this manager to play.
@@ -70,7 +59,7 @@ export class SpectatorDataManager {
      */
     get maxHitWindow(): number {
         return this.hitWindow.hitWindowFor50(
-            this.mods.some((m) => m instanceof ModPrecise)
+            this.mods.some((m) => m instanceof ModPrecise),
         );
     }
 
@@ -93,14 +82,15 @@ export class SpectatorDataManager {
             this.events.accuracy.earliestEventTime ?? Number.POSITIVE_INFINITY,
             this.events.combo.earliestEventTime ?? Number.POSITIVE_INFINITY,
             this.events.score.earliestEventTime ?? Number.POSITIVE_INFINITY,
-            this.events.objectData.earliestEventTime ?? Number.POSITIVE_INFINITY
+            this.events.objectData.earliestEventTime ??
+                Number.POSITIVE_INFINITY,
         );
 
         if (earliestEventTime === Number.POSITIVE_INFINITY) {
             for (const eventManager of this.events.cursor) {
                 earliestEventTime = Math.min(
                     earliestEventTime,
-                    eventManager.earliestEventTime ?? Number.POSITIVE_INFINITY
+                    eventManager.earliestEventTime ?? Number.POSITIVE_INFINITY,
                 );
             }
         }
@@ -116,14 +106,14 @@ export class SpectatorDataManager {
             this.events.accuracy.latestEventTime ?? Number.POSITIVE_INFINITY,
             this.events.combo.latestEventTime ?? Number.POSITIVE_INFINITY,
             this.events.score.latestEventTime ?? Number.POSITIVE_INFINITY,
-            this.events.objectData.latestEventTime ?? Number.POSITIVE_INFINITY
+            this.events.objectData.latestEventTime ?? Number.POSITIVE_INFINITY,
         );
 
         if (latestEventTime === Number.POSITIVE_INFINITY) {
             for (const eventManager of this.events.cursor) {
                 latestEventTime = Math.min(
                     latestEventTime,
-                    eventManager.latestEventTime ?? Number.POSITIVE_INFINITY
+                    eventManager.latestEventTime ?? Number.POSITIVE_INFINITY,
                 );
             }
         }
@@ -131,9 +121,9 @@ export class SpectatorDataManager {
         return Number.isFinite(latestEventTime) ? latestEventTime : null;
     }
 
-    constructor(playerInfo: PlayerInfo) {
-        this.uid = playerInfo.uid;
-        this.username = playerInfo.username;
+    constructor(player: MultiplayerPlayer) {
+        this.uid = player.uid;
+        this.username = player.username;
 
         if (!parsedBeatmap) {
             throw new Error("No beatmaps have been parsed yet");
@@ -153,6 +143,15 @@ export class SpectatorDataManager {
         for (let i = 0; i < 10; ++i) {
             this.events.cursor.push(new SpectatorCursorEventManager());
         }
+
+        this.mods = ModUtil.droidStringToMods(player.mods ?? "");
+
+        this.hitWindow = new DroidHitWindow(
+            new MapStats({
+                od: parsedBeatmap.difficulty.od,
+                mods: ModUtil.removeSpeedChangingMods(this.mods),
+            }).calculate({ convertDroidOD: false }).od!,
+        );
     }
 
     /**
@@ -163,74 +162,5 @@ export class SpectatorDataManager {
      */
     isAvailableAt(time: number): boolean {
         return time <= this.latestDataTime;
-    }
-
-    /**
-     * Resets the state of this manager.
-     */
-    reset(): void {
-        this.events.accuracy.clear();
-        this.events.combo.clear();
-        this.events.objectData.clear();
-        this.events.score.clear();
-
-        for (const cursorEventManager of this.events.cursor) {
-            cursorEventManager.clear();
-        }
-
-        this.latestDataTime = -1;
-    }
-
-    /**
-     * Applies player-specific settings of the player.
-     *
-     * @param mods The mods used by the player.
-     * @param forcedAR The forced AR used by the player.
-     */
-    applyPlayerSettings(
-        mods: (Mod & IModApplicableToDroid)[],
-        forcedAR?: number
-    ): void {
-        this.mods = mods;
-        this.recalculateScoreMultiplier();
-
-        if (parsedBeatmap) {
-            this.hitWindow = new DroidHitWindow(
-                new MapStats({
-                    od: parsedBeatmap.difficulty.od,
-                    mods: ModUtil.removeSpeedChangingMods(mods),
-                }).calculate({ convertDroidOD: false }).od!
-            );
-        }
-
-        this.forcedAR = forcedAR;
-    }
-
-    /**
-     * Recalculates the score multiplier.
-     */
-    recalculateScoreMultiplier(): void {
-        this.scoreMultiplier = this.mods.reduce(
-            (a, m) => a * m.droidScoreMultiplier,
-            1
-        );
-
-        for (const mod of this.mods) {
-            if (!modMultipliers[mod.acronym]) {
-                continue;
-            }
-
-            this.scoreMultiplier *= modMultipliers[mod.acronym];
-
-            if (mod.droidScoreMultiplier > 0) {
-                this.scoreMultiplier /= mod.droidScoreMultiplier;
-            }
-        }
-
-        if (speedMultiplier >= 1) {
-            this.scoreMultiplier *= 1 + (speedMultiplier - 1) * 0.24;
-        } else {
-            this.scoreMultiplier *= Math.pow(0.3, (1 - speedMultiplier) * 4);
-        }
     }
 }

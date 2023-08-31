@@ -55,7 +55,7 @@ export class Command<T> {
         startValue: T,
         endValue: T,
         type: StoryboardCommandType,
-        parameterType?: StoryboardParameterCommandType
+        parameterType?: StoryboardParameterCommandType,
     ) {
         this.easing = easing;
         this.startTime = startTime;

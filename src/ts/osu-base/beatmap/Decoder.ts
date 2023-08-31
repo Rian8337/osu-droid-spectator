@@ -79,7 +79,7 @@ export abstract class Decoder<R, D extends SectionDecoder<R>> {
 
                 if (!Object.values<string>(BeatmapSection).includes(section)) {
                     console.warn(
-                        `Unknown section "${line}" at line ${this.line}`
+                        `Unknown section "${line}" at line ${this.line}`,
                     );
                     continue;
                 }
@@ -107,7 +107,7 @@ export abstract class Decoder<R, D extends SectionDecoder<R>> {
                 console.log(
                     `at line ${this.line}\n${this.currentLine}\n${this.decoders[
                         this.section
-                    ]?.logExceptionPosition()}`
+                    ]?.logExceptionPosition()}`,
                 );
             }
         }

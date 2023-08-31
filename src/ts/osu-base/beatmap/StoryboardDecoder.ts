@@ -32,15 +32,15 @@ export class StoryboardDecoder extends Decoder<
         this.decoders = {
             General: new StoryboardGeneralDecoder(
                 this.finalResult,
-                this.formatVersion
+                this.formatVersion,
             ),
             Events: new StoryboardEventsDecoder(
                 this.finalResult,
-                this.formatVersion
+                this.formatVersion,
             ),
             Variables: new StoryboardVariablesDecoder(
                 this.finalResult,
-                this.formatVersion
+                this.formatVersion,
             ),
         };
     }

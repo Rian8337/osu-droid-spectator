@@ -82,7 +82,7 @@ export class CommandTimeline<T> implements ICommandTimeline {
 
     constructor(
         type: StoryboardCommandType,
-        parameterType?: StoryboardParameterCommandType
+        parameterType?: StoryboardParameterCommandType,
     ) {
         this.type = type;
         this.parameterType = parameterType;
@@ -102,7 +102,7 @@ export class CommandTimeline<T> implements ICommandTimeline {
         startTime: number,
         endTime: number,
         startValue: T,
-        endValue: T
+        endValue: T,
     ): void {
         if (startTime > endTime) {
             return;
@@ -116,8 +116,8 @@ export class CommandTimeline<T> implements ICommandTimeline {
                 startValue,
                 endValue,
                 this.type,
-                this.parameterType
-            )
+                this.parameterType,
+            ),
         );
 
         if (startTime < this._startTime) {

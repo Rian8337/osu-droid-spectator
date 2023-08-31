@@ -122,15 +122,11 @@ export class Preview {
             return;
         }
 
-        this.beatmap = new DrawableBeatmap(
-            parsedBeatmap,
-            specDataManager.mods,
-            specDataManager.forcedAR
-        );
+        this.beatmap = new DrawableBeatmap(parsedBeatmap, specDataManager.mods);
         this.specDataManager = specDataManager;
         this.playerInfo = new DrawablePlayerInfo(
             specDataManager.uid,
-            specDataManager.username
+            specDataManager.username,
         );
         this.ctx.restore();
         this.ctx.save();
@@ -139,27 +135,27 @@ export class Preview {
 
         for (const manager of specDataManager.events.cursor) {
             this.drawableCursors.push(
-                new DrawableCursor(manager, specDataManager.mods)
+                new DrawableCursor(manager, specDataManager.mods),
             );
         }
 
         this.accuracyCounter = new DrawableAccuracyCounter(
             specDataManager.events.accuracy,
-            specDataManager.events.syncedAccuracy
+            specDataManager.events.syncedAccuracy,
         );
         this.comboCounter = new DrawableComboCounter(
             specDataManager.events.combo,
-            specDataManager.events.syncedCombo
+            specDataManager.events.syncedCombo,
         );
         this.scoreCounter = new DrawableScoreCounter(
             specDataManager.events.score,
             specDataManager.events.syncedScore,
-            specDataManager.uid
+            specDataManager.uid,
         );
         this.hitErrorBar = new DrawableHitErrorBar(
             specDataManager.events.objectData,
             specDataManager.hitWindow,
-            specDataManager.mods.some((m) => m instanceof ModPrecise)
+            specDataManager.mods.some((m) => m instanceof ModPrecise),
         );
 
         this.beatmap.update(this.ctx);

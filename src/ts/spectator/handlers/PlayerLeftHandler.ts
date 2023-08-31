@@ -1,6 +1,4 @@
-import { removePlayer } from "../../settings/PlayerSettings";
-import { removePreview } from "../../settings/PreviewSettings";
-import { dataProcessor } from "../../settings/SpectatorSettings";
+import { decrementPlayerCount } from "../../settings/PlayerSettings";
 
 /**
  * A handler responsible for handling player leave events.
@@ -14,9 +12,6 @@ export abstract class PlayerLeftHandler {
     static handle(uid: number) {
         console.log("Player", uid, "left room");
 
-        removePreview(uid);
-        removePlayer(uid);
-
-        dataProcessor?.removePlayer(uid);
+        decrementPlayerCount();
     }
 }

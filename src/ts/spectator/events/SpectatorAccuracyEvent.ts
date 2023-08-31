@@ -9,19 +9,13 @@ export class SpectatorAccuracyEvent extends SpectatorEvent {
      */
     readonly accuracy: number;
 
-    /**
-     * The index of the object at which this event occurred.
-     */
-    readonly objectIndex: number;
-
-    constructor(time: number, accuracy: number, objectIndex: number) {
+    constructor(time: number, accuracy: number) {
         super(time);
 
         this.accuracy = accuracy;
-        this.objectIndex = objectIndex;
     }
 
     override isRedundant(existing: SpectatorAccuracyEvent): boolean {
-        return this.objectIndex === existing.objectIndex;
+        return this.accuracy === existing.accuracy;
     }
 }

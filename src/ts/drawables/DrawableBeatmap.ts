@@ -1,6 +1,5 @@
 import {
     Beatmap,
-    Circle,
     HitObject,
     IModApplicableToDroid,
     MapStats,
@@ -17,8 +16,8 @@ import { DrawableHitObject } from "./hitobjects/DrawableHitObject";
 import { DrawableSlider } from "./hitobjects/DrawableSlider";
 import { DrawableSpinner } from "./hitobjects/DrawableSpinner";
 import { SpectatorDataManager } from "../spectator/managers/SpectatorDataManager";
-import { HitResult } from "../spectator/structures/HitResult";
 import { Preview } from "../Preview";
+import { forcedAR } from "../settings/RoomSettings";
 
 /**
  * Represents a beatmap that can be used to draw objects.
@@ -30,7 +29,7 @@ export class DrawableBeatmap {
     static get zeroCoordinate(): Vector2 {
         return new Vector2(
             (innerWidth - Playfield.baseSize.x) / 2,
-            (innerHeight - Playfield.baseSize.y) / 2 - Preview.heightPadding
+            (innerHeight - Playfield.baseSize.y) / 2 - Preview.heightPadding,
         );
     }
 
@@ -70,7 +69,7 @@ export class DrawableBeatmap {
      */
     static convertHitObjectToDrawable(
         object: HitObject,
-        mods: (Mod & IModApplicableToDroid)[]
+        mods: (Mod & IModApplicableToDroid)[],
     ): DrawableHitObject {
         if (object instanceof Slider) {
             return new DrawableSlider(object, mods);
@@ -81,11 +80,7 @@ export class DrawableBeatmap {
         }
     }
 
-    constructor(
-        beatmap: Beatmap,
-        mods: (Mod & IModApplicableToDroid)[],
-        forcedAR?: number
-    ) {
+    constructor(beatmap: Beatmap, mods: (Mod & IModApplicableToDroid)[]) {
         this.beatmap = beatmap;
 
         if (this.beatmap.hitObjects.objects.length === 0) {
@@ -137,33 +132,25 @@ export class DrawableBeatmap {
     draw(
         ctx: CanvasRenderingContext2D,
         time: number,
-        manager: SpectatorDataManager
+        manager: SpectatorDataManager,
     ): void {
         time = this.beatmap.getOffsetTime(time);
 
         while (this.objectDrawIndexes.first < this.drawableHitObjects.length) {
             const object =
                 this.drawableHitObjects[this.objectDrawIndexes.first];
+            const objectData = manager.events.objectData.eventAtIndex(
+                this.objectDrawIndexes.first,
+            );
+
             let timeThreshold =
-                object.object.endTime +
                 DrawableHitObject.hitResultFadeOutStartTime +
                 DrawableHitObject.hitResultFadeOutTime;
 
-            if (object.object instanceof Circle) {
-                const objectData = manager.events.objectData.eventAtIndex(
-                    this.objectDrawIndexes.first
-                );
-
-                if (objectData) {
-                    if (
-                        objectData.result !== HitResult.miss ||
-                        objectData.accuracy !== 1e4
-                    ) {
-                        timeThreshold += objectData.accuracy;
-                    } else {
-                        timeThreshold += manager.maxHitWindow;
-                    }
-                }
+            if (objectData) {
+                timeThreshold += objectData.time;
+            } else {
+                timeThreshold += object.object.endTime + manager.maxHitWindow;
             }
 
             if (time <= timeThreshold) {
@@ -189,28 +176,23 @@ export class DrawableBeatmap {
             --i
         ) {
             const object = this.drawableHitObjects[i];
-            const hitData = manager.events.objectData.eventAtIndex(i);
+            const objectData = manager.events.objectData.eventAtIndex(i);
+
             let timeThreshold =
-                object.object.endTime +
                 DrawableHitObject.hitResultFadeOutStartTime +
                 DrawableHitObject.hitResultFadeOutTime;
 
-            if (object.object instanceof Circle && hitData) {
-                if (
-                    hitData.result !== HitResult.miss ||
-                    hitData.accuracy !== 1e4
-                ) {
-                    timeThreshold += hitData.accuracy;
-                } else {
-                    timeThreshold += manager.maxHitWindow;
-                }
+            if (objectData) {
+                timeThreshold += objectData.time;
+            } else {
+                timeThreshold += object.object.endTime + manager.maxHitWindow;
             }
 
             if (time > timeThreshold) {
                 break;
             }
 
-            object.draw(ctx, time, hitData, manager.maxHitWindow);
+            object.draw(ctx, time, objectData, manager.maxHitWindow);
         }
     }
 
@@ -225,7 +207,7 @@ export class DrawableBeatmap {
         for (const object of this.beatmap.hitObjects.objects) {
             const drawableObject = DrawableBeatmap.convertHitObjectToDrawable(
                 object,
-                mods
+                mods,
             );
 
             // Set combo and color.

@@ -18,7 +18,7 @@ export interface PlayerLeftMessage
  * @param message The message.
  */
 export function isPlayerLeftMessage(
-    message: BroadcastedMessage
+    message: BroadcastedMessage,
 ): message is PlayerLeftMessage {
     return message.state === MultiplayerState.playerLeft;
 }

@@ -101,7 +101,7 @@ export abstract class CircleSizeCalculator {
      */
     static standardCSToDroidScale(cs: number): number {
         return this.standardScaleToDroidScale(
-            this.standardCSToStandardScale(cs)
+            this.standardCSToStandardScale(cs),
         );
     }
 }

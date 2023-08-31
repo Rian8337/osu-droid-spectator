@@ -15,28 +15,28 @@ export class CommandTimelineGroup {
      * The command timeline that changes an animation or sprite's X and Y coordinates.
      */
     move: CommandTimeline<Vector2> = new CommandTimeline(
-        StoryboardCommandType.movement
+        StoryboardCommandType.movement,
     );
 
     /**
      * The command timeline that changes an animation or sprite's X-coordinate.
      */
     x: CommandTimeline<number> = new CommandTimeline(
-        StoryboardCommandType.movementX
+        StoryboardCommandType.movementX,
     );
 
     /**
      * The command timeline that changes an animation or sprite's Y-coordinate.
      */
     y: CommandTimeline<number> = new CommandTimeline(
-        StoryboardCommandType.movementY
+        StoryboardCommandType.movementY,
     );
 
     /**
      * The command timeline that scales an animation or sprite with a number.
      */
     scale: CommandTimeline<number> = new CommandTimeline(
-        StoryboardCommandType.scale
+        StoryboardCommandType.scale,
     );
 
     /**
@@ -45,14 +45,14 @@ export class CommandTimelineGroup {
      * This allows scaling the width and height of an animation or sprite individually at the same time.
      */
     vectorScale: CommandTimeline<Vector2> = new CommandTimeline(
-        StoryboardCommandType.vectorScale
+        StoryboardCommandType.vectorScale,
     );
 
     /**
      * The command timeline that rotates an animation or sprite, in radians, clockwise.
      */
     rotation: CommandTimeline<number> = new CommandTimeline(
-        StoryboardCommandType.rotation
+        StoryboardCommandType.rotation,
     );
 
     /**
@@ -61,14 +61,14 @@ export class CommandTimelineGroup {
      * The colors of the pixels on the animation or sprite are determined subtractively.
      */
     color: CommandTimeline<RGBColor> = new CommandTimeline(
-        StoryboardCommandType.color
+        StoryboardCommandType.color,
     );
 
     /**
      * The command timeline that changes the opacity of an animation or sprite.
      */
     alpha: CommandTimeline<number> = new CommandTimeline(
-        StoryboardCommandType.fade
+        StoryboardCommandType.fade,
     );
 
     /**
@@ -77,7 +77,7 @@ export class CommandTimelineGroup {
     blendingParameters: CommandTimeline<BlendingParameters> =
         new CommandTimeline(
             StoryboardCommandType.parameter,
-            StoryboardParameterCommandType.blendingMode
+            StoryboardParameterCommandType.blendingMode,
         );
 
     /**
@@ -85,7 +85,7 @@ export class CommandTimelineGroup {
      */
     flipHorizontal: CommandTimeline<boolean> = new CommandTimeline(
         StoryboardCommandType.parameter,
-        StoryboardParameterCommandType.horizontalFlip
+        StoryboardParameterCommandType.horizontalFlip,
     );
 
     /**
@@ -93,7 +93,7 @@ export class CommandTimelineGroup {
      */
     flipVertical: CommandTimeline<boolean> = new CommandTimeline(
         StoryboardCommandType.parameter,
-        StoryboardParameterCommandType.verticalFlip
+        StoryboardParameterCommandType.verticalFlip,
     );
 
     private readonly timelines: readonly ICommandTimeline[] = [
@@ -166,7 +166,7 @@ export class CommandTimelineGroup {
      */
     getCommands<T>(
         timelineSelector: CommandTimelineSelector<T>,
-        offset: number = 0
+        offset: number = 0,
     ): Command<T>[] {
         const timeline: CommandTimeline<T> = timelineSelector(this);
 
@@ -180,8 +180,8 @@ export class CommandTimelineGroup {
                         c.startValue,
                         c.endValue,
                         c.type,
-                        c.parameterType
-                    )
+                        c.parameterType,
+                    ),
             );
         }
 

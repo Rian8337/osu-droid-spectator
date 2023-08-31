@@ -24,7 +24,7 @@ export class DrawableCursor {
 
     constructor(
         manager: SpectatorEventManager<SpectatorCursorEvent>,
-        mods: (Mod & IModApplicableToDroid)[]
+        mods: (Mod & IModApplicableToDroid)[],
     ) {
         this.manager = manager;
         this.isHardRock = mods.some((m) => m instanceof ModHardRock);
@@ -51,7 +51,7 @@ export class DrawableCursor {
         if (this.isHardRock) {
             position = new Vector2(
                 position.x,
-                Playfield.baseSize.y - position.y
+                Playfield.baseSize.y - position.y,
             );
         }
 
@@ -59,12 +59,12 @@ export class DrawableCursor {
         const x = MathUtils.clamp(
             position.x,
             -zeroCoordinate.x,
-            ctx.canvas.width
+            ctx.canvas.width,
         );
         const y = MathUtils.clamp(
             position.y,
             -zeroCoordinate.y,
-            ctx.canvas.height
+            ctx.canvas.height,
         );
 
         const radius = 15;

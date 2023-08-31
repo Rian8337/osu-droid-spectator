@@ -37,7 +37,7 @@ export class CommandLoop extends CommandTimelineGroup {
 
     override getCommands<T>(
         timelineSelector: CommandTimelineSelector<T>,
-        offset: number = 0
+        offset: number = 0,
     ): Command<T>[] {
         const commands: Command<T>[] = [];
 
@@ -46,7 +46,7 @@ export class CommandLoop extends CommandTimelineGroup {
                 this.loopStartTime + i * this.commandsDuration;
 
             commands.push(
-                ...super.getCommands(timelineSelector, offset + loopOffset)
+                ...super.getCommands(timelineSelector, offset + loopOffset),
             );
         }
 

@@ -92,7 +92,7 @@ export class SliderPath {
                 const spanEnd: number = i + 1;
                 const cpSpan: Vector2[] = this.controlPoints.slice(
                     spanStart,
-                    spanEnd
+                    spanEnd,
                 );
                 this.calculateSubPath(cpSpan).forEach((t) => {
                     if (
@@ -120,7 +120,7 @@ export class SliderPath {
                 }
 
                 return PathApproximator.approximateCircularArc(
-                    subControlPoints
+                    subControlPoints,
                 );
             case PathType.Catmull:
                 return PathApproximator.approximateCatmull(subControlPoints);
@@ -139,7 +139,7 @@ export class SliderPath {
 
         for (let i = 0; i < this.calculatedPath.length - 1; ++i) {
             const diff: Vector2 = this.calculatedPath[i + 1].subtract(
-                this.calculatedPath[i]
+                this.calculatedPath[i],
             );
             calculatedLength += diff.length;
             this.cumulativeLength.push(calculatedLength);
@@ -179,14 +179,16 @@ export class SliderPath {
 
             // The direction of the segment to shorten or lengthen
             const dir: Vector2 = this.calculatedPath[pathEndIndex].subtract(
-                this.calculatedPath[pathEndIndex - 1]
+                this.calculatedPath[pathEndIndex - 1],
             );
             dir.normalize();
 
             this.calculatedPath[pathEndIndex] = this.calculatedPath[
                 pathEndIndex - 1
             ].add(
-                dir.scale(this.expectedDistance - this.cumulativeLength.at(-1)!)
+                dir.scale(
+                    this.expectedDistance - this.cumulativeLength.at(-1)!,
+                ),
             );
             this.cumulativeLength.push(this.expectedDistance);
         }

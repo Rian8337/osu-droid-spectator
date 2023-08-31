@@ -1,18 +1,12 @@
 import { SpectatorSyncedAccuracyEvent } from "../events/SpectatorSyncedAccuracyEvent";
-import { SpectatorIndexedEventManager } from "./SpectatorIndexedEventManager";
+import { SpectatorEventManager } from "./SpectatorEventManager";
 
 /**
  * Represents a manager for the synced accuracy spectator event.
  */
-export class SpectatorSyncedAccuracyEventManager extends SpectatorIndexedEventManager<SpectatorSyncedAccuracyEvent> {
+export class SpectatorSyncedAccuracyEventManager extends SpectatorEventManager<SpectatorSyncedAccuracyEvent> {
     protected override readonly defaultEvent = new SpectatorSyncedAccuracyEvent(
         Number.NEGATIVE_INFINITY,
         1,
-        -1
     );
-    protected override getEventIndex(
-        event: SpectatorSyncedAccuracyEvent
-    ): number {
-        return event.objectIndex;
-    }
 }

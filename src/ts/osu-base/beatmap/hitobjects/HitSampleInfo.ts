@@ -58,7 +58,7 @@ export class HitSampleInfo {
         bank?: SampleBank,
         customSampleBank: number = 0,
         volume: number = 0,
-        isLayered: boolean = false
+        isLayered: boolean = false,
     ) {
         this.name = name;
         this.bank = bank;

@@ -113,7 +113,7 @@ export class Slider extends HitObject {
     }) {
         super({
             endPosition: values.position.add(
-                values.path.positionAt(values.repetitions % 2)
+                values.path.positionAt(values.repetitions % 2),
             ),
             ...values,
         });
@@ -151,7 +151,7 @@ export class Slider extends HitObject {
         const length: number = Math.min(maxLength, this.path.expectedDistance);
         const tickDistance: number = Math.min(
             Math.max(this.tickDistance, 0),
-            length
+            length,
         );
 
         if (tickDistance !== 0) {
@@ -175,7 +175,7 @@ export class Slider extends HitObject {
                         : distanceProgress;
 
                     const sliderTickPosition: Vector2 = this.position.add(
-                        this.path.positionAt(distanceProgress)
+                        this.path.positionAt(distanceProgress),
                     );
                     const sliderTick: SliderTick = new SliderTick({
                         startTime:
@@ -197,7 +197,7 @@ export class Slider extends HitObject {
 
                 if (span < this.repetitions - 1) {
                     const repeatPosition: Vector2 = this.position.add(
-                        this.path.positionAt((span + 1) % 2)
+                        this.path.positionAt((span + 1) % 2),
                     );
                     const repeatPoint: SliderRepeat = new SliderRepeat({
                         position: repeatPosition,

@@ -28,7 +28,7 @@ export class StoryboardAnimation extends StoryboardSprite {
         initialPosition: Vector2,
         frameCount: number,
         frameDelay: number,
-        loopType: AnimationLoopType
+        loopType: AnimationLoopType,
     ) {
         super(path, origin, initialPosition);
 

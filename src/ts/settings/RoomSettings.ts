@@ -1,4 +1,5 @@
 import { setAudioPlaybackRate } from "../elements/Audio";
+import { IModApplicableToDroid, Mod, ModUtil } from "../osu-base";
 import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
 
 /**
@@ -12,36 +13,9 @@ export let roomId = "";
 export let speedMultiplier = 1;
 
 /**
- * Custom mod multipliers that overrides the client's default mod multiplier.
- *
- * Each mod is mapped to their own mod multiplier.
- */
-export let modMultipliers: Record<string, number> = {};
-
-/**
  * The combination of mods that are required to be played.
  */
-export let requiredMods = "";
-
-/**
- * Settings for force AR.
- */
-export const forcedAR = {
-    /**
-     * Whether players are allowed to use force AR.
-     */
-    allowed: false,
-
-    /**
-     * The allowable minimum value of force AR if it is allowed.
-     */
-    minValue: 0,
-
-    /**
-     * The allowable maximum value of force AR if it is allowed.
-     */
-    maxValue: 12.5,
-};
+export let mods: (Mod & IModApplicableToDroid)[] = [];
 
 /**
  * The team mode.
@@ -49,9 +23,9 @@ export const forcedAR = {
 export let teamMode = MultiplayerTeamMode.headToHead;
 
 /**
- * The score portion if the win condition is ScoreV2.
+ * The force AR to be used.
  */
-export let scorePortion = 0.4;
+export let forcedAR: number | null = null;
 
 /**
  * Sets the room ID.
@@ -63,23 +37,12 @@ export function setRoomId(newRoomId: string): void {
 }
 
 /**
- * Sets the mod multipliers.
- *
- * @param newMultipliers The new multipliers.
- */
-export function setModMultipliers(
-    newMultipliers: Record<string, number>
-): void {
-    modMultipliers = newMultipliers;
-}
-
-/**
  * Sets the required mods.
  *
- * @param mods The required mods.
+ * @param newMods The required mods.
  */
-export function setRequiredMods(mods: string): void {
-    requiredMods = mods;
+export function setMods(newMods: string): void {
+    mods = ModUtil.droidStringToMods(newMods);
 
     setAudioPlaybackRate();
 }
@@ -96,33 +59,6 @@ export function setSpeedMultiplier(value: number): void {
 }
 
 /**
- * Sets the usage rule of force AR.
- *
- * @param allow Whether to allow force AR.
- */
-export function setForceARAllowRule(allow: boolean): void {
-    forcedAR.allowed = allow;
-}
-
-/**
- * Sets the minimum value of force AR.
- *
- * @param value The value.
- */
-export function setForceARMinimumValue(value: number): void {
-    forcedAR.minValue = value;
-}
-
-/**
- * Sets the maximum value of force AR.
- *
- * @param value The value.
- */
-export function setForceARMaximumValue(value: number): void {
-    forcedAR.maxValue = value;
-}
-
-/**
  * Sets the team mode.
  *
  * @param mode The team mode.
@@ -132,10 +68,10 @@ export function setTeamMode(mode: MultiplayerTeamMode): void {
 }
 
 /**
- * Sets the score portion value.
+ * Sets the force AR value.
  *
  * @param value The value.
  */
-export function setScorePortion(value: number): void {
-    scorePortion = value;
+export function setForcedAR(value: number | null): void {
+    forcedAR = value;
 }

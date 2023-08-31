@@ -35,7 +35,7 @@ export class BeatmapDecoder extends Decoder<Beatmap, SectionDecoder<Beatmap>> {
     override decode(
         str: string,
         mods: Mod[] = [],
-        parseStoryboard: boolean = true
+        parseStoryboard: boolean = true,
     ): this {
         super.decode(str);
 
@@ -46,7 +46,7 @@ export class BeatmapDecoder extends Decoder<Beatmap, SectionDecoder<Beatmap>> {
 
             if (eventsDecoder.storyboardLines.length > 0) {
                 this.finalResult.events.storyboard = new StoryboardDecoder(
-                    this.finalResult.formatVersion
+                    this.finalResult.formatVersion,
                 ).decode(eventsDecoder.storyboardLines.join("\n")).result;
             }
         }
@@ -64,7 +64,7 @@ export class BeatmapDecoder extends Decoder<Beatmap, SectionDecoder<Beatmap>> {
 
         HitObjectStackEvaluator.applyDroidStacking(
             this.finalResult.hitObjects.objects,
-            this.finalResult.general.stackLeniency
+            this.finalResult.general.stackLeniency,
         );
 
         return this;

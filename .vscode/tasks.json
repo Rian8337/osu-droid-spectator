@@ -3,14 +3,14 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "compile-ts",
+			"script": "transpile-bundle",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
 			"problemMatcher": [],
-			"label": "npm: compile-ts",
-			"detail": "npm run compile-ts"
+			"label": "npm: transpile-bundle",
+			"detail": "npm run transpile-bundle"
 		}
 	]
 }

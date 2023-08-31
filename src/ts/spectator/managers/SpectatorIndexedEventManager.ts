@@ -7,7 +7,7 @@ import { SpectatorEventManager } from "./SpectatorEventManager";
  * Unlike normal spectator event managers, this manager stores events based on their index.
  */
 export abstract class SpectatorIndexedEventManager<
-    T extends SpectatorEvent
+    T extends SpectatorEvent,
 > extends SpectatorEventManager<T> {
     /**
      * The earliest index at which an event exists.

@@ -60,7 +60,7 @@ export abstract class ControlPointManager<T extends ControlPoint> {
         this._points.splice(
             this.findInsertionIndex(controlPoint.time),
             0,
-            controlPoint
+            controlPoint,
         );
 
         return true;
@@ -122,7 +122,7 @@ export abstract class ControlPointManager<T extends ControlPoint> {
      */
     protected binarySearchWithFallback(
         time: number,
-        fallback: T = this.defaultControlPoint
+        fallback: T = this.defaultControlPoint,
     ): T {
         return this.binarySearch(time) ?? fallback;
     }

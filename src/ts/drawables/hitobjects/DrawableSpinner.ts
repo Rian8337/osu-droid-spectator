@@ -16,7 +16,7 @@ export class DrawableSpinner extends DrawableHitObject {
     override draw(
         ctx: CanvasRenderingContext2D,
         time: number,
-        hitData: SpectatorObjectDataEvent | null
+        hitData: SpectatorObjectDataEvent | null,
     ): void {
         this.isHit = time >= this.object.endTime;
 
@@ -39,7 +39,7 @@ export class DrawableSpinner extends DrawableHitObject {
             this.object.position.y,
             DrawableSpinner.radius - DrawableSpinner.borderWidth / 2,
             -Math.PI,
-            Math.PI
+            Math.PI,
         );
         ctx.globalCompositeOperation = "destination-over";
         ctx.shadowBlur = 0;
@@ -70,7 +70,7 @@ export class DrawableSpinner extends DrawableHitObject {
                 (DrawableSpinner.radius - DrawableSpinner.borderWidth / 2) *
                     scale,
                 -Math.PI,
-                Math.PI
+                Math.PI,
             );
             ctx.shadowBlur = 3;
             ctx.strokeStyle = "#fff";
@@ -79,34 +79,12 @@ export class DrawableSpinner extends DrawableHitObject {
             ctx.restore();
         }
 
-        const endPosition = this.object.position;
-
-        if (this.isHit) {
-            if (hitData) {
-                this.drawHitResult(
-                    ctx,
-                    time,
-                    endPosition,
-                    hitData.time,
-                    hitData.result
-                );
-            } else {
-                this.drawHitResult(
-                    ctx,
-                    time,
-                    endPosition,
-                    this.object.endTime,
-                    HitResult.miss
-                );
-            }
-        } else {
-            this.drawHitResult(
-                ctx,
-                time,
-                endPosition,
-                this.object.endTime,
-                HitResult.miss
-            );
-        }
+        this.drawHitResult(
+            ctx,
+            time,
+            this.object.position,
+            hitData?.time ?? this.object.endTime,
+            hitData?.result ?? HitResult.miss,
+        );
     }
 }

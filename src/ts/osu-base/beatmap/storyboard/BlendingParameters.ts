@@ -41,7 +41,7 @@ export class BlendingParameters {
         BlendingType.one,
         BlendingType.zero,
         BlendingEquation.add,
-        BlendingEquation.add
+        BlendingEquation.add,
     );
 
     static readonly inherit: BlendingParameters = new BlendingParameters(
@@ -50,7 +50,7 @@ export class BlendingParameters {
         BlendingType.inherit,
         BlendingType.inherit,
         BlendingEquation.inherit,
-        BlendingEquation.inherit
+        BlendingEquation.inherit,
     );
 
     static readonly mixture: BlendingParameters = new BlendingParameters(
@@ -59,7 +59,7 @@ export class BlendingParameters {
         BlendingType.one,
         BlendingType.one,
         BlendingEquation.add,
-        BlendingEquation.add
+        BlendingEquation.add,
     );
 
     static readonly additive: BlendingParameters = new BlendingParameters(
@@ -68,7 +68,7 @@ export class BlendingParameters {
         BlendingType.one,
         BlendingType.one,
         BlendingEquation.add,
-        BlendingEquation.add
+        BlendingEquation.add,
     );
 
     constructor(
@@ -77,7 +77,7 @@ export class BlendingParameters {
         sourceAlpha: BlendingType,
         destinationAlpha: BlendingType,
         rgbEquation: BlendingEquation,
-        alphaEquation: BlendingEquation
+        alphaEquation: BlendingEquation,
     ) {
         this.source = source;
         this.destination = destination;

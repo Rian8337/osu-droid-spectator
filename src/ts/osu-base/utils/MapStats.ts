@@ -113,7 +113,7 @@ export class MapStats {
              * Whether to calculate for old statistics for osu!droid gamemode (1.6.7 or older).
              */
             oldStatistics?: boolean;
-        } = {}
+        } = {},
     ) {
         this.cs = values.cs;
         this.ar = values.ar;
@@ -211,7 +211,7 @@ export class MapStats {
             // droid hit window and the PR mod in mind.
             // Consider speed multiplier as well.
             const isPrecise: boolean = this.mods.some(
-                (m) => m instanceof ModPrecise
+                (m) => m instanceof ModPrecise,
             );
             const droidToMS: number =
                 new DroidHitWindow(this.od).hitWindowFor300(isPrecise) /
@@ -235,13 +235,13 @@ export class MapStats {
         if (this.cs !== undefined) {
             const scale: number = CircleSizeCalculator.droidCSToDroidScale(
                 this.cs,
-                this.mods
+                this.mods,
             );
             const radius: number =
                 CircleSizeCalculator.droidScaleToStandardRadius(scale);
             this.cs = Math.min(
                 CircleSizeCalculator.standardRadiusToStandardCS(radius),
-                10
+                10,
             );
         }
 
@@ -273,7 +273,7 @@ export class MapStats {
      */
     toString(): string {
         return `CS: ${this.cs?.toFixed(2)}, AR: ${this.ar?.toFixed(
-            2
+            2,
         )}, OD: ${this.od?.toFixed(2)}, HP: ${this.hp?.toFixed(2)}`;
     }
 
@@ -287,7 +287,7 @@ export class MapStats {
     static modifyAR(
         baseAR: number,
         speedMultiplier: number,
-        statisticsMultiplier: number
+        statisticsMultiplier: number,
     ): number {
         let ar: number = baseAR;
         ar *= statisticsMultiplier;

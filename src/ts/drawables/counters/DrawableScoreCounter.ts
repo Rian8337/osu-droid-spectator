@@ -1,8 +1,4 @@
 import { Playfield } from "../../osu-base";
-import {
-    calculateScoreV2,
-    displayScoreV2,
-} from "../../settings/SpectatorSettings";
 import { SpectatorScoreEvent } from "../../spectator/events/SpectatorScoreEvent";
 import { SpectatorSyncedScoreEvent } from "../../spectator/events/SpectatorSyncedScoreEvent";
 import { SpectatorEventManager } from "../../spectator/managers/SpectatorEventManager";
@@ -27,7 +23,7 @@ export class DrawableScoreCounter extends DrawableCounter<
     constructor(
         manager: SpectatorEventManager<SpectatorScoreEvent>,
         syncedManager: SpectatorEventManager<SpectatorSyncedScoreEvent>,
-        uid: number
+        uid: number,
     ) {
         super(manager, syncedManager);
 
@@ -35,31 +31,25 @@ export class DrawableScoreCounter extends DrawableCounter<
     }
 
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
-        let score = 0;
-        if (displayScoreV2) {
-            score = calculateScoreV2(this.uid, time);
-        } else {
-            const event = this.manager.eventAtOrDefault(time);
-            const syncedEvent = this.syncedManager.eventAtOrDefault(time);
-
-            score = event.score;
-            if (syncedEvent.time > event.time) {
-                score = syncedEvent.score;
-            }
-        }
-
         const { zeroCoordinate } = DrawableBeatmap;
 
         this.setupContext(ctx, 60);
 
         ctx.textAlign = "right";
         ctx.fillText(
-            score.toString().padStart(8, "0"),
+            this.getValueAt(time).toString().padStart(8, "0"),
             Playfield.baseSize.x +
                 zeroCoordinate.x -
                 DrawableScoreCounter.paddingX,
-            DrawableScoreCounter.paddingY - zeroCoordinate.y
+            DrawableScoreCounter.paddingY - zeroCoordinate.y,
         );
         ctx.restore();
+    }
+
+    protected override getValueAt(time: number): number {
+        const event = this.manager.eventAtOrDefault(time);
+        const syncedEvent = this.syncedManager.eventAtOrDefault(time);
+
+        return (syncedEvent.time > event.time ? syncedEvent : event).score;
     }
 }

@@ -10,6 +10,6 @@ export class SpectatorCursorEventManager extends SpectatorEventManager<Spectator
     protected override readonly defaultEvent = new SpectatorCursorEvent(
         Number.NEGATIVE_INFINITY,
         new Vector2(-1, -1),
-        MovementType.up
+        MovementType.up,
     );
 }

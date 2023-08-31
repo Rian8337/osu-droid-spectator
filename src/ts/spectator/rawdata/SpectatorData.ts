@@ -1,4 +1,5 @@
 import { SpectatorCursorData } from "./SpectatorCursorData";
+import { SpectatorEventData } from "./SpectatorEventData";
 import { SpectatorObjectData } from "./SpectatorObjectData";
 
 /**
@@ -21,6 +22,11 @@ export interface SpectatorData {
      * Object data for whatever object that was hit by the player.
      */
     readonly hitObjectData: SpectatorObjectData[];
+
+    /**
+     * Events denoting a change in score, combo, or accuracy.
+     */
+    readonly events: SpectatorEventData[];
 
     /**
      * The current score of the player.

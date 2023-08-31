@@ -10,7 +10,7 @@ export interface BeatmapChangedMessage
     /**
      * The new beatmap.
      */
-    readonly beatmap: PickedBeatmap;
+    readonly beatmap?: PickedBeatmap;
 }
 
 /**
@@ -19,7 +19,7 @@ export interface BeatmapChangedMessage
  * @param message The message.
  */
 export function isBeatmapChangedMessage(
-    message: BroadcastedMessage
+    message: BroadcastedMessage,
 ): message is BeatmapChangedMessage {
     return message.state === MultiplayerState.beatmapChanged;
 }

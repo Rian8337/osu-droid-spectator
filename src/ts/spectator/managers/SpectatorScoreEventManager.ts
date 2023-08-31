@@ -7,6 +7,6 @@ import { SpectatorEventManager } from "./SpectatorEventManager";
 export class SpectatorScoreEventManager extends SpectatorEventManager<SpectatorScoreEvent> {
     protected override readonly defaultEvent = new SpectatorScoreEvent(
         Number.NEGATIVE_INFINITY,
-        0
+        0,
     );
 }

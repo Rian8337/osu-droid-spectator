@@ -1,6 +1,6 @@
-import { MapStats, ModUtil } from "../osu-base";
+import { MapStats } from "../osu-base";
 import { previews } from "../settings/PreviewSettings";
-import { speedMultiplier, requiredMods } from "../settings/RoomSettings";
+import { speedMultiplier, mods } from "../settings/RoomSettings";
 import {
     backgroundDim,
     dataProcessor,
@@ -8,7 +8,10 @@ import {
 } from "../settings/SpectatorSettings";
 
 const audio = new Audio();
-let interval: NodeJS.Timer | null = null;
+let playbackInterval: NodeJS.Timeout | null = null;
+
+const container = $("#container")[0];
+const backgroundDimElement = $(backgroundDim);
 
 $(audio)
     .on("userinteraction", function () {
@@ -31,16 +34,17 @@ $(audio)
                 return;
             }
 
-            if (interval) {
+            if (playbackInterval) {
                 console.log("Playback interval automatically stopped");
-                clearInterval(interval);
-                interval = null;
+                clearInterval(playbackInterval);
+                playbackInterval = null;
             }
 
             for (const preview of previews.values()) {
                 preview.at(currentTime);
             }
 
+            backgroundDimElement.remove();
             teamScoreDisplay?.draw(currentTime);
             requestAnimationFrame(foo);
         });
@@ -49,13 +53,12 @@ $(audio)
         this.pause();
         audioState.audioLastPause = Date.now();
 
-        const container = $("#container")[0];
         container.append(backgroundDim);
 
-        if (!audio.ended && !interval) {
+        if (!audio.ended && !playbackInterval) {
             console.log("Playback interval started");
 
-            interval = setInterval(() => {
+            playbackInterval = setInterval(() => {
                 if ($<HTMLButtonElement>("#play").hasClass("e")) {
                     return;
                 }
@@ -73,9 +76,8 @@ $(audio)
                     this.src
                 ) {
                     console.log("Playback interval stopped");
-                    clearInterval(interval!);
-                    interval = null;
-                    $(backgroundDim).remove();
+                    clearInterval(playbackInterval!);
+                    playbackInterval = null;
                     this.play();
                 }
             }, 250);
@@ -123,7 +125,7 @@ export function resetAudio(resetSrc: boolean): void {
 export function setAudioPlaybackRate(): void {
     const stats = new MapStats({
         speedMultiplier: speedMultiplier,
-        mods: ModUtil.pcStringToMods(requiredMods),
+        mods: mods,
     }).calculate();
 
     audio.playbackRate = stats.speedMultiplier;

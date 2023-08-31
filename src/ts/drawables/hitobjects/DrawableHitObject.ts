@@ -68,7 +68,7 @@ export abstract class DrawableHitObject {
      */
     get stackedPosition(): Vector2 {
         return this.reevaluateStackedPosition(
-            this.flipVertically(this.object.position)
+            this.flipVertically(this.object.position),
         );
     }
 
@@ -77,7 +77,7 @@ export abstract class DrawableHitObject {
      */
     get stackedEndPosition(): Vector2 {
         return this.reevaluateStackedPosition(
-            this.flipVertically(this.object.endPosition)
+            this.flipVertically(this.object.endPosition),
         );
     }
 
@@ -126,7 +126,7 @@ export abstract class DrawableHitObject {
         ctx: CanvasRenderingContext2D,
         time: number,
         hitData: SpectatorObjectDataEvent | null,
-        maxHitWindow: number
+        maxHitWindow: number,
     ): void;
 
     /**
@@ -143,7 +143,7 @@ export abstract class DrawableHitObject {
         time: number,
         position: Vector2,
         hitTime: number,
-        hitResult: HitResult
+        hitResult: HitResult,
     ): void {
         if (hitResult === HitResult.great) {
             return;

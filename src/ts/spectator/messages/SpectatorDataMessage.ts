@@ -19,7 +19,7 @@ export interface SpectatorDataMessage
  * @param message The message.
  */
 export function isSpectatorDataMessage(
-    message: BroadcastedMessage
+    message: BroadcastedMessage,
 ): message is SpectatorDataMessage {
     return message.state === MultiplayerState.spectatorData;
 }

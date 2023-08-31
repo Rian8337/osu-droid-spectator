@@ -7,7 +7,7 @@ import { SpectatorEventManager } from "../../spectator/managers/SpectatorEventMa
  */
 export abstract class DrawableCounter<
     SpecEvent extends SpectatorCountableEvent,
-    SpecSyncedEvent extends SpectatorSyncedCountableEvent
+    SpecSyncedEvent extends SpectatorSyncedCountableEvent,
 > {
     /**
      * The event manager of this drawable counter.
@@ -21,7 +21,7 @@ export abstract class DrawableCounter<
 
     constructor(
         manager: SpectatorEventManager<SpecEvent>,
-        syncedManager: SpectatorEventManager<SpecSyncedEvent>
+        syncedManager: SpectatorEventManager<SpecSyncedEvent>,
     ) {
         this.manager = manager;
         this.syncedManager = syncedManager;
@@ -36,6 +36,14 @@ export abstract class DrawableCounter<
     abstract draw(ctx: CanvasRenderingContext2D, time: number): void;
 
     /**
+     * Gets the value of an event that occurs in a clock time.
+     *
+     * @param time The clock time.
+     * @returns The value of the event.
+     */
+    protected abstract getValueAt(time: number): unknown;
+
+    /**
      * Sets a canvas context up for drawing a counter.
      *
      * @param ctx The canvas context.
@@ -43,7 +51,7 @@ export abstract class DrawableCounter<
      */
     protected setupContext(
         ctx: CanvasRenderingContext2D,
-        fontSize: number
+        fontSize: number,
     ): void {
         ctx.save();
 

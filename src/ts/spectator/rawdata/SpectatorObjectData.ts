@@ -5,19 +5,9 @@ import { HitResult } from "../structures/HitResult";
  */
 export interface SpectatorObjectData {
     /**
-     * The score of the player after the object was hit.
+     * The time at which the hit result of this object is shown, in milliseconds.
      */
-    readonly currentScore: number;
-
-    /**
-     * The combo of the player after the object was hit.
-     */
-    readonly currentCombo: number;
-
-    /**
-     * The accuracy of the player after the object was hit, from 0 to 1.
-     */
-    readonly currentAccuracy: number;
+    readonly time: number;
 
     /**
      * The index of this object in the beatmap.

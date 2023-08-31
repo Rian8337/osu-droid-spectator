@@ -12,14 +12,15 @@ import {
     beatmapset,
     downloadBeatmapset,
     parsedBeatmap,
+    cancelBeatmapsetDownload,
 } from "../../settings/BeatmapSettings";
 import {
     getBeatmapsetFromDB,
     storeBeatmapsetToDB,
 } from "../../settings/DatabaseSettings";
-import { reloadPreview } from "../../settings/PreviewSettings";
+import { removePreviewsFromScreen } from "../../settings/PreviewSettings";
 import {
-    resetProcessor,
+    initProcessor,
     userHasInteracted,
 } from "../../settings/SpectatorSettings";
 import { PickedBeatmap } from "../rawdata/PickedBeatmap";
@@ -38,34 +39,52 @@ export abstract class BeatmapChangedHandler {
      *
      * @param newBeatmap The new beatmap.
      */
-    static async handle(newBeatmap: PickedBeatmap): Promise<void> {
-        resetProcessor();
-        reloadPreview();
+    static async handle(newBeatmap?: PickedBeatmap): Promise<void> {
+        const beatmapTitle = $("#title a");
+        beatmapTitle.text("Loading...").removeProp("href");
 
-        $("#title a").text("Loading...").removeProp("href");
+        cancelBeatmapsetDownload();
+
+        if (newBeatmap?.hash !== pickedBeatmap?.hash) {
+            // Only reset the processor and previews if it's a new beatmap, in which case the spectator data is invalid.
+            initProcessor();
+            removePreviewsFromScreen();
+        }
+
+        const currentBeatmapsetId = pickedBeatmap?.beatmapSetId;
+        const newBeatmapsetId = newBeatmap?.beatmapSetId;
+
+        if (!newBeatmapsetId) {
+            console.log("Hi 1");
+            $("#title a").text("Beatmap not found in mirror, sorry!");
+            return;
+        }
 
         let alreadyAttemptDownload = false;
 
-        if (!parsedBeatmap || newBeatmap.setId !== pickedBeatmap?.setId) {
-            console.log("Beatmap changed to beatmapset ID", newBeatmap.setId);
+        if (!parsedBeatmap || newBeatmapsetId !== currentBeatmapsetId) {
+            console.log("Beatmap changed to beatmapset ID", newBeatmapsetId);
 
-            resetBeatmapset();
-            resetAudio(true);
-            clearBackground();
+            if (newBeatmapsetId !== currentBeatmapsetId) {
+                resetBeatmapset();
+                resetAudio(true);
+                clearBackground();
+            }
 
-            let beatmapsetBlob = await getBeatmapsetFromDB(newBeatmap.setId);
+            let beatmapsetBlob = await getBeatmapsetFromDB(newBeatmapsetId);
 
             if (!beatmapsetBlob) {
-                beatmapsetBlob = await downloadBeatmapset(newBeatmap.setId);
+                beatmapsetBlob = await downloadBeatmapset(newBeatmapsetId);
                 alreadyAttemptDownload = true;
 
                 if (beatmapsetBlob) {
-                    await storeBeatmapsetToDB(newBeatmap.setId, beatmapsetBlob);
+                    await storeBeatmapsetToDB(newBeatmapsetId, beatmapsetBlob);
                 }
             }
 
             if (!beatmapsetBlob) {
-                $("#title a").text("Beatmap not found in mirror, sorry!");
+                console.log("Hi 2");
+                beatmapTitle.text("Beatmap not found in mirror, sorry!");
                 return;
             }
 
@@ -78,19 +97,21 @@ export abstract class BeatmapChangedHandler {
 
         if (!osuFile) {
             if (alreadyAttemptDownload) {
-                $("#title a").text("Beatmap not found in mirror, sorry!");
+                console.log("Hi 3");
+                beatmapTitle.text("Beatmap not found in mirror, sorry!");
                 return;
             }
 
             console.log(".osu file not found, redownloading beatmapset");
 
-            const beatmapsetBlob = await downloadBeatmapset(newBeatmap.setId);
+            const beatmapsetBlob = await downloadBeatmapset(newBeatmapsetId);
             if (!beatmapsetBlob) {
-                $("#title a").text("Beatmap not found in mirror, sorry!");
+                console.log("Hi 4");
+                beatmapTitle.text("Beatmap not found in mirror, sorry!");
                 return;
             }
 
-            await storeBeatmapsetToDB(newBeatmap.setId, beatmapsetBlob);
+            await storeBeatmapsetToDB(newBeatmapsetId, beatmapsetBlob);
             await beatmapset.loadAsync(beatmapsetBlob);
 
             entries = Object.values(beatmapset.files);
@@ -98,7 +119,8 @@ export abstract class BeatmapChangedHandler {
         }
 
         if (!osuFile) {
-            $("#title a").text("Beatmap not found in mirror, sorry!");
+            console.log("Hi 5");
+            beatmapTitle.text("Beatmap not found in mirror, sorry!");
             return;
         }
 
@@ -106,21 +128,31 @@ export abstract class BeatmapChangedHandler {
         const audioBlob = await this.getAudioBlob(entries, osuFile);
 
         if (!backgroundBlob || !audioBlob) {
-            $("#title a").text("An error has occurred, sorry!");
+            beatmapTitle.text("An error has occurred, sorry!");
             return;
         }
 
+        const newParsedBeatmap = new BeatmapDecoder().decode(osuFile).result;
+        const { metadata: newMetadata } = newParsedBeatmap;
+
         setPickedBeatmap(newBeatmap);
-        setParsedBeatmap(new BeatmapDecoder().decode(osuFile).result);
+        setParsedBeatmap(newParsedBeatmap);
         calculateMaxScore();
 
         background.src = backgroundBlob;
         audioState.audio.src = audioBlob;
         audioState.audio.load();
 
-        $("#title a")
-            .prop("href", `//osu.ppy.sh/b/${newBeatmap.id}`)
-            .text(newBeatmap.name);
+        beatmapTitle
+            .prop(
+                "href",
+                `//osu.ppy.sh/${newMetadata.beatmapId ? "b" : "s"}/${
+                    newMetadata.beatmapId ??
+                    newMetadata.beatmapSetId ??
+                    newBeatmapsetId
+                }`,
+            )
+            .text(newParsedBeatmap.metadata.fullTitle);
 
         if (!userHasInteracted) {
             $("#play").addClass("e");
@@ -136,7 +168,7 @@ export abstract class BeatmapChangedHandler {
      */
     private static async getOsuFile(
         entries: JSZipObject[],
-        hash: string
+        hash: string,
     ): Promise<string> {
         let osuFile = "";
 
@@ -169,7 +201,7 @@ export abstract class BeatmapChangedHandler {
      */
     private static async getBackgroundBlob(
         entries: JSZipObject[],
-        osuFile: string
+        osuFile: string,
     ): Promise<string> {
         let backgroundBlob = "";
         const backgroundMatch = osuFile.match(/(?<=0,0,").+(?=")/);
@@ -222,7 +254,7 @@ export abstract class BeatmapChangedHandler {
      */
     private static async getAudioBlob(
         entries: JSZipObject[],
-        osuFile: string
+        osuFile: string,
     ): Promise<string> {
         let audioBlob = "";
         const audioMatch = osuFile.match(/(?<=AudioFilename: ).+(?=)/);

@@ -12,7 +12,7 @@ export abstract class HitObjectStackEvaluator {
      */
     static applyDroidStacking(
         hitObjects: readonly PlaceableHitObject[],
-        stackLeniency: number
+        stackLeniency: number,
     ): void {
         if (hitObjects.length === 0) {
             return;
