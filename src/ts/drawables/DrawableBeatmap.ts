@@ -44,7 +44,7 @@ export class DrawableBeatmap {
     readonly drawableHitObjects: DrawableHitObject[] = [];
 
     private readonly approachTime: number;
-
+    
     private get comboColors(): RGBColor[] {
         return this.beatmap.colors.combo?.length ? this.beatmap.colors.combo : DrawableBeatmap.defaultComboColors;
     }
@@ -90,7 +90,7 @@ export class DrawableBeatmap {
         const stats = new MapStats({
             ar: forcedAR ?? beatmap.difficulty.ar,
             mods: ModUtil.removeSpeedChangingMods(mods),
-            isForceAR: forcedAR !== undefined,
+            isForceAR: forcedAR !== null && forcedAR !== undefined,
         }).calculate();
 
         this.approachTime = MapStats.arToMS(stats.ar!);
