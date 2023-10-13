@@ -18,7 +18,6 @@ import { DrawableSlider } from "./hitobjects/DrawableSlider";
 import { DrawableSpinner } from "./hitobjects/DrawableSpinner";
 import { SpectatorDataManager } from "../spectator/managers/SpectatorDataManager";
 import { Preview } from "../Preview";
-import { forcedAR } from "../settings/RoomSettings";
 
 /**
  * Represents a beatmap that can be used to draw objects.
@@ -82,7 +81,11 @@ export class DrawableBeatmap {
         }
     }
 
-    constructor(beatmap: Beatmap, mods: (Mod & IModApplicableToDroid)[]) {
+    constructor(
+        beatmap: Beatmap,
+        mods: (Mod & IModApplicableToDroid)[],
+        forcedAR?: number,
+    ) {
         this.beatmap = beatmap;
 
         if (this.beatmap.hitObjects.objects.length === 0) {

@@ -8,7 +8,6 @@ import {
 } from "../../settings/PlayerSettings";
 import { addPreview, removePreview } from "../../settings/PreviewSettings";
 import {
-    setForcedAR,
     setMods,
     setSpeedMultiplier,
     setTeamMode,
@@ -41,7 +40,6 @@ export abstract class RoundStartHandler {
 
         setIgnoredPlayersFromRoomName(room.name);
         setMods(room.mods.mods ?? "");
-        setForcedAR(room.mods.forceAR ?? null);
         setSpeedMultiplier(room.mods.speedMultiplier);
         setTeamMode(room.teamMode);
         calculateMaxScore();

@@ -20,7 +20,7 @@ import {
 } from "../../settings/DatabaseSettings";
 import { removePreviewsFromScreen } from "../../settings/PreviewSettings";
 import {
-    initProcessor,
+    invalidateProcessor,
     userHasInteracted,
 } from "../../settings/SpectatorSettings";
 import { PickedBeatmap } from "../rawdata/PickedBeatmap";
@@ -47,7 +47,7 @@ export abstract class BeatmapChangedHandler {
 
         if (newBeatmap?.hash !== pickedBeatmap?.hash) {
             // Only reset the processor and previews if it's a new beatmap, in which case the spectator data is invalid.
-            initProcessor();
+            invalidateProcessor();
             removePreviewsFromScreen();
         }
 

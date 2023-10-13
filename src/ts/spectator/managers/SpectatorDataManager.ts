@@ -38,6 +38,11 @@ export class SpectatorDataManager {
     readonly mods: (Mod & IModApplicableToDroid)[];
 
     /**
+     * The force AR this player uses to play.
+     */
+    readonly forcedAR?: number;
+
+    /**
      * Managers for spectator events of this player.
      */
     readonly events: SpectatorEventManagers;
@@ -124,6 +129,7 @@ export class SpectatorDataManager {
     constructor(player: MultiplayerPlayer) {
         this.uid = player.uid;
         this.username = player.username;
+        this.forcedAR = player.forcedAR ?? undefined;
 
         if (!parsedBeatmap) {
             throw new Error("No beatmaps have been parsed yet");

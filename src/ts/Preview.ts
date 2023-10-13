@@ -122,7 +122,11 @@ export class Preview {
             return;
         }
 
-        this.beatmap = new DrawableBeatmap(parsedBeatmap, specDataManager.mods);
+        this.beatmap = new DrawableBeatmap(
+            parsedBeatmap,
+            specDataManager.mods,
+            specDataManager.forcedAR,
+        );
         this.specDataManager = specDataManager;
         this.playerInfo = new DrawablePlayerInfo(
             specDataManager.uid,
