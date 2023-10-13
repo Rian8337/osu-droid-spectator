@@ -23,11 +23,6 @@ export let mods: (Mod & IModApplicableToDroid)[] = [];
 export let teamMode = MultiplayerTeamMode.headToHead;
 
 /**
- * The force AR to be used.
- */
-export let forcedAR: number | null = null;
-
-/**
  * Sets the room ID.
  *
  * @param newRoomId The new room ID.
@@ -65,13 +60,4 @@ export function setSpeedMultiplier(value: number): void {
  */
 export function setTeamMode(mode: MultiplayerTeamMode): void {
     teamMode = mode;
-}
-
-/**
- * Sets the force AR value.
- *
- * @param value The value.
- */
-export function setForcedAR(value: number | null): void {
-    forcedAR = value;
 }

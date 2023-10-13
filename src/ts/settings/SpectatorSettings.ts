@@ -69,6 +69,13 @@ export function initProcessor(): void {
 }
 
 /**
+ * Invalidates the current spectator data processor.
+ */
+export function invalidateProcessor(): void {
+    dataProcessor = null;
+}
+
+/**
  * Initializes the team score display.
  */
 export function initTeamScoreDisplay(): void {
