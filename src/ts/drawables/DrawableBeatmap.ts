@@ -1,5 +1,6 @@
 import {
     Beatmap,
+    CircleSizeCalculator,
     HitObject,
     IModApplicableToDroid,
     MapStats,
@@ -44,6 +45,7 @@ export class DrawableBeatmap {
     readonly drawableHitObjects: DrawableHitObject[] = [];
 
     private readonly approachTime: number;
+    private readonly objectScale: number;
     
     private get comboColors(): RGBColor[] {
         return this.beatmap.colors.combo?.length ? this.beatmap.colors.combo : DrawableBeatmap.defaultComboColors;
@@ -88,10 +90,15 @@ export class DrawableBeatmap {
         }
 
         const stats = new MapStats({
+            cs: beatmap.difficulty.cs,
             ar: forcedAR ?? beatmap.difficulty.ar,
             mods: ModUtil.removeSpeedChangingMods(mods),
             isForceAR: forcedAR !== null && forcedAR !== undefined,
         }).calculate();
+
+        this.objectScale = CircleSizeCalculator.standardCSToDroidScale(
+            stats.cs!,
+        );
 
         this.approachTime = MapStats.arToMS(stats.ar!);
         this.convertHitObjects(mods);
@@ -221,6 +228,7 @@ export class DrawableBeatmap {
                 setComboIndex = false;
             }
 
+            drawableObject.object.scale = this.objectScale;
             drawableObject.approachTime = this.approachTime;
             drawableObject.comboNumber = comboNumber++;
             drawableObject.color = this.comboColors[comboColorIndex];

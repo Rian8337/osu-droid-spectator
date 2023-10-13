@@ -7,6 +7,7 @@ import {
     ObjectTypes,
     Playfield,
     RGBColor,
+    Utils,
     Vector2,
 } from "../../osu-base";
 import { hitResultColors } from "../../settings/SpectatorSettings";
@@ -108,7 +109,7 @@ export abstract class DrawableHitObject {
     isHit = false;
 
     constructor(object: HitObject, mods: (Mod & IModApplicableToDroid)[]) {
-        this.object = object;
+        this.object = Utils.deepCopy(object);
         this.mods = mods;
         this.isHardRock = this.mods.some((m) => m instanceof ModHardRock);
     }
