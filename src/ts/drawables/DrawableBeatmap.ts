@@ -93,7 +93,7 @@ export class DrawableBeatmap {
         const stats = new MapStats({
             ar: forcedAR ?? beatmap.difficulty.ar,
             mods: ModUtil.removeSpeedChangingMods(mods),
-            isForceAR: forcedAR !== null && forcedAR !== undefined,
+            isForceAR: forcedAR !== undefined,
         }).calculate();
 
         this.approachTime = MapStats.arToMS(stats.ar!);
