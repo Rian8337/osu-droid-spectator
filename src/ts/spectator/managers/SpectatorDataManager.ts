@@ -129,7 +129,7 @@ export class SpectatorDataManager {
     constructor(player: MultiplayerPlayer) {
         this.uid = player.uid;
         this.username = player.username;
-        this.forcedAR = player.forcedAR ?? undefined;
+        this.forcedAR = player.mods.forceAR ?? undefined;
 
         if (!parsedBeatmap) {
             throw new Error("No beatmaps have been parsed yet");
@@ -150,7 +150,7 @@ export class SpectatorDataManager {
             this.events.cursor.push(new SpectatorCursorEventManager());
         }
 
-        this.mods = ModUtil.droidStringToMods(player.mods ?? "");
+        this.mods = ModUtil.droidStringToMods(player.mods.mods ?? "");
 
         this.hitWindow = new DroidHitWindow(
             new MapStats({

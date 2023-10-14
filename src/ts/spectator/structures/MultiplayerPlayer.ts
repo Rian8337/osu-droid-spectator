@@ -1,3 +1,4 @@
+import { MultiplayerRoomMods } from "./MultiplayerRoomMods";
 import { MultiplayerTeam } from "./MultiplayerTeam";
 
 export interface MultiplayerPlayer {
@@ -12,17 +13,12 @@ export interface MultiplayerPlayer {
     readonly username: string;
 
     /**
-     * The mods used by the player, in droid mod string.
+     * The mods used by the player.
      */
-    readonly mods: string | null;
+    readonly mods: MultiplayerRoomMods;
 
     /**
      * The team this player is at, if in Team VS team mode.
      */
     team: MultiplayerTeam | null;
-
-    /**
-     * The forced AR setting used by the player.
-     */
-    forcedAR?: number | null;
 }
