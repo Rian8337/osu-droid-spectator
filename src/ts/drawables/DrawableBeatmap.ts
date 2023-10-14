@@ -1,14 +1,18 @@
 import {
     Beatmap,
+    CircleSizeCalculator,
     HitObject,
+    HitObjectStackEvaluator,
     IModApplicableToDroid,
     MapStats,
     Mod,
     ModUtil,
+    PlaceableHitObject,
     Playfield,
     RGBColor,
     Slider,
     Spinner,
+    Utils,
     Vector2,
 } from "../osu-base";
 import { DrawableCircle } from "./hitobjects/DrawableCircle";
@@ -43,9 +47,11 @@ export class DrawableBeatmap {
     readonly drawableHitObjects: DrawableHitObject[] = [];
 
     private readonly approachTime: number;
-    
+
     private get comboColors(): RGBColor[] {
-        return this.beatmap.colors.combo?.length ? this.beatmap.colors.combo : DrawableBeatmap.defaultComboColors;
+        return this.beatmap.colors.combo?.length
+            ? this.beatmap.colors.combo
+            : DrawableBeatmap.defaultComboColors;
     }
 
     private readonly objectDrawIndexes = {
@@ -91,13 +97,24 @@ export class DrawableBeatmap {
         }
 
         const stats = new MapStats({
+            cs: beatmap.difficulty.cs,
             ar: forcedAR ?? beatmap.difficulty.ar,
             mods: ModUtil.removeSpeedChangingMods(mods),
             isForceAR: forcedAR !== undefined,
         }).calculate();
 
+        const objectScale = CircleSizeCalculator.standardCSToDroidScale(
+            stats.cs!,
+        );
+
+        const hitObjects =
+            objectScale !== beatmap.hitObjects.objects[0].scale
+                ? // Deep-copy all objects so that the global beatmap instance is not modified.
+                  Utils.deepCopy(beatmap.hitObjects.objects)
+                : beatmap.hitObjects.objects;
+
         this.approachTime = MapStats.arToMS(stats.ar!);
-        this.convertHitObjects(mods);
+        this.convertHitObjects(hitObjects, mods, objectScale);
     }
 
     update(ctx: CanvasRenderingContext2D): void {
@@ -202,12 +219,18 @@ export class DrawableBeatmap {
     /**
      * Converts hitobjects to drawable hitobjects.
      */
-    private convertHitObjects(mods: (Mod & IModApplicableToDroid)[]): void {
+    private convertHitObjects(
+        hitObjects: readonly PlaceableHitObject[],
+        mods: (Mod & IModApplicableToDroid)[],
+        objectScale: number,
+    ): void {
         let comboNumber = 1;
         let comboColorIndex = -1;
         let setComboIndex = true;
 
-        for (const object of this.beatmap.hitObjects.objects) {
+        const recomputeStackHeight = objectScale !== hitObjects[0].scale;
+
+        for (const object of hitObjects) {
             const drawableObject = DrawableBeatmap.convertHitObjectToDrawable(
                 object,
                 mods,
@@ -224,11 +247,19 @@ export class DrawableBeatmap {
                 setComboIndex = false;
             }
 
+            drawableObject.object.scale = objectScale;
             drawableObject.approachTime = this.approachTime;
             drawableObject.comboNumber = comboNumber++;
             drawableObject.color = this.comboColors[comboColorIndex];
 
             this.drawableHitObjects.push(drawableObject);
+        }
+
+        if (recomputeStackHeight) {
+            HitObjectStackEvaluator.applyDroidStacking(
+                hitObjects,
+                this.beatmap.general.stackLeniency,
+            );
         }
     }
 }
