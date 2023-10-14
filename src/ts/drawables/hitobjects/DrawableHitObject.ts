@@ -155,16 +155,24 @@ export abstract class DrawableHitObject {
         }
 
         let opacity = 1;
-        const fadeInTime = 150;
-        const fadeOutTime = 250;
-        const fadeOutStartTime = 500;
 
-        if (dt <= fadeInTime) {
+        const {
+            hitResultFadeIn,
+            hitResultFadeOutTime,
+            hitResultFadeOutStartTime,
+        } = DrawableHitObject;
+
+        if (dt <= hitResultFadeIn) {
             // Consider fade in first.
-            opacity = dt / fadeInTime;
-        } else if (dt >= fadeOutStartTime) {
+            opacity = dt / hitResultFadeIn;
+        } else if (dt >= hitResultFadeOutStartTime) {
             // Then fade out.
-            opacity = 1 - Math.min(1, (dt - fadeOutStartTime) / fadeOutTime);
+            opacity =
+                1 -
+                Math.min(
+                    1,
+                    (dt - hitResultFadeOutStartTime) / hitResultFadeOutTime,
+                );
         }
 
         if (opacity === 0) {
