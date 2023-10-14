@@ -2,7 +2,7 @@
 
 > Notice: This client is in beta stage.
 
-A web-based spectator client for osu!droid collaborating with multiplayer-based Discord bot from [Alice](https://github.com/Rian8337/Alice).
+A web-based spectator client for osu!droid using a [custom game client](https://github.com/Rian8337/osu-droid/tree/tournament-client).
 
 Code for previewing beatmap mostly taken from [osu-preview](https://github.com/jmir1/osu-preview). Beatmaps are downloaded from [Sayobot](https://osu.sayobot.cn/).
 
@@ -14,6 +14,6 @@ Please see the [wiki](https://github.com/Rian8337/osu-droid-spectator/wiki) for 
 
 ## Building from source
 
-You may also build the program from source. To do so, you need [Node.js](https://nodejs.org) version 16 or later. The latest LTS release is recommended.
+You may also build the client from source. To do so, you need [Node.js](https://nodejs.org) version 16 or later. The latest LTS release is recommended.
 
-Install all dependencies with `npm i` and run `npm run compile-ts`. After that, open `index.html` in your browser of choice.
+Install all dependencies with `npm i` and run `npm run transpile-bundle`. After that, open `index.html` in your browser of choice.
