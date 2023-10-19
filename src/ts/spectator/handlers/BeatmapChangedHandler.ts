@@ -55,7 +55,6 @@ export abstract class BeatmapChangedHandler {
         const newBeatmapsetId = newBeatmap?.beatmapSetId;
 
         if (!newBeatmapsetId) {
-            console.log("Hi 1");
             $("#title a").text("Beatmap not found in mirror, sorry!");
             return;
         }
@@ -83,7 +82,6 @@ export abstract class BeatmapChangedHandler {
             }
 
             if (!beatmapsetBlob) {
-                console.log("Hi 2");
                 beatmapTitle.text("Beatmap not found in mirror, sorry!");
                 return;
             }
@@ -97,7 +95,6 @@ export abstract class BeatmapChangedHandler {
 
         if (!osuFile) {
             if (alreadyAttemptDownload) {
-                console.log("Hi 3");
                 beatmapTitle.text("Beatmap not found in mirror, sorry!");
                 return;
             }
@@ -106,7 +103,6 @@ export abstract class BeatmapChangedHandler {
 
             const beatmapsetBlob = await downloadBeatmapset(newBeatmapsetId);
             if (!beatmapsetBlob) {
-                console.log("Hi 4");
                 beatmapTitle.text("Beatmap not found in mirror, sorry!");
                 return;
             }
@@ -119,7 +115,6 @@ export abstract class BeatmapChangedHandler {
         }
 
         if (!osuFile) {
-            console.log("Hi 5");
             beatmapTitle.text("Beatmap not found in mirror, sorry!");
             return;
         }
