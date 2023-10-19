@@ -12,25 +12,21 @@ export const players = new Map<number, MultiplayerPlayer>();
 export const ignoredPlayers = new Set<number>();
 
 /**
- * Adds a player.
+ * Sets the players of this room.
  *
- * @param player The player to add.
+ * @param players The players.
  */
-export function addPlayer(player: MultiplayerPlayer): void {
-    if (players.size === 4 || ignoredPlayers.has(player.uid)) {
-        return;
+export function setPlayers(list: MultiplayerPlayer[]) {
+    players.clear();
+
+    for (const player of list) {
+        if (ignoredPlayers.has(player.uid)) {
+            continue;
+        }
+
+        players.set(player.uid, player);
+        console.log("Added uid", player.uid, "to the list of players");
     }
-
-    players.set(player.uid, player);
-}
-
-/**
- * Removes a player.
- *
- * @param uid The uid of the player.
- */
-export function removePlayer(uid: number): void {
-    players.delete(uid);
 }
 
 /**

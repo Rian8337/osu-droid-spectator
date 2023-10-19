@@ -1,12 +1,10 @@
 import { audioState, resetAudio } from "../../elements/Audio";
 import { calculateMaxScore } from "../../settings/BeatmapSettings";
 import {
-    addPlayer,
-    players,
-    removePlayer,
     setIgnoredPlayersFromRoomName,
+    setPlayers,
 } from "../../settings/PlayerSettings";
-import { addPreview, removePreview } from "../../settings/PreviewSettings";
+import { previews, reloadPreviews } from "../../settings/PreviewSettings";
 import {
     setMods,
     setSpeedMultiplier,
@@ -32,21 +30,12 @@ export abstract class RoundStartHandler {
         console.log("Round started");
         console.log(room);
 
-        // Remove existing players before loading new room settings.
-        for (const player of players.values()) {
-            removePlayer(player.uid);
-            removePreview(player.uid);
-        }
-
         setIgnoredPlayersFromRoomName(room.name);
+        setPlayers(room.playingPlayers);
         setMods(room.mods.mods ?? "");
         setSpeedMultiplier(room.mods.speedMultiplier);
         setTeamMode(room.teamMode);
         calculateMaxScore();
-
-        for (const player of room.playingPlayers) {
-            addPlayer(player);
-        }
 
         initProcessor();
 
@@ -54,8 +43,10 @@ export abstract class RoundStartHandler {
             return alert("The spectator client failed to launch.");
         }
 
+        reloadPreviews();
+
         for (const manager of dataProcessor.managers.values()) {
-            const preview = addPreview(manager.uid);
+            const preview = previews.get(manager.uid);
             if (!preview) {
                 continue;
             }

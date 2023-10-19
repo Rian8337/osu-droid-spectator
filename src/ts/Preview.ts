@@ -5,9 +5,8 @@ import { SpectatorDataManager } from "./spectator/managers/SpectatorDataManager"
 import { DrawableScoreCounter } from "./drawables/counters/DrawableScoreCounter";
 import { DrawableAccuracyCounter } from "./drawables/counters/DrawableAccuracyCounter";
 import { DrawablePlayerInfo } from "./drawables/DrawablePlayerInfo";
-import { Anchor, ModPrecise } from "./osu-base";
+import { ModPrecise, Vector2 } from "./osu-base";
 import { parsedBeatmap } from "./settings/BeatmapSettings";
-import { PreviewAnchor } from "./settings/PreviewSettings";
 import { teamMode } from "./settings/RoomSettings";
 import { MultiplayerTeamMode } from "./spectator/structures/MultiplayerTeamMode";
 import { DrawableHitErrorBar } from "./drawables/DrawableHitErrorBar";
@@ -67,11 +66,6 @@ export class Preview {
     readonly screen: HTMLCanvasElement;
 
     /**
-     * The anchor of this preview.
-     */
-    readonly anchor: PreviewAnchor;
-
-    /**
      * The canvas context of the screen.
      */
     get ctx(): CanvasRenderingContext2D {
@@ -85,13 +79,24 @@ export class Preview {
         return teamMode === MultiplayerTeamMode.teamVS ? 50 : 0;
     }
 
-    constructor(uid: number, anchor: PreviewAnchor) {
+    constructor(
+        uid: number,
+        zeroCoordinate: Vector2,
+        scaleX: number,
+        scaleY: number,
+    ) {
         this.uid = uid;
-        this.screen = document.createElement("canvas");
-        this.anchor = anchor;
 
-        this.screen.id = `preview${this.anchor}`;
-        this.applyCanvasPosition();
+        this.screen = document.createElement("canvas");
+        this.screen.id = `preview${zeroCoordinate}`;
+        this.screen.width = innerWidth;
+        this.screen.height = innerHeight - Preview.heightPadding;
+        this.screen.style.left = `${zeroCoordinate.x}px`;
+        this.screen.style.top = `${zeroCoordinate.y}px`;
+
+        this.ctx.scale(scaleX, scaleY);
+        this.screen.style.position = "absolute";
+
         this.attachToContainer();
     }
 
@@ -177,7 +182,6 @@ export class Preview {
             return;
         }
 
-        this.applyCanvasPosition();
         this.beatmap.update(this.ctx);
         this.ctx.save();
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -192,40 +196,6 @@ export class Preview {
 
         for (const drawableCursor of this.drawableCursors) {
             drawableCursor.draw(this.ctx, time);
-        }
-    }
-
-    /**
-     * Applies the canvas position with respect to the window size.
-     */
-    private applyCanvasPosition(): void {
-        this.screen.width = innerWidth / 2;
-        this.screen.height = innerHeight / 2 - Preview.heightPadding;
-
-        this.ctx.scale(0.5, 0.5);
-        this.screen.style.position = "absolute";
-
-        switch (this.anchor) {
-            case Anchor.topLeft:
-                this.screen.style.left = "0px";
-                this.screen.style.top = "0px";
-                break;
-            case Anchor.topCenter:
-                this.screen.style.left = `${innerWidth / 2}px`;
-                this.screen.style.top = "0px";
-                break;
-            case Anchor.centerLeft:
-                this.screen.style.left = "0px";
-                this.screen.style.top = `${
-                    innerHeight / 2 - Preview.heightPadding
-                }px`;
-                break;
-            case Anchor.center:
-                this.screen.style.left = `${innerWidth / 2}px`;
-                this.screen.style.top = `${
-                    innerHeight / 2 - Preview.heightPadding
-                }px`;
-                break;
         }
     }
 }
