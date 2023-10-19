@@ -67,11 +67,12 @@ export function reloadPreviews(): void {
         }
 
         for (let row = 0; row < rows; ++row) {
-            for (let cell = 0; cell < cells; ++cell) {
-                const player = playersArray.at(row * cells + cell);
-                if (!player) {
-                    break;
-                }
+            const players = playersArray.slice(row * cells, row * (1 + cells));
+            const unfilledWidth =
+                (maxWidth - minWidth) * (1 - players.length / cells);
+
+            for (let cell = 0; cell < Math.min(players.length, cells); ++cell) {
+                const player = players[cell];
 
                 previews.set(
                     player.uid,
@@ -82,7 +83,9 @@ export function reloadPreviews(): void {
                                 minWidth,
                                 maxWidth,
                                 cell / cells,
-                            ),
+                            ) +
+                                // Position the preview to the center if the row is not filled entirely.
+                                unfilledWidth / 2,
                             Interpolation.lerp(
                                 0,
                                 innerHeight - Preview.heightPadding,
