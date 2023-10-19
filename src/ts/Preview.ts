@@ -79,23 +79,18 @@ export class Preview {
         return teamMode === MultiplayerTeamMode.teamVS ? 50 : 0;
     }
 
-    constructor(
-        uid: number,
-        zeroCoordinate: Vector2,
-        scaleX: number,
-        scaleY: number,
-    ) {
+    constructor(uid: number, zeroCoordinate: Vector2, scale: number) {
         this.uid = uid;
 
         this.screen = document.createElement("canvas");
         this.screen.id = `preview${zeroCoordinate}`;
         this.screen.width = innerWidth;
         this.screen.height = innerHeight - Preview.heightPadding;
+        this.screen.style.position = "absolute";
         this.screen.style.left = `${zeroCoordinate.x}px`;
         this.screen.style.top = `${zeroCoordinate.y}px`;
 
-        this.ctx.scale(scaleX, scaleY);
-        this.screen.style.position = "absolute";
+        this.ctx.scale(scale, scale);
 
         this.attachToContainer();
     }

@@ -66,9 +66,6 @@ export function reloadPreviews(): void {
                 rows = 4;
         }
 
-        const scaleX = 1 / cells;
-        const scaleY = 1 / rows;
-
         for (let row = 0; row < rows; ++row) {
             for (let cell = 0; cell < cells; ++cell) {
                 const player = playersArray.at(row * cells + cell);
@@ -92,8 +89,8 @@ export function reloadPreviews(): void {
                                 row / rows,
                             ),
                         ),
-                        scaleX,
-                        scaleY,
+                        // We are using cell count for scale as playfield height is smaller than width.
+                        1 / cells,
                     ),
                 );
             }
