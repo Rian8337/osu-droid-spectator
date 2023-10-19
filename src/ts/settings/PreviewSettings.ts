@@ -12,11 +12,19 @@ import { teamMode } from "./RoomSettings";
 export const previews = new Map<number, Preview>();
 
 /**
+ * Deletes all previews.
+ */
+export function deletePreviews(): void {
+    $("#container").empty();
+
+    previews.clear();
+}
+
+/**
  * Reloads all previews.
  */
 export function reloadPreviews(): void {
-    $("#container").empty();
-    previews.clear();
+    deletePreviews();
 
     const addPlayers = (
         players: MultiplayerPlayer[],

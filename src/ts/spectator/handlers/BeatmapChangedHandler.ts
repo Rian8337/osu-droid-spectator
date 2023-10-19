@@ -18,12 +18,12 @@ import {
     getBeatmapsetFromDB,
     storeBeatmapsetToDB,
 } from "../../settings/DatabaseSettings";
-import { removePreviewsFromScreen } from "../../settings/PreviewSettings";
 import {
     invalidateProcessor,
     userHasInteracted,
 } from "../../settings/SpectatorSettings";
 import { PickedBeatmap } from "../rawdata/PickedBeatmap";
+import { deletePreviews } from "../../settings/PreviewSettings";
 
 /**
  * A handler responsible for handling beatmap changed events.
@@ -48,7 +48,7 @@ export abstract class BeatmapChangedHandler {
         if (newBeatmap?.hash !== pickedBeatmap?.hash) {
             // Only reset the processor and previews if it's a new beatmap, in which case the spectator data is invalid.
             invalidateProcessor();
-            removePreviewsFromScreen();
+            deletePreviews();
         }
 
         const currentBeatmapsetId = pickedBeatmap?.beatmapSetId;
