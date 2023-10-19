@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "A web-based spectator client for osu!droid collaborating with multiplayer-based Discord bot",
   "scripts": {
+    "build": "dts-gen -m faye -o -f node_modules/faye/src/faye_node.d.ts && node src/bundler.js",
     "format-code": "npx prettier -w --loglevel=silent \"src/ts/**\"",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "transpile-bundle": "dts-gen -m faye -o -f node_modules/faye/src/faye_node.d.ts && node src/bundler.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Rian8337",

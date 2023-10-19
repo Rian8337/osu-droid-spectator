@@ -3,14 +3,14 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "transpile-bundle",
+			"script": "build",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
 			"problemMatcher": [],
-			"label": "npm: transpile-bundle",
-			"detail": "npm run transpile-bundle"
+			"label": "npm: build",
+			"detail": "npm run build"
 		}
 	]
 }

@@ -16,5 +16,5 @@ jobs:
       - name: Install dependencies
         run: npm i
 
-      - name: Transpile and bundle
-        run: npm run transpile-bundle
+      - name: Build
+        run: npm run build
