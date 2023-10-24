@@ -32,7 +32,7 @@ export let teamScoreDisplay: DrawableTeamScoreDisplay | null = null;
  */
 export const teamColors: Record<MultiplayerTeam, RGBColor> = {
     [MultiplayerTeam.red]: new RGBColor(255, 112, 112),
-    [MultiplayerTeam.blue]: new RGBColor(86, 109, 245),
+    [MultiplayerTeam.blue]: new RGBColor(141, 155, 242),
 };
 
 /**
