@@ -1,16 +1,14 @@
 import {
     DroidHitWindow,
     MathUtils,
-    Playfield,
+    RGBColor,
     Slider,
     Spinner,
-    Vector2,
 } from "../osu-base";
 import { parsedBeatmap } from "../settings/BeatmapSettings";
 import { hitResultColors } from "../settings/SpectatorSettings";
 import { SpectatorObjectDataEventManager } from "../spectator/managers/SpectatorObjectDataEventManager";
 import { HitResult } from "../spectator/structures/HitResult";
-import { DrawableBeatmap } from "./DrawableBeatmap";
 
 /**
  * Represents a hit error bar that can be drawn.
@@ -31,15 +29,6 @@ export class DrawableHitErrorBar {
      */
     readonly isPrecise: boolean;
 
-    private get centerCoordinate(): Vector2 {
-        const { zeroCoordinate } = DrawableBeatmap;
-
-        return new Vector2(
-            zeroCoordinate.x / 2,
-            Playfield.baseSize.y + zeroCoordinate.y / 1.75,
-        );
-    }
-
     private readonly maxDrawTime = 3000;
 
     constructor(
@@ -59,107 +48,75 @@ export class DrawableHitErrorBar {
      * @param time The time to draw the hit error bar at.
      */
     draw(ctx: CanvasRenderingContext2D, time: number): void {
+        ctx.save();
+
+        ctx.translate(ctx.canvas.width / 2, ctx.canvas.height * 0.85);
+
         this.drawMehRange(ctx);
         this.drawGoodRange(ctx);
         this.drawGreatRange(ctx);
         this.drawMiddleLine(ctx);
         this.drawHitResults(ctx, time);
+
+        ctx.restore();
     }
 
     private drawMehRange(ctx: CanvasRenderingContext2D): void {
-        ctx.save();
-
-        const { centerCoordinate } = this;
-        const drawDistance = this.calculateDrawDistance(
+        this.drawRange(
             ctx,
             this.hitWindow.hitWindowFor50(this.isPrecise),
+            hitResultColors[HitResult.meh],
         );
-
-        ctx.globalAlpha = 1;
-        ctx.lineWidth = ctx.canvas.height / 75;
-        ctx.strokeStyle = `rgb(${hitResultColors[HitResult.meh]})`;
-        ctx.beginPath();
-        ctx.moveTo(centerCoordinate.x - drawDistance, centerCoordinate.y);
-        ctx.lineTo(centerCoordinate.x + drawDistance, centerCoordinate.y);
-        ctx.stroke();
-        ctx.closePath();
-
-        ctx.restore();
     }
 
     private drawGoodRange(ctx: CanvasRenderingContext2D): void {
-        ctx.save();
-
-        const { centerCoordinate } = this;
-        const drawDistance = this.calculateDrawDistance(
+        this.drawRange(
             ctx,
             this.hitWindow.hitWindowFor100(this.isPrecise),
+            hitResultColors[HitResult.good],
         );
-
-        ctx.globalAlpha = 1;
-        ctx.lineWidth = ctx.canvas.height / 75;
-        ctx.strokeStyle = `rgb(${hitResultColors[HitResult.good]})`;
-        ctx.beginPath();
-        ctx.moveTo(centerCoordinate.x - drawDistance, centerCoordinate.y);
-        ctx.lineTo(centerCoordinate.x + drawDistance, centerCoordinate.y);
-        ctx.stroke();
-        ctx.closePath();
-
-        ctx.restore();
     }
 
     private drawGreatRange(ctx: CanvasRenderingContext2D): void {
-        ctx.save();
-
-        const { centerCoordinate } = this;
-        const drawDistance = this.calculateDrawDistance(
+        this.drawRange(
             ctx,
             this.hitWindow.hitWindowFor300(this.isPrecise),
+            hitResultColors[HitResult.great],
         );
+    }
+
+    private drawRange(
+        ctx: CanvasRenderingContext2D,
+        hitWindow: number,
+        color: RGBColor,
+    ): void {
+        const drawDistance = this.calculateDrawDistance(ctx, hitWindow);
 
         ctx.globalAlpha = 1;
         ctx.lineWidth = ctx.canvas.height / 75;
-        ctx.strokeStyle = `rgb(${hitResultColors[HitResult.great]})`;
+        ctx.strokeStyle = `rgb(${color})`;
         ctx.beginPath();
-        ctx.moveTo(centerCoordinate.x - drawDistance, centerCoordinate.y);
-        ctx.lineTo(centerCoordinate.x + drawDistance, centerCoordinate.y);
+        ctx.moveTo(-drawDistance, 0);
+        ctx.lineTo(drawDistance, 0);
         ctx.stroke();
         ctx.closePath();
-
-        ctx.restore();
     }
 
     private drawMiddleLine(ctx: CanvasRenderingContext2D): void {
-        ctx.save();
-
-        const { centerCoordinate } = this;
-
         ctx.globalAlpha = 1;
         ctx.lineWidth = ctx.canvas.width / 100;
         ctx.strokeStyle = "#fff";
         ctx.beginPath();
-        ctx.moveTo(
-            centerCoordinate.x,
-            centerCoordinate.y - ctx.canvas.height / 20,
-        );
-        ctx.lineTo(
-            centerCoordinate.x,
-            centerCoordinate.y + ctx.canvas.height / 20,
-        );
+        ctx.moveTo(0, -ctx.canvas.height / 20);
+        ctx.lineTo(0, ctx.canvas.height / 20);
         ctx.stroke();
         ctx.closePath();
-
-        ctx.restore();
     }
 
     private drawHitResults(ctx: CanvasRenderingContext2D, time: number): void {
         if (!parsedBeatmap) {
             throw new Error("No beatmaps have been parsed yet");
         }
-
-        const { centerCoordinate } = this;
-
-        ctx.save();
 
         for (
             let event = this.manager.eventAt(time);
@@ -211,14 +168,8 @@ export class DrawableHitErrorBar {
             ctx.lineWidth = ctx.canvas.width / 125;
             ctx.strokeStyle = `rgb(${hitResultColors[event.result]})`;
             ctx.beginPath();
-            ctx.moveTo(
-                centerCoordinate.x + distanceFromCenter,
-                centerCoordinate.y - ctx.canvas.height / 30,
-            );
-            ctx.lineTo(
-                centerCoordinate.x + distanceFromCenter,
-                centerCoordinate.y + ctx.canvas.height / 30,
-            );
+            ctx.moveTo(distanceFromCenter, -ctx.canvas.height / 30);
+            ctx.lineTo(distanceFromCenter, ctx.canvas.height / 30);
             ctx.stroke();
             ctx.closePath();
         }

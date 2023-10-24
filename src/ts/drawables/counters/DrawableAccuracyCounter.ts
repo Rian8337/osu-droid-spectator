@@ -1,7 +1,6 @@
-import { Playfield } from "../../osu-base";
+import { Vector2 } from "../../osu-base";
 import { SpectatorAccuracyEvent } from "../../spectator/events/SpectatorAccuracyEvent";
 import { SpectatorSyncedAccuracyEvent } from "../../spectator/events/SpectatorSyncedAccuracyEvent";
-import { DrawableBeatmap } from "../DrawableBeatmap";
 import { DrawableCounter } from "./DrawableCounter";
 import { DrawableScoreCounter } from "./DrawableScoreCounter";
 
@@ -12,21 +11,21 @@ export class DrawableAccuracyCounter extends DrawableCounter<
     SpectatorAccuracyEvent,
     SpectatorSyncedAccuracyEvent
 > {
+    private static readonly fontSize = 40;
     private static readonly paddingX = DrawableScoreCounter.paddingX;
-    private static readonly paddingY = DrawableScoreCounter.paddingY * 2 + 10;
+    private static readonly paddingY =
+        DrawableScoreCounter.paddingY + this.fontSize + 5;
 
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
-        const { zeroCoordinate } = DrawableBeatmap;
+        const { fontSize, paddingX, paddingY } = DrawableAccuracyCounter;
 
-        this.setupContext(ctx, 40);
+        this.setupContext(ctx, new Vector2(ctx.canvas.width, 0), fontSize);
 
         ctx.textAlign = "right";
         ctx.fillText(
             `${(this.getValueAt(time) * 100).toFixed(2)}%`,
-            Playfield.baseSize.x +
-                zeroCoordinate.x -
-                DrawableAccuracyCounter.paddingX,
-            DrawableAccuracyCounter.paddingY - zeroCoordinate.y,
+            -paddingX,
+            paddingY,
         );
         ctx.restore();
     }

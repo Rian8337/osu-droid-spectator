@@ -65,10 +65,13 @@ export class Preview {
      */
     readonly screen: HTMLCanvasElement;
 
+    private readonly positionScale: Vector2;
+    private readonly sizeScale: Vector2;
+
     /**
      * The canvas context of the screen.
      */
-    get ctx(): CanvasRenderingContext2D {
+    private get ctx(): CanvasRenderingContext2D {
         return this.screen.getContext("2d")!;
     }
 
@@ -79,19 +82,15 @@ export class Preview {
         return teamMode === MultiplayerTeamMode.teamVS ? 50 : 0;
     }
 
-    constructor(uid: number, zeroCoordinate: Vector2, scale: number) {
+    constructor(uid: number, positionScale: Vector2, sizeScale: Vector2) {
         this.uid = uid;
+        this.positionScale = positionScale;
+        this.sizeScale = sizeScale;
 
         this.screen = document.createElement("canvas");
-        this.screen.id = `preview${zeroCoordinate}`;
-        this.screen.width = innerWidth;
-        this.screen.height = innerHeight - Preview.heightPadding;
-        this.screen.style.position = "absolute";
-        this.screen.style.left = `${zeroCoordinate.x}px`;
-        this.screen.style.top = `${zeroCoordinate.y}px`;
+        this.screen.id = `preview${positionScale}`;
 
-        this.ctx.scale(scale, scale);
-
+        this.applyCanvasPosition();
         this.attachToContainer();
     }
 
@@ -125,36 +124,42 @@ export class Preview {
         this.beatmap = new DrawableBeatmap(
             parsedBeatmap,
             specDataManager.mods,
+            this.sizeScale,
             specDataManager.forcedAR,
         );
         this.specDataManager = specDataManager;
         this.playerInfo = new DrawablePlayerInfo(
             specDataManager.uid,
             specDataManager.username,
+            this.sizeScale,
         );
-        this.ctx.restore();
-        this.ctx.save();
 
         this.drawableCursors.length = 0;
 
         for (const manager of specDataManager.events.cursor) {
             this.drawableCursors.push(
-                new DrawableCursor(manager, specDataManager.mods),
+                new DrawableCursor(
+                    manager,
+                    this.sizeScale,
+                    specDataManager.mods,
+                ),
             );
         }
 
         this.accuracyCounter = new DrawableAccuracyCounter(
             specDataManager.events.accuracy,
             specDataManager.events.syncedAccuracy,
+            this.sizeScale,
         );
         this.comboCounter = new DrawableComboCounter(
             specDataManager.events.combo,
             specDataManager.events.syncedCombo,
+            this.sizeScale,
         );
         this.scoreCounter = new DrawableScoreCounter(
             specDataManager.events.score,
             specDataManager.events.syncedScore,
-            specDataManager.uid,
+            this.sizeScale,
         );
         this.hitErrorBar = new DrawableHitErrorBar(
             specDataManager.events.objectData,
@@ -162,7 +167,6 @@ export class Preview {
             specDataManager.mods.some((m) => m instanceof ModPrecise),
         );
 
-        this.beatmap.update(this.ctx);
         this.at(0);
     }
 
@@ -177,12 +181,8 @@ export class Preview {
             return;
         }
 
-        this.beatmap.update(this.ctx);
-        this.ctx.save();
-        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-        this.ctx.clearRect(0, 0, innerWidth, innerHeight);
-        this.ctx.restore();
-        this.playerInfo?.draw(this.ctx, time);
+        this.applyCanvasPosition();
+        this.ctx.clearRect(0, 0, this.screen.width, this.screen.height);
         this.accuracyCounter?.draw(this.ctx, time);
         this.comboCounter?.draw(this.ctx, time);
         this.scoreCounter?.draw(this.ctx, time);
@@ -192,5 +192,21 @@ export class Preview {
         for (const drawableCursor of this.drawableCursors) {
             drawableCursor.draw(this.ctx, time);
         }
+
+        this.playerInfo?.draw(this.ctx, time);
+    }
+
+    /**
+     * Applies the canvas position with respect to the window size.
+     */
+    private applyCanvasPosition(): void {
+        const height = innerHeight - Preview.heightPadding * 2;
+
+        this.screen.width = this.sizeScale.x * innerWidth;
+        this.screen.height = this.sizeScale.y * height;
+
+        this.screen.style.position = "absolute";
+        this.screen.style.left = `${this.positionScale.x * innerWidth}px`;
+        this.screen.style.top = `${this.positionScale.y * height}px`;
     }
 }

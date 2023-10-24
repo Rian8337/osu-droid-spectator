@@ -49,7 +49,6 @@ export class DrawableTeamScoreCounter {
 
         this.score = 0;
 
-        // TODO: consider different win conditions
         for (const player of players.values()) {
             if (player.team !== this.team) {
                 continue;

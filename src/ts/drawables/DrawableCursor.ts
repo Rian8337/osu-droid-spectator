@@ -9,7 +9,6 @@ import {
 import { SpectatorCursorEvent } from "../spectator/events/SpectatorCursorEvent";
 import { MovementType } from "../spectator/structures/MovementType";
 import { SpectatorEventManager } from "../spectator/managers/SpectatorEventManager";
-import { DrawableBeatmap } from "./DrawableBeatmap";
 
 /**
  * Represents a cursor that can be drawn.
@@ -21,12 +20,15 @@ export class DrawableCursor {
     readonly manager: SpectatorEventManager<SpectatorCursorEvent>;
 
     private readonly isHardRock: boolean;
+    private readonly sizeScale: Vector2;
 
     constructor(
         manager: SpectatorEventManager<SpectatorCursorEvent>,
+        sizeScale: Vector2,
         mods: (Mod & IModApplicableToDroid)[],
     ) {
         this.manager = manager;
+        this.sizeScale = sizeScale;
         this.isHardRock = mods.some((m) => m instanceof ModHardRock);
     }
 
@@ -55,17 +57,16 @@ export class DrawableCursor {
             );
         }
 
-        const { zeroCoordinate } = DrawableBeatmap;
-        const x = MathUtils.clamp(
-            position.x,
-            -zeroCoordinate.x,
-            ctx.canvas.width,
+        const playfieldSize = Playfield.baseSize.multiply(this.sizeScale);
+
+        ctx.translate(
+            (ctx.canvas.width - playfieldSize.x) / 2,
+            (ctx.canvas.height - playfieldSize.y) / 2,
         );
-        const y = MathUtils.clamp(
-            position.y,
-            -zeroCoordinate.y,
-            ctx.canvas.height,
-        );
+        ctx.scale(this.sizeScale.x, this.sizeScale.y);
+
+        const x = MathUtils.clamp(position.x, 0, Playfield.baseSize.x);
+        const y = MathUtils.clamp(position.y, 0, Playfield.baseSize.y);
 
         const radius = 15;
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);

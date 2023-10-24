@@ -1,7 +1,6 @@
-import { Playfield } from "../../osu-base";
+import { Vector2 } from "../../osu-base";
 import { SpectatorComboEvent } from "../../spectator/events/SpectatorComboEvent";
 import { SpectatorSyncedComboEvent } from "../../spectator/events/SpectatorSyncedComboEvent";
-import { DrawableBeatmap } from "../DrawableBeatmap";
 import { DrawableCounter } from "./DrawableCounter";
 
 /**
@@ -13,20 +12,15 @@ export class DrawableComboCounter extends DrawableCounter<
 > {
     private static readonly paddingX = 5;
     private static readonly paddingY = 30;
+    private static readonly fontSize = 70;
 
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
-        const { zeroCoordinate } = DrawableBeatmap;
+        const { fontSize, paddingX, paddingY } = DrawableComboCounter;
 
-        this.setupContext(ctx, 70);
+        this.setupContext(ctx, new Vector2(0, ctx.canvas.height), fontSize);
 
         ctx.textAlign = "left";
-        ctx.fillText(
-            `${this.getValueAt(time)}x`,
-            DrawableComboCounter.paddingX - zeroCoordinate.x,
-            Playfield.baseSize.y +
-                zeroCoordinate.y -
-                DrawableComboCounter.paddingY,
-        );
+        ctx.fillText(`${this.getValueAt(time)}x`, paddingX, -paddingY);
         ctx.restore();
     }
 

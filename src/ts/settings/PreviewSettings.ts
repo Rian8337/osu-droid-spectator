@@ -1,5 +1,5 @@
 import { Preview } from "../Preview";
-import { Interpolation, Vector2 } from "../osu-base";
+import { Vector2 } from "../osu-base";
 import { MultiplayerPlayer } from "../spectator/structures/MultiplayerPlayer";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
@@ -28,16 +28,17 @@ export function reloadPreviews(): void {
 
     const addPlayers = (
         players: MultiplayerPlayer[],
-        minWidth: number,
-        maxWidth: number,
+        minWidthScale = 0,
+        maxWidthScale = 1,
     ) => {
         // Divide previews into different layouts for varying cell counts in order to maximize dimensions.
         let rows = 1;
         let cells = 1;
 
         switch (players.length) {
+            case 1:
             case 2:
-                cells = 2;
+                rows = 2;
                 break;
             case 3:
             case 4:
@@ -66,35 +67,35 @@ export function reloadPreviews(): void {
                 rows = 4;
         }
 
-        for (let row = 0; row < rows; ++row) {
-            const players = playersArray.slice(row * cells, row * (1 + cells));
-            const unfilledWidth =
-                (maxWidth - minWidth) * (1 - players.length / cells);
+        const widthScaleRange = maxWidthScale - minWidthScale;
+        const sizeScale = new Vector2(widthScaleRange / cells, 1 / rows);
 
-            for (let cell = 0; cell < Math.min(players.length, cells); ++cell) {
-                const player = players[cell];
+        // cells * rows - players --> unfilledSlots
+        // floor(unfilled / cells) / rows
+        const unfilledSlots = cells * rows - players.length;
+        const yScaleOffset = sizeScale.y * Math.floor(unfilledSlots / cells);
+
+        for (let row = 0; row < rows; ++row) {
+            const playersToAdd = players.slice(cells * row, cells * (1 + row));
+            const xScaleOffset =
+                widthScaleRange * (1 - playersToAdd.length / cells);
+
+            for (
+                let cell = 0;
+                cell < Math.min(playersToAdd.length, cells);
+                ++cell
+            ) {
+                const player = playersToAdd[cell];
+
+                // Position the preview to the center if the row or cell is not filled entirely.
+                const positionScale = new Vector2(
+                    minWidthScale + sizeScale.x * cell + xScaleOffset / 2,
+                    sizeScale.y * row + yScaleOffset / 2,
+                );
 
                 previews.set(
                     player.uid,
-                    new Preview(
-                        player.uid,
-                        new Vector2(
-                            Interpolation.lerp(
-                                minWidth,
-                                maxWidth,
-                                cell / cells,
-                            ) +
-                                // Position the preview to the center if the row is not filled entirely.
-                                unfilledWidth / 2,
-                            Interpolation.lerp(
-                                0,
-                                innerHeight - Preview.heightPadding,
-                                row / rows,
-                            ),
-                        ),
-                        // We are using cell count for scale as playfield height is smaller than width.
-                        1 / cells,
-                    ),
+                    new Preview(player.uid, positionScale, sizeScale),
                 );
             }
         }
@@ -103,18 +104,18 @@ export function reloadPreviews(): void {
     const playersArray = [...players.values()];
 
     if (teamMode === MultiplayerTeamMode.headToHead) {
-        addPlayers(playersArray, 0, innerWidth);
+        addPlayers(playersArray);
     } else {
         addPlayers(
             playersArray.filter((p) => p.team === MultiplayerTeam.red),
             0,
-            innerWidth / 2,
+            0.5,
         );
 
         addPlayers(
             playersArray.filter((p) => p.team === MultiplayerTeam.blue),
-            innerWidth / 2,
-            innerWidth,
+            0.5,
+            1,
         );
     }
 }

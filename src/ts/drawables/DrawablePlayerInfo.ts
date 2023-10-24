@@ -1,6 +1,5 @@
-import { MathUtils, Playfield, RGBColor } from "../osu-base";
+import { MathUtils, RGBColor, Vector2 } from "../osu-base";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
-import { DrawableBeatmap } from "./DrawableBeatmap";
 import { players } from "../settings/PlayerSettings";
 import { dataProcessor, teamColors } from "../settings/SpectatorSettings";
 import { parsedBeatmap } from "../settings/BeatmapSettings";
@@ -21,10 +20,13 @@ export class DrawablePlayerInfo
     readonly username: string;
     readonly team: MultiplayerTeam | null;
 
-    constructor(uid: number, username: string) {
+    private readonly sizeScale: Vector2;
+
+    constructor(uid: number, username: string, sizeScale: Vector2) {
         this.uid = uid;
         this.username = username;
         this.team = players.get(this.uid)?.team ?? null;
+        this.sizeScale = sizeScale;
     }
 
     /**
@@ -105,23 +107,19 @@ export class DrawablePlayerInfo
             // Ignore error
         }
 
-        const { zeroCoordinate } = DrawableBeatmap;
-
         ctx.fillStyle = `rgb(${color})`;
         ctx.globalAlpha = 1;
         ctx.textAlign = "right";
+        ctx.translate(ctx.canvas.width, ctx.canvas.height);
+        ctx.scale(this.sizeScale.x, this.sizeScale.y);
         ctx.fillText(
             `${this.username}${
                 manager.mods.length > 0
                     ? ` (${manager.mods.reduce((a, m) => a + m.acronym, "")})`
                     : ""
             }`,
-            Playfield.baseSize.x +
-                zeroCoordinate.x -
-                DrawablePlayerInfo.paddingX,
-            Playfield.baseSize.y +
-                zeroCoordinate.y -
-                DrawablePlayerInfo.paddingY,
+            -DrawablePlayerInfo.paddingX,
+            -DrawablePlayerInfo.paddingY,
         );
         ctx.restore();
     }

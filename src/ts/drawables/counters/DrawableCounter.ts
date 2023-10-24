@@ -1,3 +1,4 @@
+import { Vector2 } from "../../osu-base";
 import { SpectatorCountableEvent } from "../../spectator/events/SpectatorCountableEvent";
 import { SpectatorSyncedCountableEvent } from "../../spectator/events/SpectatorSyncedCountableEvent";
 import { SpectatorEventManager } from "../../spectator/managers/SpectatorEventManager";
@@ -12,19 +13,26 @@ export abstract class DrawableCounter<
     /**
      * The event manager of this drawable counter.
      */
-    readonly manager: SpectatorEventManager<SpecEvent>;
+    protected readonly manager: SpectatorEventManager<SpecEvent>;
 
     /**
      * The synced event manager of this drawable counter.
      */
-    readonly syncedManager: SpectatorEventManager<SpecSyncedEvent>;
+    protected readonly syncedManager: SpectatorEventManager<SpecSyncedEvent>;
+
+    /**
+     * The size scale of the underlying preview.
+     */
+    protected readonly sizeScale: Vector2;
 
     constructor(
         manager: SpectatorEventManager<SpecEvent>,
         syncedManager: SpectatorEventManager<SpecSyncedEvent>,
+        sizeScale: Vector2,
     ) {
         this.manager = manager;
         this.syncedManager = syncedManager;
+        this.sizeScale = sizeScale;
     }
 
     /**
@@ -51,9 +59,12 @@ export abstract class DrawableCounter<
      */
     protected setupContext(
         ctx: CanvasRenderingContext2D,
+        zeroPosition: Vector2,
         fontSize: number,
     ): void {
         ctx.save();
+        ctx.translate(zeroPosition.x, zeroPosition.y);
+        ctx.scale(this.sizeScale.x, this.sizeScale.y);
 
         try {
             // This code will fail in Firefox(<~ 44)

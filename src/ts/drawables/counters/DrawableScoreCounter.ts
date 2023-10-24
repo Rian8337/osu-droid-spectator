@@ -1,8 +1,6 @@
-import { Playfield } from "../../osu-base";
+import { Vector2 } from "../../osu-base";
 import { SpectatorScoreEvent } from "../../spectator/events/SpectatorScoreEvent";
 import { SpectatorSyncedScoreEvent } from "../../spectator/events/SpectatorSyncedScoreEvent";
-import { SpectatorEventManager } from "../../spectator/managers/SpectatorEventManager";
-import { DrawableBeatmap } from "../DrawableBeatmap";
 import { DrawableCounter } from "./DrawableCounter";
 
 /**
@@ -12,36 +10,20 @@ export class DrawableScoreCounter extends DrawableCounter<
     SpectatorScoreEvent,
     SpectatorSyncedScoreEvent
 > {
+    private static readonly fontSize = 60;
     static readonly paddingX = 5;
-    static readonly paddingY = 35;
-
-    /**
-     * The uid of the player represented by this counter.
-     */
-    readonly uid: number;
-
-    constructor(
-        manager: SpectatorEventManager<SpectatorScoreEvent>,
-        syncedManager: SpectatorEventManager<SpectatorSyncedScoreEvent>,
-        uid: number,
-    ) {
-        super(manager, syncedManager);
-
-        this.uid = uid;
-    }
+    static readonly paddingY = this.fontSize;
 
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
-        const { zeroCoordinate } = DrawableBeatmap;
+        const { fontSize, paddingX, paddingY } = DrawableScoreCounter;
 
-        this.setupContext(ctx, 60);
+        this.setupContext(ctx, new Vector2(ctx.canvas.width, 0), fontSize);
 
         ctx.textAlign = "right";
         ctx.fillText(
             this.getValueAt(time).toString().padStart(8, "0"),
-            Playfield.baseSize.x +
-                zeroCoordinate.x -
-                DrawableScoreCounter.paddingX,
-            DrawableScoreCounter.paddingY - zeroCoordinate.y,
+            -paddingX,
+            paddingY,
         );
         ctx.restore();
     }

@@ -35,6 +35,8 @@ export class DrawableTeamScoreDisplay {
 
         const container = $("#container")[0];
         container.appendChild(this.screen);
+
+        this.draw(0);
     }
 
     /**

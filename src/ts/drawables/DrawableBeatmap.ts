@@ -20,22 +20,11 @@ import { DrawableHitObject } from "./hitobjects/DrawableHitObject";
 import { DrawableSlider } from "./hitobjects/DrawableSlider";
 import { DrawableSpinner } from "./hitobjects/DrawableSpinner";
 import { SpectatorDataManager } from "../spectator/managers/SpectatorDataManager";
-import { Preview } from "../Preview";
 
 /**
  * Represents a beatmap that can be used to draw objects.
  */
 export class DrawableBeatmap {
-    /**
-     * The coordinate of the playfield at (0, 0) with respect to the window size.
-     */
-    static get zeroCoordinate(): Vector2 {
-        return new Vector2(
-            (innerWidth - Playfield.baseSize.x) / 2,
-            (innerHeight - Playfield.baseSize.y) / 2 - Preview.heightPadding,
-        );
-    }
-
     /**
      * The underlying beatmap.
      */
@@ -47,6 +36,7 @@ export class DrawableBeatmap {
     readonly drawableHitObjects: DrawableHitObject[] = [];
 
     private readonly approachTime: number;
+    private readonly sizeScale: Vector2;
 
     private get comboColors(): RGBColor[] {
         return this.beatmap.colors.combo?.length
@@ -88,9 +78,11 @@ export class DrawableBeatmap {
     constructor(
         beatmap: Beatmap,
         mods: (Mod & IModApplicableToDroid)[],
+        sizeScale: Vector2,
         forcedAR?: number,
     ) {
         this.beatmap = beatmap;
+        this.sizeScale = sizeScale;
 
         if (this.beatmap.hitObjects.objects.length === 0) {
             throw new Error("This beatmap does not have any hitobjects.");
@@ -117,23 +109,6 @@ export class DrawableBeatmap {
         this.convertHitObjects(hitObjects, mods, objectScale);
     }
 
-    update(ctx: CanvasRenderingContext2D): void {
-        ctx.shadowColor = "#666";
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-        try {
-            // this code will fail in Firefox(<~ 44)
-            // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `${this.drawableHitObjects[0].object.radius}px Trebuchet MS, sans-serif`;
-        } catch (e) {
-            // Ignore error
-        }
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        const { zeroCoordinate } = DrawableBeatmap;
-        ctx.translate(zeroCoordinate.x, zeroCoordinate.y);
-    }
-
     /**
      * Resets the state of object draw indexes.
      */
@@ -154,6 +129,10 @@ export class DrawableBeatmap {
         time: number,
         manager: SpectatorDataManager,
     ): void {
+        ctx.save();
+
+        this.applyCanvasConfig(ctx);
+
         time = this.beatmap.getOffsetTime(time);
 
         while (this.objectDrawIndexes.first < this.drawableHitObjects.length) {
@@ -214,6 +193,8 @@ export class DrawableBeatmap {
 
             object.draw(ctx, time, objectData, manager.maxHitWindow);
         }
+
+        ctx.restore();
     }
 
     /**
@@ -261,5 +242,29 @@ export class DrawableBeatmap {
                 this.beatmap.general.stackLeniency,
             );
         }
+    }
+
+    private applyCanvasConfig(ctx: CanvasRenderingContext2D): void {
+        ctx.shadowColor = "#666";
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        try {
+            // this code will fail in Firefox(<~ 44)
+            // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
+            ctx.font = `${this.drawableHitObjects[0].object.radius}px Trebuchet MS, sans-serif`;
+        } catch (e) {
+            // Ignore error
+        }
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        // Position the playfield to the center of the canvas.
+        const playfieldSize = Playfield.baseSize.multiply(this.sizeScale);
+
+        ctx.translate(
+            (ctx.canvas.width - playfieldSize.x) / 2,
+            (ctx.canvas.height - playfieldSize.y) / 2,
+        );
+        ctx.scale(this.sizeScale.x, this.sizeScale.y);
     }
 }
