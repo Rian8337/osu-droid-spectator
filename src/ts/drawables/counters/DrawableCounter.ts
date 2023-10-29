@@ -64,7 +64,9 @@ export abstract class DrawableCounter<
     ): void {
         ctx.save();
         ctx.translate(zeroPosition.x, zeroPosition.y);
-        ctx.scale(this.sizeScale.x, this.sizeScale.y);
+
+        // Only use Y scale so that the text is not stretched.
+        ctx.scale(this.sizeScale.y, this.sizeScale.y);
 
         try {
             // This code will fail in Firefox(<~ 44)

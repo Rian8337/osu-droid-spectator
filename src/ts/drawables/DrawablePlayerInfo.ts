@@ -15,6 +15,8 @@ export class DrawablePlayerInfo
     private static readonly paddingX = 15;
     private static readonly paddingY = 35;
     private static readonly missColor = new RGBColor(209, 14, 0);
+    private static readonly fontSize: number = 50;
+    private static readonly missMaxFontSize = 60;
 
     readonly uid: number;
     readonly username: string;
@@ -62,11 +64,12 @@ export class DrawablePlayerInfo
             this.team !== null
                 ? teamColors[this.team]
                 : new RGBColor(255, 255, 255);
-        let fontSize = ctx.canvas.height / 8;
         const missDt = time - event.time;
 
+        const { missColor, missMaxFontSize } = DrawablePlayerInfo;
+        let { fontSize } = DrawablePlayerInfo;
+
         if (event.combo === 0 && missDt <= missAnimationDuration) {
-            const missMaxFontSize = ctx.canvas.height / 6;
             let multiplier = 1;
 
             if (missDt <= 1000) {
@@ -84,7 +87,6 @@ export class DrawablePlayerInfo
                 multiplier = Math.pow(1 - t, 2);
             }
 
-            const { missColor } = DrawablePlayerInfo;
             color = new RGBColor(
                 Interpolation.lerp(color.r, missColor.r, multiplier),
                 Interpolation.lerp(color.g, missColor.g, multiplier),
@@ -111,7 +113,10 @@ export class DrawablePlayerInfo
         ctx.globalAlpha = 1;
         ctx.textAlign = "right";
         ctx.translate(ctx.canvas.width, ctx.canvas.height);
-        ctx.scale(this.sizeScale.x, this.sizeScale.y);
+
+        // Only use Y scale so that the text is not stretched weirdly.
+        ctx.scale(this.sizeScale.y, this.sizeScale.y);
+
         ctx.fillText(
             `${this.username}${
                 manager.mods.length > 0
