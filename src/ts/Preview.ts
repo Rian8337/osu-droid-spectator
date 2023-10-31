@@ -88,7 +88,7 @@ export class Preview {
         this.sizeScale = sizeScale;
 
         this.screen = document.createElement("canvas");
-        this.screen.id = `preview${positionScale}`;
+        this.screen.id = `preview${uid}`;
 
         this.applyCanvasPosition();
         this.attachToContainer();
