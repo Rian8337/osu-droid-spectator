@@ -39,7 +39,7 @@ export class DrawableBeatmap {
     private readonly sizeScale: Vector2;
 
     private get comboColors(): RGBColor[] {
-        return this.beatmap.colors.combo?.length
+        return this.beatmap.colors.combo.length
             ? this.beatmap.colors.combo
             : DrawableBeatmap.defaultComboColors;
     }
