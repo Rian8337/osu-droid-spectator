@@ -1,4 +1,3 @@
-import { askRoomID } from "../RoomLoader";
 import { MultiplayerPlayer } from "../spectator/structures/MultiplayerPlayer";
 
 /**
@@ -26,40 +25,6 @@ export function setPlayers(list: MultiplayerPlayer[]) {
 
         players.set(player.uid, player);
         console.log("Added uid", player.uid, "to the list of players");
-    }
-}
-
-/**
- * The amount of players in the room.
- */
-let playerCount = 0;
-
-/**
- * Sets the current player count in the room.
- *
- * @param count The player count.
- */
-export function setPlayerCount(count: number): void {
-    playerCount = count;
-}
-
-/**
- * Increments the player count in the room.
- */
-export function incrementPlayerCount(): void {
-    ++playerCount;
-}
-
-/**
- * Decrements the player count in the room.
- */
-export function decrementPlayerCount(): void {
-    --playerCount;
-
-    if (playerCount <= 0) {
-        console.log("Room closed");
-
-        askRoomID();
     }
 }
 

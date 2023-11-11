@@ -2,7 +2,6 @@ import { openDatabase } from "./settings/DatabaseSettings";
 import { setPickedBeatmap } from "./settings/BeatmapSettings";
 import { BeatmapChangedHandler } from "./spectator/handlers/BeatmapChangedHandler";
 import { RoundStartHandler } from "./spectator/handlers/RoundStartHandler";
-import { setPlayerCount } from "./settings/PlayerSettings";
 import { Socket, io } from "socket.io-client";
 import { SpectatorClientEvents } from "./spectator/SpectatorClientEvents";
 
@@ -32,7 +31,6 @@ export async function askRoomID(messagePrefix?: string): Promise<void> {
             console.log(room);
 
             setPickedBeatmap(room.beatmap);
-            setPlayerCount(room.playerCount);
 
             await openDatabase();
 

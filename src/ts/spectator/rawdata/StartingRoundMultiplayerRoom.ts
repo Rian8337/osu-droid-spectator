@@ -12,11 +12,6 @@ export interface StartingRoundMultiplayerRoom {
     readonly mods: MultiplayerRoomMods;
 
     /**
-     * The amount of players who are in this room.
-     */
-    readonly playerCount: number;
-
-    /**
      * The players who are playing in the room.
      */
     readonly playingPlayers: MultiplayerPlayer[];
