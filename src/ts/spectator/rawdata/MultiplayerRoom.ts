@@ -1,12 +1,10 @@
-import { MultiplayerTeamMode } from "../structures/MultiplayerTeamMode";
-import { MultiplayerPlayer } from "../structures/MultiplayerPlayer";
 import { PickedBeatmap } from "./PickedBeatmap";
-import { MultiplayerRoomMods } from "../structures/MultiplayerRoomMods";
+import { StartingRoundMultiplayerRoom } from "./StartingRoundMultiplayerRoom";
 
 /**
  * Represents the information about a multiplayer room that's received from the server.
  */
-export interface MultiplayerRoom {
+export interface MultiplayerRoom extends StartingRoundMultiplayerRoom {
     /**
      * The name of the room.
      */
@@ -16,26 +14,6 @@ export interface MultiplayerRoom {
      * The beatmap that is currently being played.
      */
     readonly beatmap: PickedBeatmap | null;
-
-    /**
-     * The mods that must be played.
-     */
-    readonly mods: MultiplayerRoomMods;
-
-    /**
-     * The amount of players who are in this room.
-     */
-    readonly playerCount: number;
-
-    /**
-     * The players who are playing in the room.
-     */
-    readonly playingPlayers: MultiplayerPlayer[];
-
-    /**
-     * The team mode of the room.
-     */
-    readonly teamMode: MultiplayerTeamMode;
 
     /**
      * Whether the room is currently playing.

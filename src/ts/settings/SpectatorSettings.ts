@@ -1,16 +1,10 @@
 import { DrawableTeamScoreDisplay } from "../drawables/DrawableTeamScoreDisplay";
 import { RGBColor } from "../osu-base";
-import { FayeClientManager } from "../spectator/FayeClientManager";
 import { SpectatorDataProcessor } from "../spectator/SpectatorDataProcessor";
 import { HitResult } from "../spectator/structures/HitResult";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
 import { teamMode } from "./RoomSettings";
-
-/**
- * The Faye client manager.
- */
-export const fayeClient = new FayeClientManager();
 
 /**
  * Whether the user has interacted with the play button.

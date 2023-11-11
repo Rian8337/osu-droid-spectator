@@ -3,12 +3,32 @@
  */
 export interface PickedBeatmap {
     /**
-     * The beatmapset ID of the beatmap.
+     * The artist of this beatmap.
      */
-    readonly beatmapSetId?: number;
+    readonly artist: string;
 
     /**
-     * The MD5 hash of the beatmap.
+     * The creator of this beatmap.
      */
-    readonly hash: string;
+    readonly creator: string;
+
+    /**
+     * The MD5 hash of this beatmap.
+     */
+    readonly md5: string;
+
+    /**
+     * The title of the beatmap.
+     */
+    readonly title: string;
+
+    /**
+     * The version (difficulty name) of this beatmap.
+     */
+    readonly version: string;
+
+    /**
+     * The beatmap set ID of this beatmap.
+     */
+    readonly beatmapSetId?: number;
 }

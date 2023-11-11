@@ -45,7 +45,7 @@ export abstract class BeatmapChangedHandler {
 
         cancelBeatmapsetDownload();
 
-        if (newBeatmap?.hash !== pickedBeatmap?.hash) {
+        if (newBeatmap?.md5 !== pickedBeatmap?.md5) {
             // Only reset the processor and previews if it's a new beatmap, in which case the spectator data is invalid.
             invalidateProcessor();
             deletePreviews();
@@ -91,7 +91,7 @@ export abstract class BeatmapChangedHandler {
 
         setParsedBeatmap(null);
         let entries = Object.values(beatmapset.files);
-        let osuFile = await this.getOsuFile(entries, newBeatmap.hash);
+        let osuFile = await this.getOsuFile(entries, newBeatmap.md5);
 
         if (!osuFile) {
             if (alreadyAttemptDownload) {
@@ -111,7 +111,7 @@ export abstract class BeatmapChangedHandler {
             await beatmapset.loadAsync(beatmapsetBlob);
 
             entries = Object.values(beatmapset.files);
-            osuFile = await this.getOsuFile(entries, newBeatmap.hash);
+            osuFile = await this.getOsuFile(entries, newBeatmap.md5);
         }
 
         if (!osuFile) {

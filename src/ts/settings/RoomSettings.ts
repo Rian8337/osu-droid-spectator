@@ -3,11 +3,6 @@ import { IModApplicableToDroid, Mod, ModUtil } from "../osu-base";
 import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
 
 /**
- * The ID of the room.
- */
-export let roomId = "";
-
-/**
  * The custom speed multiplier to be used.
  */
 export let speedMultiplier = 1;
@@ -21,15 +16,6 @@ export let mods: (Mod & IModApplicableToDroid)[] = [];
  * The team mode.
  */
 export let teamMode = MultiplayerTeamMode.headToHead;
-
-/**
- * Sets the room ID.
- *
- * @param newRoomId The new room ID.
- */
-export function setRoomId(newRoomId: string): void {
-    roomId = newRoomId;
-}
 
 /**
  * Sets the required mods.

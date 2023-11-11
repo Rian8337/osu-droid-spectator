@@ -1,14 +1,14 @@
 import { openDatabase } from "./settings/DatabaseSettings";
 import { setPickedBeatmap } from "./settings/BeatmapSettings";
-import { setRoomId } from "./settings/RoomSettings";
-import { fayeClient } from "./settings/SpectatorSettings";
 import { BeatmapChangedHandler } from "./spectator/handlers/BeatmapChangedHandler";
-import { MultiplayerRoom } from "./spectator/rawdata/MultiplayerRoom";
 import { RoundStartHandler } from "./spectator/handlers/RoundStartHandler";
 import { setPlayerCount } from "./settings/PlayerSettings";
+import { Socket, io } from "socket.io-client";
+import { SpectatorClientEvents } from "./spectator/SpectatorClientEvents";
 
-export async function askRoomID(): Promise<void> {
+export async function askRoomID(messagePrefix?: string): Promise<void> {
     const message =
+        (messagePrefix ? `${messagePrefix}\n\n` : "") +
         "Enter the ID of the multiplayer room that you want to spectate.";
     let roomId = prompt(message);
 
@@ -16,52 +16,34 @@ export async function askRoomID(): Promise<void> {
         roomId = prompt(message);
     }
 
-    let roomInfoRequest = await fetch(
-        `https://droidpp.osudroid.moe/api/droid/getRoomInfo?roomId=${roomId}`,
+    const socket: Socket<SpectatorClientEvents> = io(
+        `https://droidpp.osudroid.moe/api/tournament/${roomId}`,
     );
-    let roomInfo: MultiplayerRoom = await roomInfoRequest.json();
 
-    while (roomInfoRequest.status !== 200) {
-        roomId = prompt(
-            (roomInfoRequest.status === 404
-                ? "Room not found"
-                : "You are being rate limited. Please try again later") +
-                `.\n\n${message}`,
-        );
+    socket
+        .once("connect_error", (err) => {
+            console.error(err);
+            askRoomID("Unable to connect to the room.");
+        })
+        .once("disconnect", () => askRoomID("Disconnected from the room."))
+        .once("connect", () => console.log(`Connected to room ${roomId}`))
+        .once("initialConnection", async (room) => {
+            console.log("Room info received:");
+            console.log(room);
 
-        roomInfoRequest = await fetch(
-            `https://droidpp.osudroid.moe/api/droid/getRoomInfo?roomId=${roomId}`,
-        );
-        roomInfo = await roomInfoRequest.json();
-    }
+            setPickedBeatmap(room.beatmap);
+            setPlayerCount(room.playerCount);
 
-    console.log("Room info received:");
-    console.log(roomInfo);
+            await openDatabase();
 
-    setRoomId(roomId!);
-    loadRoom(roomInfo);
-}
+            if (room.beatmap) {
+                await BeatmapChangedHandler.handle(room.beatmap);
+            } else {
+                $("#title a").text("No beatmaps selected yet");
+            }
 
-/**
- * Loads the room.
- *
- * @param roomInfo The room info.
- */
-export async function loadRoom(roomInfo: MultiplayerRoom): Promise<void> {
-    await fayeClient.beginSubscription();
-
-    setPickedBeatmap(roomInfo.beatmap);
-    setPlayerCount(roomInfo.playerCount);
-
-    await openDatabase();
-
-    if (roomInfo.beatmap) {
-        await BeatmapChangedHandler.handle(roomInfo.beatmap);
-    } else {
-        $("#title a").text("No beatmaps selected yet");
-    }
-
-    if (roomInfo.isPlaying) {
-        RoundStartHandler.handle(roomInfo);
-    }
+            if (room.isPlaying) {
+                RoundStartHandler.handle(room);
+            }
+        });
 }
