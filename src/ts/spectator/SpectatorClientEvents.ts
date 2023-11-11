@@ -19,7 +19,7 @@ export interface SpectatorClientEvents {
      *
      * @param beatmap The new beatmap. If omitted, no beatmap was selected.
      */
-    beatmapChanged: (beatmap?: PickedBeatmap) => void;
+    beatmapChanged: (beatmap: PickedBeatmap | null) => void;
 
     /**
      * Emitted when the round is starting.
