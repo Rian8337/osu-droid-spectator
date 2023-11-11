@@ -10,17 +10,21 @@ export async function askRoomID(messagePrefix?: string): Promise<void> {
     const message =
         (messagePrefix ? `${messagePrefix}\n\n` : "") +
         "Enter the ID of the multiplayer room that you want to spectate.";
-    let roomId = prompt(message);
 
+    let roomId: string | null = null;
     while (!roomId) {
         roomId = prompt(message);
     }
 
     const socket: Socket<SpectatorClientEvents> = io(
         `https://droidpp.osudroid.moe/api/tournament/${roomId}`,
-    );
-
-    socket
+        {
+            path: "/api/tournament/socket.io",
+            auth: {
+                type: "1",
+            },
+        },
+    )
         .once("connect_error", (err) => {
             console.error(err);
             askRoomID("Unable to connect to the room.");
@@ -36,8 +40,9 @@ export async function askRoomID(messagePrefix?: string): Promise<void> {
                     "beatmapChanged",
                     BeatmapChangedHandler.handle.bind(BeatmapChangedHandler),
                 )
-                .on("chatMessage", () => {
-                    // TODO: display chat message
+                .on("chatMessage", (uid, message) => {
+                    // TODO: chat tab?
+                    console.log(`Chat message from ${uid}: ${message}`);
                 })
                 .on(
                     "roundStarted",
