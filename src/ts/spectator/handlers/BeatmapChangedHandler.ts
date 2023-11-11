@@ -39,7 +39,7 @@ export abstract class BeatmapChangedHandler {
      *
      * @param newBeatmap The new beatmap.
      */
-    static async handle(newBeatmap?: PickedBeatmap): Promise<void> {
+    static async handle(newBeatmap?: PickedBeatmap | null): Promise<void> {
         const beatmapTitle = $("#title a");
         beatmapTitle.text("Loading...").removeProp("href");
 

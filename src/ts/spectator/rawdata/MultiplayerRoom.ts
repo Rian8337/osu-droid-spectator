@@ -6,11 +6,6 @@ import { StartingRoundMultiplayerRoom } from "./StartingRoundMultiplayerRoom";
  */
 export interface MultiplayerRoom extends StartingRoundMultiplayerRoom {
     /**
-     * The name of the room.
-     */
-    readonly name: string;
-
-    /**
      * The beatmap that is currently being played.
      */
     readonly beatmap: PickedBeatmap | null;

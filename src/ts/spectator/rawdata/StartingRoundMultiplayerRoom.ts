@@ -7,6 +7,11 @@ import { MultiplayerTeamMode } from "../structures/MultiplayerTeamMode";
  */
 export interface StartingRoundMultiplayerRoom {
     /**
+     * The name of the room.
+     */
+    readonly name: string;
+
+    /**
      * The mods that must be played.
      */
     readonly mods: MultiplayerRoomMods;

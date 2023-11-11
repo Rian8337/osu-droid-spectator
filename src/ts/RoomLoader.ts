@@ -4,6 +4,7 @@ import { BeatmapChangedHandler } from "./spectator/handlers/BeatmapChangedHandle
 import { RoundStartHandler } from "./spectator/handlers/RoundStartHandler";
 import { Socket, io } from "socket.io-client";
 import { SpectatorClientEvents } from "./spectator/SpectatorClientEvents";
+import { dataProcessor } from "./settings/SpectatorSettings";
 
 export async function askRoomID(messagePrefix?: string): Promise<void> {
     const message =
@@ -29,6 +30,23 @@ export async function askRoomID(messagePrefix?: string): Promise<void> {
         .once("initialConnection", async (room) => {
             console.log("Room info received:");
             console.log(room);
+
+            socket
+                .on(
+                    "beatmapChanged",
+                    BeatmapChangedHandler.handle.bind(BeatmapChangedHandler),
+                )
+                .on("chatMessage", () => {
+                    // TODO: display chat message
+                })
+                .on(
+                    "roundStarted",
+                    RoundStartHandler.handle.bind(RoundStartHandler),
+                )
+                .on(
+                    "spectatorData",
+                    (data) => dataProcessor?.processData(data),
+                );
 
             setPickedBeatmap(room.beatmap);
 

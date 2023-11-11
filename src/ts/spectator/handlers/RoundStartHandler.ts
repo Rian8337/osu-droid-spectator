@@ -15,7 +15,7 @@ import {
     initProcessor,
     initTeamScoreDisplay,
 } from "../../settings/SpectatorSettings";
-import { MultiplayerRoom } from "../rawdata/MultiplayerRoom";
+import { StartingRoundMultiplayerRoom } from "../rawdata/StartingRoundMultiplayerRoom";
 
 /**
  * A handler responsible for handling round start events.
@@ -26,7 +26,7 @@ export abstract class RoundStartHandler {
      *
      * @param room The room state when the round starts.
      */
-    static handle(room: MultiplayerRoom): void {
+    static handle(room: StartingRoundMultiplayerRoom): void {
         console.log("Round started");
         console.log(room);
 
