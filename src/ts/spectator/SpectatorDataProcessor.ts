@@ -190,7 +190,7 @@ export class SpectatorDataProcessor {
             new SpectatorSyncedComboEvent(mSecPassed, data.currentCombo),
         );
 
-        manager.latestDataTime = data.secPassed * 1000;
+        manager.latestDataTime = mSecPassed;
         console.log(
             "Received data from uid",
             manager.uid,
