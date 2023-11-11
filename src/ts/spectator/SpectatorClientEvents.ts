@@ -10,7 +10,7 @@ export interface SpectatorClientEvents {
     /**
      * Emitted after the client connects to the server.
      *
-     * @param room The
+     * @param room The structure of the connected room.
      */
     initialConnection: (room: MultiplayerRoom) => Promise<void>;
 
