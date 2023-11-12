@@ -10,8 +10,6 @@ const move = (e: MouseEvent) => {
 };
 
 chatContainerHeader.addEventListener("mousedown", (e) => {
-    console.log("Hi");
-
     offsetX = e.clientX - chatContainer.offsetLeft;
     offsetY = e.clientY - chatContainer.offsetTop;
 
