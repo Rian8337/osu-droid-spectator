@@ -38,8 +38,8 @@ export interface SpectatorClientEvents {
     /**
      * Emitted when a player or the system sends a chat message.
      *
-     * @param uid The uid of the player. If `null`, the message is a system message.
+     * @param username The username of the player. If `null`, the message is a system message.
      * @param message The message that was sent by the player or system.
      */
-    chatMessage: (uid: string | null, message: string) => void;
+    chatMessage: (username: string | null, message: string) => void;
 }
