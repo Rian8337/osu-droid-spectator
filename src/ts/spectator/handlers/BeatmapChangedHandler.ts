@@ -85,7 +85,9 @@ export abstract class BeatmapChangedHandler {
             }
 
             if (!beatmapsetBlob) {
-                beatmapTitle.text(notFoundText);
+                beatmapTitle
+                    .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
+                    .text(notFoundText);
                 return;
             }
 
@@ -98,7 +100,9 @@ export abstract class BeatmapChangedHandler {
 
         if (!osuFile) {
             if (alreadyAttemptDownload) {
-                beatmapTitle.text(notFoundText);
+                beatmapTitle
+                    .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
+                    .text(notFoundText);
                 return;
             }
 
@@ -106,7 +110,9 @@ export abstract class BeatmapChangedHandler {
 
             const beatmapsetBlob = await downloadBeatmapset(newBeatmapsetId);
             if (!beatmapsetBlob) {
-                beatmapTitle.text(notFoundText);
+                beatmapTitle
+                    .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
+                    .text(notFoundText);
                 return;
             }
 
@@ -118,7 +124,9 @@ export abstract class BeatmapChangedHandler {
         }
 
         if (!osuFile) {
-            beatmapTitle.text(notFoundText);
+            beatmapTitle
+                .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
+                .text(notFoundText);
             return;
         }
 
@@ -126,7 +134,9 @@ export abstract class BeatmapChangedHandler {
         const audioBlob = await this.getAudioBlob(entries, osuFile);
 
         if (!backgroundBlob || !audioBlob) {
-            beatmapTitle.text(`${beatmapText} (an error has occurred)`);
+            beatmapTitle
+                .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
+                .text(`${beatmapText} (an error has occurred)`);
             return;
         }
 
