@@ -166,8 +166,12 @@ a:hover {
 #chat-container {
     position: absolute;
     z-index: 9;
-    background-color: #f1f1f1;
+    background-color: rgb(47, 47, 47);
     border: 1px solid #d3d3d3;
+    width: 25%;
+    max-height: 50%;
+    color: #fff;
+    overflow-y: scroll;
 }
 
 .chat-container-hide {
@@ -179,6 +183,6 @@ a:hover {
     padding: 10px;
     cursor: move;
     z-index: 10;
-    background-color: #2196f3;
-    color: #fff;
+    background-color: #0063b5;
+    font-weight: bold;
 }
