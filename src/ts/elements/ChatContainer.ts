@@ -1,6 +1,9 @@
 const chatContainer = document.getElementById("chat-container")!;
 const chatContainerHeader = document.getElementById("chat-container-header")!;
 
+chatContainer.style.left = `${(innerWidth - chatContainer.offsetWidth) / 2}px`;
+chatContainer.style.top = `${(innerHeight - chatContainer.offsetHeight) / 2}px`;
+
 let offsetX = 0;
 let offsetY = 0;
 
