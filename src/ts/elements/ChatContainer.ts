@@ -19,6 +19,13 @@ chatContainerHeader.addEventListener("mousedown", (e) => {
     document.addEventListener("mousemove", move);
 });
 
+chatContainer.addEventListener("scroll", () =>
+    $(chatContainer).prop("scrolled", true),
+);
+chatContainer.addEventListener("scrollend", () =>
+    $(chatContainer).removeProp("scrolled"),
+);
+
 document.addEventListener("mouseup", () =>
     document.removeEventListener("mousemove", move),
 );

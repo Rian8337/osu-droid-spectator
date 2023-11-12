@@ -25,7 +25,17 @@ export abstract class ChatMessageHandler {
             paragraph.textContent = message;
         }
 
-        $<HTMLDivElement>("#chat-container").append(paragraph);
+        const container = $<HTMLDivElement>("#chat-container");
+        container.append(paragraph);
+
+        // Scroll down to the last message when the user isn't scrolling the chat.
+        if (!container.prop("scrolled")) {
+            container.animate(
+                { scrollTop: container.prop("scrollHeight") },
+                200,
+                "swing",
+            );
+        }
     }
 
     /**
