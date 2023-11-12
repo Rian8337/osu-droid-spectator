@@ -37,8 +37,9 @@ export function reloadPreviews(): void {
 
         switch (players.length) {
             case 1:
+                break;
             case 2:
-                rows = 2;
+                cells = 2;
                 break;
             case 3:
             case 4:
