@@ -32,7 +32,7 @@ export abstract class ChatMessageHandler {
         if (!container.prop("scrolled")) {
             container.animate(
                 { scrollTop: container.prop("scrollHeight") },
-                200,
+                500,
                 "swing",
             );
         }
