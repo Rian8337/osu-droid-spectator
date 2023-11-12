@@ -1,3 +1,8 @@
 import { askRoomID } from "./RoomLoader";
+import { openDatabase } from "./settings/DatabaseSettings";
 
-askRoomID();
+(async () => {
+    await openDatabase();
+
+    askRoomID();
+})();

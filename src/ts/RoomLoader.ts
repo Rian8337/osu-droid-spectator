@@ -1,4 +1,3 @@
-import { openDatabase } from "./settings/DatabaseSettings";
 import { setPickedBeatmap } from "./settings/BeatmapSettings";
 import { BeatmapChangedHandler } from "./spectator/handlers/BeatmapChangedHandler";
 import { RoundStartHandler } from "./spectator/handlers/RoundStartHandler";
@@ -56,8 +55,6 @@ export function askRoomID(messagePrefix?: string): void {
                 );
 
             setPickedBeatmap(room.beatmap);
-
-            await openDatabase();
 
             if (room.beatmap) {
                 await BeatmapChangedHandler.handle(room.beatmap);
