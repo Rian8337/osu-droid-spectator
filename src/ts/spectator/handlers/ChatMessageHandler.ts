@@ -10,19 +10,19 @@ export abstract class ChatMessageHandler {
      */
     static handle(username: string | null, message: string): void {
         const paragraph = document.createElement("p");
-
-        paragraph.textContent = message
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
+        message = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
         if (username !== null) {
             const usernameSpan = document.createElement("span");
             usernameSpan.style.fontWeight = "bold";
+            usernameSpan.style.color = "#f299b7";
             usernameSpan.textContent = username;
 
             paragraph.appendChild(usernameSpan);
+            paragraph.insertAdjacentText("beforeend", `: ${message}`);
         } else {
             paragraph.style.color = "#5288de";
+            paragraph.textContent = message;
         }
 
         $<HTMLDivElement>("#chat-container").append(paragraph);
