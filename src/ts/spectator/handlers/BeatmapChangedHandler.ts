@@ -59,6 +59,9 @@ export abstract class BeatmapChangedHandler {
             return;
         }
 
+        const beatmapText = `${newBeatmap.artist} - ${newBeatmap.title} (${newBeatmap.creator}) [${newBeatmap.version}]`;
+        const notFoundText = `${beatmapText} (not found in mirror)`;
+
         let alreadyAttemptDownload = false;
 
         if (!parsedBeatmap || newBeatmapsetId !== currentBeatmapsetId) {
@@ -82,7 +85,7 @@ export abstract class BeatmapChangedHandler {
             }
 
             if (!beatmapsetBlob) {
-                beatmapTitle.text("Beatmap not found in mirror, sorry!");
+                beatmapTitle.text(notFoundText);
                 return;
             }
 
@@ -95,7 +98,7 @@ export abstract class BeatmapChangedHandler {
 
         if (!osuFile) {
             if (alreadyAttemptDownload) {
-                beatmapTitle.text("Beatmap not found in mirror, sorry!");
+                beatmapTitle.text(notFoundText);
                 return;
             }
 
@@ -103,7 +106,7 @@ export abstract class BeatmapChangedHandler {
 
             const beatmapsetBlob = await downloadBeatmapset(newBeatmapsetId);
             if (!beatmapsetBlob) {
-                beatmapTitle.text("Beatmap not found in mirror, sorry!");
+                beatmapTitle.text(notFoundText);
                 return;
             }
 
@@ -115,7 +118,7 @@ export abstract class BeatmapChangedHandler {
         }
 
         if (!osuFile) {
-            beatmapTitle.text("Beatmap not found in mirror, sorry!");
+            beatmapTitle.text(notFoundText);
             return;
         }
 
@@ -123,7 +126,7 @@ export abstract class BeatmapChangedHandler {
         const audioBlob = await this.getAudioBlob(entries, osuFile);
 
         if (!backgroundBlob || !audioBlob) {
-            beatmapTitle.text("An error has occurred, sorry!");
+            beatmapTitle.text(`${beatmapText} (an error has occurred)`);
             return;
         }
 
