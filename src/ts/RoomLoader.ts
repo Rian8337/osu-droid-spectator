@@ -37,22 +37,17 @@ export function askRoomID(messagePrefix?: string): void {
         .once("disconnect", () => askRoomID("Disconnected from the room."))
         .once("connect", () => console.log(`Connected to room ${roomId}`))
         .on("chatMessage", ChatMessageHandler.handle.bind(ChatMessageHandler))
-        .on("spectatorData", (data) => dataProcessor.processData(data))
+        .on("spectatorData", dataProcessor.process.bind(dataProcessor))
+        .on(
+            "beatmapChanged",
+            BeatmapChangedHandler.handle.bind(BeatmapChangedHandler),
+        )
+        .on("roundStarted", RoundStartHandler.handle.bind(RoundStartHandler))
         .once("initialConnection", async (room) => {
             console.log("Room info received:");
             console.log(room);
 
             ChatMessageHandler.emptyChat();
-
-            socket
-                ?.on(
-                    "beatmapChanged",
-                    BeatmapChangedHandler.handle.bind(BeatmapChangedHandler),
-                )
-                .on(
-                    "roundStarted",
-                    RoundStartHandler.handle.bind(RoundStartHandler),
-                );
 
             setPickedBeatmap(room.beatmap);
 

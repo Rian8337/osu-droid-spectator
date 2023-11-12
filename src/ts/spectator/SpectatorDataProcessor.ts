@@ -8,11 +8,16 @@ import { SpectatorCursorEvent } from "./events/SpectatorCursorEvent";
 import { SpectatorObjectDataEvent } from "./events/SpectatorObjectDataEvent";
 import { SpectatorScoreEvent } from "./events/SpectatorScoreEvent";
 import { MultiplayerPlayer } from "./structures/MultiplayerPlayer";
-import { SpectatorData } from "./rawdata/SpectatorData";
 import { SpectatorDataManager } from "./managers/SpectatorDataManager";
 import { SpectatorSyncedScoreEvent } from "./events/SpectatorSyncedScoreEvent";
 import { SpectatorSyncedAccuracyEvent } from "./events/SpectatorSyncedAccuracyEvent";
 import { SpectatorSyncedComboEvent } from "./events/SpectatorSyncedComboEvent";
+import { MovementType } from "./structures/MovementType";
+import { HitResult } from "./structures/HitResult";
+
+interface Counter {
+    counter: number;
+}
 
 /**
  * A handler for holding and processing spectator data.
@@ -70,13 +75,13 @@ export class SpectatorDataProcessor {
     }
 
     constructor() {
-        this.resetData();
+        this.reset();
     }
 
     /**
-     * Resets this processor based on current players.
+     * Resets this processor to the current players.
      */
-    resetData() {
+    reset() {
         this.managers.clear();
 
         for (const player of players.values()) {
@@ -142,70 +147,178 @@ export class SpectatorDataProcessor {
     }
 
     /**
-     * Adds spectator data for a player.
+     * Processes spectator data of a player.
      *
+     * @param uid The uid of the player.
      * @param data The data to add.
      * @returns Whether the data addition was successful.
      */
-    processData(data: SpectatorData): boolean {
-        const manager = this.managers.get(data.uid);
+    process(uid: number, data: ArrayBuffer): boolean {
+        const manager = this.managers.get(uid);
 
         if (!manager) {
             return false;
         }
 
         const { events } = manager;
+        const buf = Buffer.from(data);
+        const counter: Counter = { counter: 0 };
 
-        for (const objectData of data.hitObjectData) {
-            events.objectData.add(new SpectatorObjectDataEvent(objectData));
-        }
+        //#region Parse seconds passed, current score, combo, acc
+        const mSecPassed = this.readFloat(buf, counter) * 1000;
 
-        for (let i = 0; i < data.cursorMovement.length; ++i) {
-            const cursorMovement = data.cursorMovement[i];
+        events.syncedScore.add(
+            new SpectatorSyncedScoreEvent(
+                mSecPassed,
+                this.readInt(buf, counter),
+            ),
+        );
 
-            for (const cursorData of cursorMovement) {
+        events.syncedCombo.add(
+            new SpectatorSyncedComboEvent(
+                mSecPassed,
+                this.readInt(buf, counter),
+            ),
+        );
+
+        events.syncedAccuracy.add(
+            new SpectatorSyncedAccuracyEvent(
+                mSecPassed,
+                this.readFloat(buf, counter),
+            ),
+        );
+        //#endregion
+
+        //#region Parse movement data
+        const cursorAmount = this.readInt(buf, counter);
+
+        for (let i = 0; i < cursorAmount; ++i) {
+            const moveSize = this.readInt(buf, counter);
+
+            for (let j = 0; j < moveSize; ++j) {
+                let time = this.readInt(buf, counter);
+                const id: MovementType = time & 3;
+                time >>= 2;
+
                 events.cursor[i].add(
                     new SpectatorCursorEvent(
-                        cursorData.time,
+                        time,
                         new Vector2(
-                            cursorData.position.x,
-                            cursorData.position.y,
+                            id !== MovementType.up
+                                ? this.readFloat(buf, counter)
+                                : -1,
+                            id !== MovementType.up
+                                ? this.readFloat(buf, counter)
+                                : -1,
                         ),
-                        cursorData.id,
+                        id,
                     ),
                 );
             }
         }
+        //#endregion
 
-        for (const event of data.events) {
-            events.score.add(new SpectatorScoreEvent(event.time, event.score));
-            events.accuracy.add(
-                new SpectatorAccuracyEvent(event.time, event.accuracy),
+        //#region Parse object result data
+        const objectDataSize = this.readInt(buf, counter);
+
+        for (let i = 0; i < objectDataSize; ++i) {
+            const index = this.readInt(buf, counter);
+            const time = this.readDouble(buf, counter);
+            const accuracy = this.readShort(buf, counter);
+            const tickset: boolean[] = [];
+
+            const len = this.readByte(buf, counter);
+
+            if (len > 0) {
+                const bytes: number[] = [];
+
+                for (let j = 0; j < len; ++j) {
+                    bytes.push(this.readByte(buf, counter));
+                }
+
+                for (let j = 0; j < len * 8; ++j) {
+                    tickset[j] =
+                        // Int/int division in Java; numbers must be truncated to get actual number
+                        (bytes[len - Math.trunc(j / 8) - 1] &
+                            (1 << Math.trunc(j % 8))) !==
+                        0;
+                }
+            }
+
+            const result: HitResult = this.readByte(buf, counter);
+
+            events.objectData.add(
+                new SpectatorObjectDataEvent({
+                    index: index,
+                    time: time,
+                    accuracy: accuracy,
+                    tickset: tickset,
+                    result: result,
+                }),
             );
-            events.combo.add(new SpectatorComboEvent(event.time, event.combo));
         }
+        //#endregion
 
-        const mSecPassed = data.secPassed * 1000;
+        //#region Parse events
+        const eventsSize = this.readInt(buf, counter);
 
-        events.syncedScore.add(
-            new SpectatorSyncedScoreEvent(mSecPassed, data.currentScore),
-        );
+        for (let i = 0; i < eventsSize; ++i) {
+            const time = this.readFloat(buf, counter);
 
-        events.syncedAccuracy.add(
-            new SpectatorSyncedAccuracyEvent(mSecPassed, data.currentAccuracy),
-        );
-
-        events.syncedCombo.add(
-            new SpectatorSyncedComboEvent(mSecPassed, data.currentCombo),
-        );
+            events.score.add(
+                new SpectatorScoreEvent(time, this.readInt(buf, counter)),
+            );
+            events.combo.add(
+                new SpectatorComboEvent(time, this.readInt(buf, counter)),
+            );
+            events.accuracy.add(
+                new SpectatorAccuracyEvent(time, this.readFloat(buf, counter)),
+            );
+        }
+        //#endregion
 
         manager.latestDataTime = mSecPassed;
         console.log(
             "Received data from uid",
-            manager.uid,
+            uid,
             "latest data time is set to",
             manager.latestDataTime,
         );
         return true;
+    }
+
+    private readByte(buf: Buffer, counter: Counter) {
+        const num = buf.readInt8(counter.counter);
+        counter.counter += 1;
+
+        return num;
+    }
+
+    private readShort(buf: Buffer, counter: Counter) {
+        const num = buf.readInt16BE(counter.counter);
+        counter.counter += 2;
+
+        return num;
+    }
+
+    private readInt(buf: Buffer, counter: Counter) {
+        const num = buf.readInt32BE(counter.counter);
+        counter.counter += 4;
+
+        return num;
+    }
+
+    private readFloat(buf: Buffer, counter: Counter) {
+        const num = buf.readFloatBE(counter.counter);
+        counter.counter += 4;
+
+        return num;
+    }
+
+    private readDouble(buf: Buffer, counter: Counter) {
+        const num = buf.readDoubleBE(counter.counter);
+        counter.counter += 8;
+
+        return num;
     }
 }

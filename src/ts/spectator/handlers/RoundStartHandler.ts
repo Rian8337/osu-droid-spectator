@@ -37,7 +37,7 @@ export abstract class RoundStartHandler {
         calculateMaxScore();
         reloadPreviews();
 
-        dataProcessor.resetData();
+        dataProcessor.reset();
 
         for (const manager of dataProcessor.managers.values()) {
             const preview = previews.get(manager.uid);

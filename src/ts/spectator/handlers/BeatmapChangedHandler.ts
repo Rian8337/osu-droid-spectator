@@ -47,7 +47,7 @@ export abstract class BeatmapChangedHandler {
 
         if (newBeatmap?.md5 !== pickedBeatmap?.md5) {
             // Only reset the processor and previews if it's a new beatmap, in which case the spectator data is invalid.
-            dataProcessor.resetData();
+            dataProcessor.reset();
             deletePreviews();
         }
 

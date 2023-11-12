@@ -1,6 +1,5 @@
 import { MultiplayerRoom } from "./rawdata/MultiplayerRoom";
 import { PickedBeatmap } from "./rawdata/PickedBeatmap";
-import { SpectatorData } from "./rawdata/SpectatorData";
 import { StartingRoundMultiplayerRoom } from "./rawdata/StartingRoundMultiplayerRoom";
 
 /**
@@ -33,7 +32,7 @@ export interface SpectatorClientEvents {
      *
      * @param data The spectator data.
      */
-    spectatorData: (data: SpectatorData) => void;
+    spectatorData: (uid: number, data: ArrayBuffer) => void;
 
     /**
      * Emitted when a player or the system sends a chat message.
