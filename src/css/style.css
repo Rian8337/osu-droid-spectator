@@ -179,6 +179,8 @@ a:hover {
 }
 
 #chat-container-header {
+    position: sticky;
+    top: 0;
     text-align: center;
     padding: 10px;
     cursor: move;
