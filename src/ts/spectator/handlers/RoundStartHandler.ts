@@ -12,7 +12,6 @@ import {
 } from "../../settings/RoomSettings";
 import {
     dataProcessor,
-    initProcessor,
     initTeamScoreDisplay,
 } from "../../settings/SpectatorSettings";
 import { StartingRoundMultiplayerRoom } from "../rawdata/StartingRoundMultiplayerRoom";
@@ -36,14 +35,9 @@ export abstract class RoundStartHandler {
         setSpeedMultiplier(room.mods.speedMultiplier);
         setTeamMode(room.teamMode);
         calculateMaxScore();
-
-        initProcessor();
-
-        if (!dataProcessor) {
-            return alert("The spectator client failed to launch.");
-        }
-
         reloadPreviews();
+
+        dataProcessor.resetData();
 
         for (const manager of dataProcessor.managers.values()) {
             const preview = previews.get(manager.uid);

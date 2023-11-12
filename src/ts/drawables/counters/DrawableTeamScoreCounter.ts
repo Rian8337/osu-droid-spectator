@@ -54,7 +54,7 @@ export class DrawableTeamScoreCounter {
                 continue;
             }
 
-            const manager = dataProcessor?.managers.get(player.uid);
+            const manager = dataProcessor.managers.get(player.uid);
 
             if (!manager) {
                 continue;

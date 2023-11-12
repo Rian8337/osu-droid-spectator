@@ -70,6 +70,15 @@ export class SpectatorDataProcessor {
     }
 
     constructor() {
+        this.resetData();
+    }
+
+    /**
+     * Resets this processor based on current players.
+     */
+    resetData() {
+        this.managers.clear();
+
         for (const player of players.values()) {
             this.addPlayer(player);
         }

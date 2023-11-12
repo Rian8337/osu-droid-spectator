@@ -14,7 +14,7 @@ export let userHasInteracted = false;
 /**
  * The spectator data processor.
  */
-export let dataProcessor: SpectatorDataProcessor | null = null;
+export const dataProcessor = new SpectatorDataProcessor();
 
 /**
  * The team score display. Not `null` if the team mode is TeamVS.
@@ -54,20 +54,6 @@ const backgroundDimContext = backgroundDim.getContext("2d")!;
 backgroundDimContext.fillStyle = "#000000";
 backgroundDimContext.globalAlpha = 0.35;
 backgroundDimContext.fillRect(0, 0, backgroundDim.width, backgroundDim.height);
-
-/**
- * Initializes the spectator data processor.
- */
-export function initProcessor(): void {
-    dataProcessor = new SpectatorDataProcessor();
-}
-
-/**
- * Invalidates the current spectator data processor.
- */
-export function invalidateProcessor(): void {
-    dataProcessor = null;
-}
 
 /**
  * Initializes the team score display.

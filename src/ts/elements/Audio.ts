@@ -29,7 +29,7 @@ $(audio)
         requestAnimationFrame(function foo() {
             const currentTime = audio.currentTime * 1000;
 
-            if (!dataProcessor?.isAvailableAt(currentTime) || audio.ended) {
+            if (!dataProcessor.isAvailableAt(currentTime) || audio.ended) {
                 $(audio).trigger("manualpause");
                 return;
             }
@@ -64,15 +64,15 @@ $(audio)
                 }
 
                 if (
-                    dataProcessor?.earliestEventTime !== null &&
-                    dataProcessor?.earliestEventTime !== undefined &&
+                    dataProcessor.earliestEventTime !== null &&
+                    dataProcessor.earliestEventTime !== undefined &&
                     this.currentTime * 1000 < dataProcessor.earliestEventTime
                 ) {
                     this.currentTime = dataProcessor.earliestEventTime / 1000;
                 }
 
                 if (
-                    dataProcessor?.isAvailableAt(this.currentTime * 1000) &&
+                    dataProcessor.isAvailableAt(this.currentTime * 1000) &&
                     this.src
                 ) {
                     console.log("Playback interval stopped");

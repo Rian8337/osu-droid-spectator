@@ -42,7 +42,7 @@ export class DrawablePlayerInfo
             return;
         }
 
-        const manager = dataProcessor?.managers.get(this.uid);
+        const manager = dataProcessor.managers.get(this.uid);
 
         if (!manager) {
             return;
