@@ -21,7 +21,7 @@ export abstract class ChatMessageHandler {
             paragraph.appendChild(usernameSpan);
             paragraph.insertAdjacentText("beforeend", `: ${message}`);
         } else {
-            paragraph.style.color = "#5288de";
+            paragraph.style.color = "#77a0e0";
             paragraph.textContent = message;
         }
 
