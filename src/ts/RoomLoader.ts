@@ -7,6 +7,8 @@ import { SpectatorClientEvents } from "./spectator/SpectatorClientEvents";
 import { dataProcessor } from "./settings/SpectatorSettings";
 import { ChatMessageHandler } from "./spectator/handlers/ChatMessageHandler";
 
+let socket: Socket<SpectatorClientEvents> | null = null;
+
 export function askRoomID(messagePrefix?: string): void {
     const message =
         (messagePrefix ? `${messagePrefix}\n\n` : "") +
@@ -17,20 +19,20 @@ export function askRoomID(messagePrefix?: string): void {
         roomId = prompt(message);
     }
 
-    const socket: Socket<SpectatorClientEvents> = io(
-        `https://droidpp.osudroid.moe/api/tournament/${roomId}`,
-        {
-            path: "/api/tournament/socket.io",
-            auth: {
-                type: "1",
-            },
+    // Close the existing connection, if present.
+    socket?.disconnect();
+
+    socket = io(`https://droidpp.osudroid.moe/api/tournament/${roomId}`, {
+        path: "/api/tournament/socket.io",
+        auth: {
+            type: "1",
         },
-    );
+        reconnection: false,
+    });
 
     socket
         .once("connect_error", (err) => {
             console.error(err);
-            socket.close();
             askRoomID("Unable to connect to the room.");
         })
         .once("disconnect", () => askRoomID("Disconnected from the room."))
@@ -43,7 +45,7 @@ export function askRoomID(messagePrefix?: string): void {
             ChatMessageHandler.emptyChat();
 
             socket
-                .on(
+                ?.on(
                     "beatmapChanged",
                     BeatmapChangedHandler.handle.bind(BeatmapChangedHandler),
                 )
