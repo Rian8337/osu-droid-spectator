@@ -169,7 +169,7 @@ a:hover {
     background-color: rgb(47, 47, 47);
     border: 1px solid #d3d3d3;
     width: 25%;
-    max-height: 50%;
+    max-height: 60%;
     color: #fff;
     overflow-y: scroll;
 }
