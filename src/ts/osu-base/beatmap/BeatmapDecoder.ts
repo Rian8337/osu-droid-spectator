@@ -12,7 +12,6 @@ import { BeatmapColorDecoder } from "./decoder/beatmap/BeatmapColorDecoder";
 import { BeatmapSection } from "../constants/BeatmapSection";
 import { Decoder } from "./Decoder";
 import { SectionDecoder } from "./decoder/SectionDecoder";
-import { StoryboardDecoder } from "./StoryboardDecoder";
 import { HitObjectStackEvaluator } from "../utils/HitObjectStackEvaluator";
 import { CircleSizeCalculator } from "../utils/CircleSizeCalculator";
 
@@ -32,24 +31,8 @@ export class BeatmapDecoder extends Decoder<Beatmap, SectionDecoder<Beatmap>> {
      * @param mods The mods to decode for.
      * @param parseStoryboard Whether to parse the beatmap's storyboard.
      */
-    override decode(
-        str: string,
-        mods: Mod[] = [],
-        parseStoryboard: boolean = true,
-    ): this {
+    override decode(str: string, mods: Mod[] = []): this {
         super.decode(str);
-
-        if (parseStoryboard) {
-            const eventsDecoder: BeatmapEventsDecoder = <BeatmapEventsDecoder>(
-                this.decoders[BeatmapSection.events]
-            );
-
-            if (eventsDecoder.storyboardLines.length > 0) {
-                this.finalResult.events.storyboard = new StoryboardDecoder(
-                    this.finalResult.formatVersion,
-                ).decode(eventsDecoder.storyboardLines.join("\n")).result;
-            }
-        }
 
         const circleSize: number = new MapStats({
             cs: this.finalResult.difficulty.cs,

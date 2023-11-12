@@ -9,7 +9,6 @@ import { SectionDecoder } from "../SectionDecoder";
  * A decoder for decoding a beatmap's events section.
  */
 export class BeatmapEventsDecoder extends SectionDecoder<Beatmap> {
-    readonly storyboardLines: string[] = [];
     protected override decodeInternal(line: string): void {
         const s: string[] = line.split(",");
 
@@ -25,8 +24,6 @@ export class BeatmapEventsDecoder extends SectionDecoder<Beatmap> {
             case "Break":
                 this.parseBreak(s);
                 break;
-            default:
-                this.storyboardLines.push(line);
         }
     }
 
