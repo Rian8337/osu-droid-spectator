@@ -74,10 +74,6 @@ export class SpectatorDataProcessor {
         return Number.isFinite(latestEventTime) ? latestEventTime : null;
     }
 
-    constructor() {
-        this.reset();
-    }
-
     /**
      * Resets this processor to the current players.
      */
