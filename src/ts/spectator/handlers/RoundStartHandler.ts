@@ -38,6 +38,7 @@ export abstract class RoundStartHandler {
         reloadPreviews();
 
         dataProcessor.reset();
+        dataProcessor.addPlayers();
 
         for (const manager of dataProcessor.managers.values()) {
             const preview = previews.get(manager.uid);

@@ -79,7 +79,12 @@ export class SpectatorDataProcessor {
      */
     reset() {
         this.managers.clear();
+    }
 
+    /**
+     * Adds all players to the list of managers.
+     */
+    addPlayers() {
         for (const player of players.values()) {
             this.addPlayer(player);
         }
