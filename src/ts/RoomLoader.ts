@@ -28,7 +28,7 @@ export async function askRoomID(messagePrefix?: string): Promise<void> {
         .once("connect_error", (err) => {
             console.error(err);
             socket.close();
-            // askRoomID("Unable to connect to the room.");
+            askRoomID("Unable to connect to the room.");
         })
         .once("disconnect", () => askRoomID("Disconnected from the room."))
         .once("connect", () => console.log(`Connected to room ${roomId}`))
