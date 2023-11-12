@@ -3,6 +3,7 @@ body {
     height: 100%;
     overflow: hidden;
 }
+
 body {
     margin: 0;
     background: #000;
@@ -20,6 +21,7 @@ button {
     height: 40px;
     font: 14px sans-serif;
 }
+
 button::-moz-focus-inner {
     padding: 0;
     border: 0;
@@ -28,12 +30,14 @@ button::-moz-focus-inner {
 body > * {
     position: fixed;
 }
+
 #speed,
 #control,
 #title {
     background: rgba(0, 0, 0, 0.6);
     display: none;
 }
+
 body.h #speed,
 body.h #control,
 body.h #title,
@@ -61,6 +65,7 @@ body.h {
     text-shadow: 0 0 0.05em #000;
     opacity: 0;
 }
+
 #play.e {
     opacity: 0.6;
 }
@@ -70,24 +75,34 @@ body.h {
     left: 0;
     width: 100%;
 }
+
 input {
     margin: 4px;
     padding: 0;
     height: 32px;
     box-sizing: border-box;
 }
+
 #progress {
-    width: calc(100% - 256px);
+    width: calc(100% - 270px);
 }
+
 #volume {
     width: 100px;
 }
-#addBeatmap {
+
+#toggleChat {
     width: 34px;
 }
-#downloadBeatmap {
+
+#addBeatmapset {
     width: 34px;
 }
+
+#downloadBeatmapset {
+    width: 34px;
+}
+
 #addBeatmapsetInput {
     display: none;
 }
@@ -98,6 +113,7 @@ input {
     width: 100%;
     white-space: nowrap;
 }
+
 img {
     vertical-align: middle;
     position: relative;
@@ -105,15 +121,18 @@ img {
     top: -1px;
     padding: 0 10px;
 }
+
 a {
     font: 14px/40px sans-serif;
     border-bottom: 1px dashed transparent;
     color: #fff;
     text-decoration: none;
 }
+
 a:hover {
     border-bottom-color: #ddd;
 }
+
 #share {
     position: absolute;
     top: 0;
@@ -127,10 +146,12 @@ a:hover {
     background: rgba(255, 255, 255, 0.6);
     display: none;
 }
+
 #sharePrompt button {
     float: right;
     background: #49f;
 }
+
 #sharePrompt input {
     width: 100%;
     margin: 0;
@@ -140,4 +161,24 @@ a:hover {
     position: absolute;
     top: 0;
     right: 0;
+}
+
+#chat-container {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    border: 1px solid #d3d3d3;
+}
+
+.chat-container-hide {
+    display: none;
+}
+
+#chat-container-header {
+    text-align: center;
+    padding: 10px;
+    cursor: move;
+    z-index: 10;
+    background-color: #2196f3;
+    color: #fff;
 }

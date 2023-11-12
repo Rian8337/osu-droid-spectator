@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -21,11 +21,23 @@
     </head>
 
     <body class="h">
+        <div id="chat-container" class="chat-container-hide">
+            <div id="chat-container-header">Chat</div>
+            <p>Hi</p>
+        </div>
         <div id="container" class="x-viewbox"></div>
         <button type="button" id="play" class="material-icons">&#xE037;</button>
         <div id="control">
             <input id="progress" type="range" min="0" max="0" value="0" />
             <input id="volume" type="range" min="0" max="100" value="100" />
+            <button
+                type="button"
+                title="Toggle chat visibility"
+                id="toggleChat"
+                class="material-icons"
+            >
+                chat
+            </button>
             <button
                 type="button"
                 title="Add local beatmapset"
