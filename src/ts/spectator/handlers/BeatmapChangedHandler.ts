@@ -7,7 +7,6 @@ import {
     pickedBeatmap,
     setPickedBeatmap,
     setParsedBeatmap,
-    calculateMaxScore,
     resetBeatmapset,
     beatmapset,
     downloadBeatmapset,
@@ -145,7 +144,6 @@ export abstract class BeatmapChangedHandler {
 
         setPickedBeatmap(newBeatmap);
         setParsedBeatmap(newParsedBeatmap);
-        calculateMaxScore();
 
         background.src = backgroundBlob;
         audioState.audio.src = audioBlob;

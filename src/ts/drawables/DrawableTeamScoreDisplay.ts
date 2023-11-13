@@ -120,7 +120,7 @@ export class DrawableTeamScoreDisplay {
 
         // Cap score difference line at 50% maximum score.
         const lineLengthMultiplier = MathUtils.clamp(
-            scoreDiff / (maxScore * 0.5),
+            scoreDiff / (maxScore * 0.5) || 0,
             -1,
             1,
         );
