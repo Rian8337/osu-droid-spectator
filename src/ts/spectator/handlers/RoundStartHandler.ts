@@ -15,6 +15,7 @@ import {
     initTeamScoreDisplay,
 } from "../../settings/SpectatorSettings";
 import { StartingRoundMultiplayerRoom } from "../rawdata/StartingRoundMultiplayerRoom";
+import { ChatMessageHandler } from "./ChatMessageHandler";
 
 /**
  * A handler responsible for handling round start events.
@@ -52,6 +53,8 @@ export abstract class RoundStartHandler {
 
         initTeamScoreDisplay();
         resetAudio(false);
+
+        ChatMessageHandler.hideChat();
 
         $(audioState.audio).trigger("manualpause");
     }

@@ -44,4 +44,18 @@ export abstract class ChatMessageHandler {
     static emptyChat() {
         $<HTMLDivElement>("#chat-container p").remove();
     }
+
+    /**
+     * Displays the chat box.
+     */
+    static showChat() {
+        $<HTMLDivElement>("#chat-container").removeClass("chat-container-hide");
+    }
+
+    /**
+     * Hides the chat box.
+     */
+    static hideChat() {
+        $<HTMLDivElement>("#chat-container").addClass("chat-container-hide");
+    }
 }

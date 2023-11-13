@@ -5,6 +5,7 @@ import { Socket, io } from "socket.io-client";
 import { SpectatorClientEvents } from "./spectator/SpectatorClientEvents";
 import { dataProcessor } from "./settings/SpectatorSettings";
 import { ChatMessageHandler } from "./spectator/handlers/ChatMessageHandler";
+import { RoundEndHandler } from "./spectator/handlers/RoundEndHandler";
 
 let socket: Socket<SpectatorClientEvents> | null = null;
 
@@ -43,6 +44,7 @@ export function askRoomID(messagePrefix?: string): void {
             BeatmapChangedHandler.handle.bind(BeatmapChangedHandler),
         )
         .on("roundStarted", RoundStartHandler.handle.bind(RoundStartHandler))
+        .on("roundEnded", RoundEndHandler.handle.bind(RoundEndHandler))
         .once("initialConnection", async (room) => {
             console.log("Room info received:");
             console.log(room);

@@ -28,6 +28,11 @@ export interface SpectatorClientEvents {
     roundStarted: (room: StartingRoundMultiplayerRoom) => void;
 
     /**
+     * Emitted when a round ends.
+     */
+    roundEnded: () => void;
+
+    /**
      * Emitted when spectator data is received.
      *
      * @param data The spectator data.
