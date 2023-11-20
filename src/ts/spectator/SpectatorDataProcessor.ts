@@ -162,42 +162,42 @@ export class SpectatorDataProcessor {
         }
 
         const { events } = manager;
-        const buf = Buffer.from(data);
+        const view = new DataView(data);
         const counter: Counter = { counter: 0 };
 
         //#region Parse seconds passed, current score, combo, acc
-        const mSecPassed = this.readFloat(buf, counter) * 1000;
+        const mSecPassed = this.readFloat(view, counter) * 1000;
 
         events.syncedScore.add(
             new SpectatorSyncedScoreEvent(
                 mSecPassed,
-                this.readInt(buf, counter),
+                this.readInt(view, counter),
             ),
         );
 
         events.syncedCombo.add(
             new SpectatorSyncedComboEvent(
                 mSecPassed,
-                this.readInt(buf, counter),
+                this.readInt(view, counter),
             ),
         );
 
         events.syncedAccuracy.add(
             new SpectatorSyncedAccuracyEvent(
                 mSecPassed,
-                this.readFloat(buf, counter),
+                this.readFloat(view, counter),
             ),
         );
         //#endregion
 
         //#region Parse movement data
-        const cursorAmount = this.readInt(buf, counter);
+        const cursorAmount = this.readInt(view, counter);
 
         for (let i = 0; i < cursorAmount; ++i) {
-            const moveSize = this.readInt(buf, counter);
+            const moveSize = this.readInt(view, counter);
 
             for (let j = 0; j < moveSize; ++j) {
-                let time = this.readInt(buf, counter);
+                let time = this.readInt(view, counter);
                 const id: MovementType = time & 3;
                 time >>= 2;
 
@@ -206,10 +206,10 @@ export class SpectatorDataProcessor {
                         time,
                         new Vector2(
                             id !== MovementType.up
-                                ? this.readFloat(buf, counter)
+                                ? this.readFloat(view, counter)
                                 : -1,
                             id !== MovementType.up
-                                ? this.readFloat(buf, counter)
+                                ? this.readFloat(view, counter)
                                 : -1,
                         ),
                         id,
@@ -220,21 +220,21 @@ export class SpectatorDataProcessor {
         //#endregion
 
         //#region Parse object result data
-        const objectDataSize = this.readInt(buf, counter);
+        const objectDataSize = this.readInt(view, counter);
 
         for (let i = 0; i < objectDataSize; ++i) {
-            const index = this.readInt(buf, counter);
-            const time = this.readDouble(buf, counter);
-            const accuracy = this.readShort(buf, counter);
+            const index = this.readInt(view, counter);
+            const time = this.readDouble(view, counter);
+            const accuracy = this.readShort(view, counter);
             const tickset: boolean[] = [];
 
-            const len = this.readByte(buf, counter);
+            const len = this.readByte(view, counter);
 
             if (len > 0) {
                 const bytes: number[] = [];
 
                 for (let j = 0; j < len; ++j) {
-                    bytes.push(this.readByte(buf, counter));
+                    bytes.push(this.readByte(view, counter));
                 }
 
                 for (let j = 0; j < len * 8; ++j) {
@@ -246,7 +246,7 @@ export class SpectatorDataProcessor {
                 }
             }
 
-            const result: HitResult = this.readByte(buf, counter);
+            const result: HitResult = this.readByte(view, counter);
 
             events.objectData.add(
                 new SpectatorObjectDataEvent({
@@ -261,19 +261,19 @@ export class SpectatorDataProcessor {
         //#endregion
 
         //#region Parse events
-        const eventsSize = this.readInt(buf, counter);
+        const eventsSize = this.readInt(view, counter);
 
         for (let i = 0; i < eventsSize; ++i) {
-            const time = this.readFloat(buf, counter);
+            const time = this.readFloat(view, counter);
 
             events.score.add(
-                new SpectatorScoreEvent(time, this.readInt(buf, counter)),
+                new SpectatorScoreEvent(time, this.readInt(view, counter)),
             );
             events.combo.add(
-                new SpectatorComboEvent(time, this.readInt(buf, counter)),
+                new SpectatorComboEvent(time, this.readInt(view, counter)),
             );
             events.accuracy.add(
-                new SpectatorAccuracyEvent(time, this.readFloat(buf, counter)),
+                new SpectatorAccuracyEvent(time, this.readFloat(view, counter)),
             );
         }
         //#endregion
@@ -288,36 +288,36 @@ export class SpectatorDataProcessor {
         return true;
     }
 
-    private readByte(buf: Buffer, counter: Counter) {
-        const num = buf.readInt8(counter.counter);
+    private readByte(view: DataView, counter: Counter) {
+        const num = view.getInt8(counter.counter);
         counter.counter += 1;
 
         return num;
     }
 
-    private readShort(buf: Buffer, counter: Counter) {
-        const num = buf.readInt16BE(counter.counter);
+    private readShort(view: DataView, counter: Counter) {
+        const num = view.getInt16(counter.counter);
         counter.counter += 2;
 
         return num;
     }
 
-    private readInt(buf: Buffer, counter: Counter) {
-        const num = buf.readInt32BE(counter.counter);
+    private readInt(view: DataView, counter: Counter) {
+        const num = view.getInt32(counter.counter);
         counter.counter += 4;
 
         return num;
     }
 
-    private readFloat(buf: Buffer, counter: Counter) {
-        const num = buf.readFloatBE(counter.counter);
+    private readFloat(view: DataView, counter: Counter) {
+        const num = view.getFloat32(counter.counter);
         counter.counter += 4;
 
         return num;
     }
 
-    private readDouble(buf: Buffer, counter: Counter) {
-        const num = buf.readDoubleBE(counter.counter);
+    private readDouble(view: DataView, counter: Counter) {
+        const num = view.getFloat64(counter.counter);
         counter.counter += 8;
 
         return num;
