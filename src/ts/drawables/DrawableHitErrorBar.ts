@@ -184,6 +184,6 @@ export class DrawableHitErrorBar {
         // The highest hit window the player can achieve with mods.
         const maxMs = new DroidHitWindow(0).hitWindowFor50();
 
-        return (ms / maxMs) * maxDistance;
+        return MathUtils.clamp(ms / maxMs, 0, 1) * maxDistance;
     }
 }
