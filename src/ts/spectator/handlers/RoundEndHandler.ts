@@ -1,3 +1,4 @@
+import { audioState } from "../../elements/Audio";
 import { ChatMessageHandler } from "./ChatMessageHandler";
 
 /**
@@ -8,6 +9,10 @@ export abstract class RoundEndHandler {
      * Handles the event when a round ends.
      */
     static handle() {
-        ChatMessageHandler.showChat();
+        audioState.audio.addEventListener(
+            "ended",
+            ChatMessageHandler.hideChat,
+            { once: true },
+        );
     }
 }
