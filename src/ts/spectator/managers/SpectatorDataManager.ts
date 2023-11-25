@@ -38,9 +38,19 @@ export class SpectatorDataManager {
     readonly mods: (Mod & IModApplicableToDroid)[];
 
     /**
+     * The force CS this player uses to play.
+     */
+    readonly forceCS?: number;
+
+    /**
      * The force AR this player uses to play.
      */
-    readonly forcedAR?: number;
+    readonly forceAR?: number;
+
+    /**
+     * The force OD this player uses to play.
+     */
+    readonly forceOD?: number;
 
     /**
      * Managers for spectator events of this player.
@@ -129,7 +139,9 @@ export class SpectatorDataManager {
     constructor(player: MultiplayerPlayer) {
         this.uid = player.uid;
         this.username = player.username;
-        this.forcedAR = player.mods.forceAR ?? undefined;
+        this.forceCS = player.mods.customCS;
+        this.forceAR = player.mods.customAR;
+        this.forceOD = player.mods.customOD;
 
         if (!parsedBeatmap) {
             throw new Error("No beatmaps have been parsed yet");
@@ -154,7 +166,8 @@ export class SpectatorDataManager {
 
         this.hitWindow = new DroidHitWindow(
             new MapStats({
-                od: parsedBeatmap.difficulty.od,
+                od: this.forceOD ?? parsedBeatmap.difficulty.od,
+                forceOD: this.forceOD !== undefined,
                 mods: ModUtil.removeSpeedChangingMods(this.mods),
             }).calculate({ convertDroidOD: false }).od!,
         );

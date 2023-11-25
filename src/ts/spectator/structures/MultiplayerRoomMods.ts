@@ -18,7 +18,22 @@ export interface MultiplayerRoomMods {
     readonly flFollowDelay: number;
 
     /**
-     * The force AR set in this room or by the player.
+     * The custom CS set in this room.
      */
-    readonly forceAR: number | null;
+    readonly customCS?: number;
+
+    /**
+     * The custom AR set in this room or by the player.
+     */
+    readonly customAR?: number;
+
+    /**
+     * The custom OD set in this room.
+     */
+    readonly customOD?: number;
+
+    /**
+     * The custom HP set in this room.
+     */
+    readonly customHP?: number;
 }

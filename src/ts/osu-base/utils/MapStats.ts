@@ -7,32 +7,36 @@ import { ModHardRock } from "../mods/ModHardRock";
 import { ModEasy } from "../mods/ModEasy";
 import { ModPrecise } from "../mods/ModPrecise";
 import { ModReallyEasy } from "../mods/ModReallyEasy";
-import { ModUtil } from "./ModUtil";
 import { CircleSizeCalculator } from "./CircleSizeCalculator";
 
 /**
- * Holds general beatmap statistics for further modifications.
+ * A structure to initialize a `MapStats` instance.
  */
-export class MapStats {
+export type MapStatsInit = Partial<{
     /**
      * The circle size of the beatmap.
+     *
+     * In osu!droid gamemode, this is the value of the CS converted to osu!standard CS after calling `calculate()`.
      */
-    cs?: number;
+    cs: number;
 
     /**
      * The approach rate of the beatmap.
      */
-    ar?: number;
+    ar: number;
 
     /**
      * The overall difficulty of the beatmap.
+     *
+     * In osu!droid gamemode, this is the value of the CS converted to osu!standard CS after calling `calculate()`,
+     * provided that the `convertDroidOD` property was not set to `false`.
      */
-    od?: number;
+    od: number;
 
     /**
      * The health drain rate of the beatmap.
      */
-    hp?: number;
+    hp: number;
 
     /**
      * The enabled modifications.
@@ -45,14 +49,49 @@ export class MapStats {
     speedMultiplier: number;
 
     /**
-     * Whether or not this map statistics uses forced AR.
+     * Whether to force the CS into the given CS. This will ignore the effect of game modifications.
+     *
+     * When calculating for osu!droid gamemode, the CS will still be converted to osu!standard CS.
      */
-    isForceAR: boolean;
+    forceCS: boolean;
 
     /**
-     * Whether to calculate for old statistics for osu!droid gamemode (1.6.7 and older). Defaults to `false`.
+     * Whether to force the AR into the given AR.
+     * This will ignore the effect of game modifications and speed multiplier.
      */
-    oldStatistics: boolean;
+    forceAR: boolean;
+
+    /**
+     * Whether to force the OD into the given OD.
+     * This will ignore the effect of game modifications and speed multiplier.
+     *
+     * When calculating for osu!droid gamemode, the OD will still be converted to osu!standard OD.
+     * Set the `convertDroidOD` property to `false` when calling `calculate()` to disable this behavior.
+     */
+
+    forceOD: boolean;
+
+    /**
+     * Whether to force the HP into the given HP.
+     * This will ignore the effect of game modifications and speed multiplier.
+     */
+    forceHP: boolean;
+}>;
+
+/**
+ * Holds general beatmap statistics for further modifications.
+ */
+export class MapStats implements MapStatsInit {
+    cs?: number;
+    ar?: number;
+    od?: number;
+    hp?: number;
+    mods: Mod[];
+    speedMultiplier: number;
+    forceCS: boolean;
+    forceAR: boolean;
+    forceOD: boolean;
+    forceHP: boolean;
 
     /**
      * Whether this map statistics have been calculated.
@@ -65,65 +104,24 @@ export class MapStats {
     static readonly AR5_MS: number = 1200;
     static readonly AR10_MS: number = 450;
 
-    static readonly OD_MS_STEP: number =
-        (MapStats.OD0_MS - MapStats.OD10_MS) / 10;
     static readonly AR_MS_STEP1: number =
         (MapStats.AR0_MS - MapStats.AR5_MS) / 5;
     static readonly AR_MS_STEP2: number =
         (MapStats.AR5_MS - MapStats.AR10_MS) / 5;
 
-    constructor(
-        values: {
-            /**
-             * The circle size of the beatmap.
-             */
-            cs?: number;
+    constructor(values?: MapStatsInit) {
+        this.cs = values?.cs;
+        this.ar = values?.ar;
+        this.od = values?.od;
+        this.hp = values?.hp;
+        this.mods = values?.mods ?? [];
 
-            /**
-             * The approach rate of the beatmap.
-             */
-            ar?: number;
+        this.speedMultiplier = values?.speedMultiplier ?? 1;
 
-            /**
-             * The overall difficulty of the beatmap.
-             */
-            od?: number;
-
-            /**
-             * The health drain rate of the beatmap.
-             */
-            hp?: number;
-
-            /**
-             * Applied modifications.
-             */
-            mods?: Mod[];
-
-            /**
-             * The speed multiplier to calculate for.
-             */
-            speedMultiplier?: number;
-
-            /**
-             * Whether or not force AR is turned on.
-             */
-            isForceAR?: boolean;
-
-            /**
-             * Whether to calculate for old statistics for osu!droid gamemode (1.6.7 or older).
-             */
-            oldStatistics?: boolean;
-        } = {},
-    ) {
-        this.cs = values.cs;
-        this.ar = values.ar;
-        this.od = values.od;
-        this.hp = values.hp;
-        this.mods = values.mods ?? [];
-
-        this.speedMultiplier = values.speedMultiplier ?? 1;
-        this.isForceAR = values.isForceAR ?? false;
-        this.oldStatistics = values.oldStatistics ?? false;
+        this.forceCS = values?.forceCS ?? false;
+        this.forceAR = values?.forceAR ?? false;
+        this.forceOD = values?.forceOD ?? false;
+        this.forceHP = values?.forceHP ?? false;
     }
 
     /**
@@ -132,21 +130,6 @@ export class MapStats {
      * This can only be called once for an instance.
      */
     calculate(params?: {
-        /**
-         * The applied modifications in osu!standard format.
-         */
-        mods?: string;
-
-        /**
-         * The speed multiplier to calculate for.
-         */
-        speedMultiplier?: number;
-
-        /**
-         * Whether force AR is turned on.
-         */
-        isForceAR?: boolean;
-
         /**
          * Whether to convert osu!droid OD to osu!standard OD. Defaults to `true`.
          * Will only be considered when using `Modes.droid` for `mode`.
@@ -158,16 +141,6 @@ export class MapStats {
         }
 
         this.calculated = true;
-
-        if (params?.mods) {
-            this.mods = ModUtil.pcStringToMods(params.mods);
-        }
-        if (params?.speedMultiplier) {
-            this.speedMultiplier = params.speedMultiplier;
-        }
-        if (params?.isForceAR) {
-            this.isForceAR = params.isForceAR;
-        }
 
         let statisticsMultiplier: number = 1;
 
@@ -187,35 +160,33 @@ export class MapStats {
             statisticsMultiplier *= 0.5;
         }
 
-        // In droid pre-1.6.8, NC speed multiplier is assumed bugged (1.39).
-        if (
-            this.mods.some((m) => m instanceof ModNightCore) &&
-            this.oldStatistics
-        ) {
-            this.speedMultiplier *= 1.39 / 1.5;
-        }
-
         // CS and OD work differently in droid, therefore it
         // needs to be computed regardless of map-changing mods
         // and statistics multiplier.
         if (this.od !== undefined) {
-            // Apply non-speed changing mods to OD.
-            this.od *= statisticsMultiplier;
-            if (this.mods.some((m) => m instanceof ModReallyEasy)) {
-                this.od /= 2;
-            }
-
-            this.od = Math.min(this.od, 10);
-
-            // Convert original OD to droid hit window to take
-            // droid hit window and the PR mod in mind.
-            // Consider speed multiplier as well.
+            let droidToMS: number;
             const isPrecise: boolean = this.mods.some(
                 (m) => m instanceof ModPrecise,
             );
-            const droidToMS: number =
-                new DroidHitWindow(this.od).hitWindowFor300(isPrecise) /
-                this.speedMultiplier;
+
+            if (this.forceOD) {
+                droidToMS = new DroidHitWindow(this.od).hitWindowFor300(
+                    isPrecise,
+                );
+            } else {
+                // Apply non-speed changing mods to OD.
+                this.od *= statisticsMultiplier;
+                if (this.mods.some((m) => m instanceof ModReallyEasy)) {
+                    this.od /= 2;
+                }
+
+                this.od = Math.min(this.od, 10);
+
+                // Consider speed multiplier as well when converting to milliseconds.
+                droidToMS =
+                    new DroidHitWindow(this.od).hitWindowFor300(isPrecise) /
+                    this.speedMultiplier;
+            }
 
             if (params?.convertDroidOD !== false) {
                 // Convert droid hit window to osu!standard OD.
@@ -233,26 +204,36 @@ export class MapStats {
         // from the bitwise enum of mods to prevent double
         // calculation.
         if (this.cs !== undefined) {
-            const scale: number = CircleSizeCalculator.droidCSToDroidScale(
-                this.cs,
-                this.mods,
-            );
-            const radius: number =
-                CircleSizeCalculator.droidScaleToStandardRadius(scale);
-            this.cs = Math.min(
-                CircleSizeCalculator.standardRadiusToStandardCS(radius),
-                10,
-            );
+            if (this.forceCS) {
+                const scale: number = CircleSizeCalculator.droidCSToDroidScale(
+                    this.cs,
+                );
+                const radius: number =
+                    CircleSizeCalculator.droidScaleToStandardRadius(scale);
+                this.cs =
+                    CircleSizeCalculator.standardRadiusToStandardCS(radius);
+            } else {
+                const scale: number = CircleSizeCalculator.droidCSToDroidScale(
+                    this.cs,
+                    this.mods,
+                );
+                const radius: number =
+                    CircleSizeCalculator.droidScaleToStandardRadius(scale);
+                this.cs = Math.min(
+                    CircleSizeCalculator.standardRadiusToStandardCS(radius),
+                    10,
+                );
+            }
         }
 
-        if (this.hp !== undefined) {
+        if (this.hp !== undefined && !this.forceHP) {
             if (this.mods.some((m) => m instanceof ModReallyEasy)) {
                 this.hp /= 2;
             }
             this.hp = Math.min(this.hp * statisticsMultiplier, 10);
         }
 
-        if (this.ar !== undefined && !this.isForceAR) {
+        if (this.ar !== undefined && !this.forceAR) {
             this.ar *= statisticsMultiplier;
             if (this.mods.some((m) => m instanceof ModReallyEasy)) {
                 if (this.mods.some((m) => m instanceof ModEasy)) {

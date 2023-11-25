@@ -125,7 +125,8 @@ export class Preview {
             parsedBeatmap,
             specDataManager.mods,
             this.sizeScale,
-            specDataManager.forcedAR,
+            specDataManager.forceCS,
+            specDataManager.forceAR,
         );
         this.specDataManager = specDataManager;
         this.playerInfo = new DrawablePlayerInfo(

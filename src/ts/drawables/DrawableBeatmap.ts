@@ -79,7 +79,8 @@ export class DrawableBeatmap {
         beatmap: Beatmap,
         mods: (Mod & IModApplicableToDroid)[],
         sizeScale: Vector2,
-        forcedAR?: number,
+        forceCS?: number,
+        forceAR?: number,
     ) {
         this.beatmap = beatmap;
         this.sizeScale = sizeScale;
@@ -89,10 +90,11 @@ export class DrawableBeatmap {
         }
 
         const stats = new MapStats({
-            cs: beatmap.difficulty.cs,
-            ar: forcedAR ?? beatmap.difficulty.ar,
+            cs: forceCS ?? beatmap.difficulty.cs,
+            ar: forceAR ?? beatmap.difficulty.ar,
             mods: ModUtil.removeSpeedChangingMods(mods),
-            isForceAR: forcedAR !== undefined,
+            forceCS: forceCS !== undefined,
+            forceAR: forceAR !== undefined,
         }).calculate();
 
         const objectScale = CircleSizeCalculator.standardCSToDroidScale(
