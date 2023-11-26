@@ -8,6 +8,7 @@ import { ChatMessageHandler } from "./spectator/handlers/ChatMessageHandler";
 import { RoundEndHandler } from "./spectator/handlers/RoundEndHandler";
 
 let socket: Socket<SpectatorClientEvents> | null = null;
+let disconnectTimeout: NodeJS.Timeout | undefined;
 
 export function askRoomID(messagePrefix?: string): void {
     const message =
@@ -31,12 +32,33 @@ export function askRoomID(messagePrefix?: string): void {
     });
 
     socket
-        .once("connect_error", (err) => {
+        .on("connect_error", (err) => {
             console.error(err);
             askRoomID("Unable to connect to the room.");
         })
-        .once("disconnect", () => askRoomID("Disconnected from the room."))
-        .once("connect", () => console.log(`Connected to room ${roomId}`))
+        .on("disconnect", (reason) => {
+            const msg = "Disconnected from the room.";
+
+            switch (reason) {
+                case "io server disconnect":
+                case "io client disconnect":
+                    askRoomID(msg);
+                    break;
+                default:
+                    console.log(
+                        "Disconnected from the server, attempting to reconnect",
+                    );
+
+                    disconnectTimeout = setTimeout(
+                        askRoomID.bind(null, msg),
+                        35000,
+                    );
+            }
+        })
+        .on("connect", () => {
+            clearTimeout(disconnectTimeout);
+            console.log(`Connected to room ${roomId}`);
+        })
         .on("chatMessage", ChatMessageHandler.handle.bind(ChatMessageHandler))
         .on("spectatorData", dataProcessor.process.bind(dataProcessor))
         .on(
