@@ -28,7 +28,7 @@ export function askRoomID(messagePrefix?: string): void {
         auth: {
             type: "1",
         },
-        reconnection: false,
+        reconnectionAttempts: 8,
     });
 
     socket
