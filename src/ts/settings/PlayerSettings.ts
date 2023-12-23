@@ -43,7 +43,7 @@ export function setIgnoredPlayersFromRoomName(name: string): void {
     }
 
     const uids = name
-        .substring(4)
+        .substring(name.indexOf("Ref") + 4)
         .split(",")
         .map((s) => parseInt(s));
 
