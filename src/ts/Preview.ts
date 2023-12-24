@@ -201,12 +201,9 @@ export class Preview {
      * Applies the canvas position with respect to the window size.
      */
     private applyCanvasPosition(): void {
+        const height = innerHeight - Preview.heightPadding * 2;
+
         this.screen.width = this.sizeScale.x * innerWidth;
-
-        const height =
-            Math.min(this.screen.width * 0.75, innerHeight) -
-            Preview.heightPadding * 2;
-
         this.screen.height = this.sizeScale.y * height;
 
         this.screen.style.position = "absolute";

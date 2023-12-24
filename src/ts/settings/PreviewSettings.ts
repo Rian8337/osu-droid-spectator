@@ -69,7 +69,10 @@ export function reloadPreviews(): void {
         }
 
         const widthScaleRange = maxWidthScale - minWidthScale;
-        const sizeScale = new Vector2(widthScaleRange / cells, 1 / rows);
+        const sizeScale = new Vector2(
+            widthScaleRange / cells,
+            Math.min(widthScaleRange / cells, 1 / rows),
+        );
 
         // cells * rows - players --> unfilledSlots
         // floor(unfilled / cells) / rows
