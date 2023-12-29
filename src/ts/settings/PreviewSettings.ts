@@ -70,31 +70,27 @@ export function reloadPreviews(): void {
 
         const widthScaleRange = maxWidthScale - minWidthScale;
         const sizeScale = new Vector2(
-            widthScaleRange / cells,
             Math.min(widthScaleRange / cells, 1 / rows),
         );
 
-        // cells * rows - players --> unfilledSlots
-        // floor(unfilled / cells) / rows
-        const unfilledSlots = cells * rows - players.length;
-        const yScaleOffset = sizeScale.y * Math.floor(unfilledSlots / cells);
+        // Center the previews in the Y axis.
+        const yFilledScale = sizeScale.y * rows;
+        const yScaleOffset = (1 - yFilledScale) / 2;
 
         for (let row = 0; row < rows; ++row) {
             const playersToAdd = players.slice(cells * row, cells * (1 + row));
-            const xScaleOffset =
-                widthScaleRange * (1 - playersToAdd.length / cells);
 
-            for (
-                let cell = 0;
-                cell < Math.min(playersToAdd.length, cells);
-                ++cell
-            ) {
+            // Center the previews in the X axis.
+            const xFilledScale = sizeScale.x * playersToAdd.length;
+            const xScaleOffset = (widthScaleRange - xFilledScale) / 2;
+
+            for (let cell = 0; cell < playersToAdd.length; ++cell) {
                 const player = playersToAdd[cell];
 
                 // Position the preview to the center if the row or cell is not filled entirely.
                 const positionScale = new Vector2(
-                    minWidthScale + sizeScale.x * cell + xScaleOffset / 2,
-                    sizeScale.y * row + yScaleOffset / 2,
+                    minWidthScale + sizeScale.x * cell + xScaleOffset,
+                    sizeScale.y * row + yScaleOffset,
                 );
 
                 previews.set(
