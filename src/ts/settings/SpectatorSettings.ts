@@ -41,19 +41,42 @@ export const hitResultColors: Record<HitResult, RGBColor> = {
     [HitResult.miss]: new RGBColor(237, 17, 33),
 };
 
-/**
- * The canvas that is used to dim the background if no spectator data is available.
- */
-export const backgroundDim = document.createElement("canvas");
-
+const backgroundDim = document.createElement("canvas");
 backgroundDim.id = "backgroundDim";
-backgroundDim.width = innerWidth;
-backgroundDim.height = innerHeight;
 
-const backgroundDimContext = backgroundDim.getContext("2d")!;
-backgroundDimContext.fillStyle = "#000000";
-backgroundDimContext.globalAlpha = 0.35;
-backgroundDimContext.fillRect(0, 0, backgroundDim.width, backgroundDim.height);
+/**
+ * Gets the `HTMLCanvasElement` that is used to dim the background if no spectator data is available.
+ */
+export function getBackgroundDim(): HTMLCanvasElement {
+    if (
+        backgroundDim.width === innerWidth &&
+        backgroundDim.height === innerHeight
+    ) {
+        return backgroundDim;
+    }
+
+    const { width: previousWidth, height: previousHeight } = backgroundDim;
+
+    backgroundDim.width = innerWidth;
+    backgroundDim.height = innerHeight;
+
+    if (previousWidth > innerWidth || previousHeight > innerHeight) {
+        // Redraw the dim.
+        const backgroundDimContext = backgroundDim.getContext("2d")!;
+
+        backgroundDimContext.clearRect(0, 0, previousWidth, previousHeight);
+        backgroundDimContext.fillStyle = "#000000";
+        backgroundDimContext.globalAlpha = 0.35;
+        backgroundDimContext.fillRect(
+            0,
+            0,
+            backgroundDim.width,
+            backgroundDim.height,
+        );
+    }
+
+    return backgroundDim;
+}
 
 /**
  * Initializes the team score display.

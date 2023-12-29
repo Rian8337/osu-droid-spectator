@@ -2,7 +2,7 @@ import { MapStats } from "../osu-base";
 import { previews } from "../settings/PreviewSettings";
 import { speedMultiplier, mods } from "../settings/RoomSettings";
 import {
-    backgroundDim,
+    getBackgroundDim,
     dataProcessor,
     teamScoreDisplay,
 } from "../settings/SpectatorSettings";
@@ -11,7 +11,7 @@ const audio = new Audio();
 let playbackInterval: NodeJS.Timeout | null = null;
 
 const container = $("#container")[0];
-const backgroundDimElement = $(backgroundDim);
+const backgroundDimElement = $(getBackgroundDim());
 
 $(audio)
     .on("userinteraction", function () {
@@ -53,7 +53,7 @@ $(audio)
         this.pause();
         audioState.audioLastPause = Date.now();
 
-        container.append(backgroundDim);
+        container.append(getBackgroundDim());
 
         if (!audio.ended && !playbackInterval) {
             console.log("Playback interval started");
