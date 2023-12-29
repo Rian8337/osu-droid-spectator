@@ -60,7 +60,7 @@ export function getBackgroundDim(): HTMLCanvasElement {
     backgroundDim.width = innerWidth;
     backgroundDim.height = innerHeight;
 
-    if (previousWidth > innerWidth || previousHeight > innerHeight) {
+    if (previousWidth < innerWidth || previousHeight < innerHeight) {
         // Redraw the dim.
         const backgroundDimContext = backgroundDim.getContext("2d")!;
 
