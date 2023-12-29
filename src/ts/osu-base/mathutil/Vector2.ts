@@ -12,9 +12,11 @@ export class Vector2 {
      */
     y: number;
 
-    constructor(x: number, y: number) {
+    constructor(value: number);
+    constructor(x: number, y: number);
+    constructor(x: number, y?: number) {
         this.x = x;
-        this.y = y;
+        this.y = y ?? x;
     }
 
     /**
