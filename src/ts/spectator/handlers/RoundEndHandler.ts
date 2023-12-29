@@ -11,7 +11,7 @@ export abstract class RoundEndHandler {
     static handle() {
         audioState.audio.addEventListener(
             "ended",
-            ChatMessageHandler.hideChat,
+            ChatMessageHandler.showChat,
             { once: true },
         );
     }
