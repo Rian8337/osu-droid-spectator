@@ -39,7 +39,11 @@ export function reloadPreviews(): void {
             case 1:
                 break;
             case 2:
-                cells = 2;
+                if (teamMode === MultiplayerTeamMode.teamVS) {
+                    rows = 2;
+                } else {
+                    cells = 2;
+                }
                 break;
             case 3:
             case 4:
