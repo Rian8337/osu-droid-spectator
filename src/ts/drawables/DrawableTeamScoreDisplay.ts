@@ -49,6 +49,7 @@ export class DrawableTeamScoreDisplay {
         this.drawBackground();
         this.drawBorder();
         this.drawCounters(time);
+        this.drawScoreDifference();
         this.drawScoreDifferenceLine();
     }
 
@@ -108,6 +109,51 @@ export class DrawableTeamScoreDisplay {
 
         redCounter.draw(this.ctx, redCounter.score > blueCounter.score);
         blueCounter.draw(this.ctx, blueCounter.score > redCounter.score);
+    }
+
+    private drawScoreDifference(): void {
+        const redCounter = this.counters[MultiplayerTeam.red];
+        const blueCounter = this.counters[MultiplayerTeam.blue];
+
+        if (redCounter.score === blueCounter.score) {
+            return;
+        }
+
+        this.ctx.save();
+        const { canvas } = this.ctx;
+
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillStyle = "#ffffff";
+
+        try {
+            // this code will fail in Firefox(<~ 44)
+            // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
+            this.ctx.font = `bold ${
+                canvas.height / 5
+            }px Trebuchet MS, sans-serif`;
+        } catch (e) {
+            // Ignore error
+        }
+
+        if (redCounter.score > blueCounter.score) {
+            this.ctx.textAlign = "right";
+            this.ctx.translate(
+                canvas.width / 2 - canvas.width / 25,
+                canvas.height / 2 - canvas.height / 4,
+            );
+        } else {
+            this.ctx.textAlign = "right";
+            this.ctx.translate(
+                canvas.width / 2 + canvas.width / 25,
+                canvas.height / 2 - canvas.height / 4,
+            );
+        }
+
+        const diff = Math.abs(redCounter.score - blueCounter.score);
+
+        this.ctx.fillText(diff.toLocaleString("en-US"), 0, 0);
+
+        this.ctx.restore();
     }
 
     private drawScoreDifferenceLine(): void {
