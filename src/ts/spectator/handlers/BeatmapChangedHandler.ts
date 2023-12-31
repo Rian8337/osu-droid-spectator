@@ -39,19 +39,24 @@ export abstract class BeatmapChangedHandler {
      * @param newBeatmap The new beatmap.
      */
     static async handle(newBeatmap?: PickedBeatmap | null): Promise<void> {
+        if (!newBeatmap) {
+            $("#title a").text("No beatmap is picked in room");
+            return;
+        }
+
         const beatmapTitle = $("#title a");
         beatmapTitle.text("Loading...").removeProp("href");
 
         cancelBeatmapsetDownload();
 
-        if (newBeatmap?.md5 !== pickedBeatmap?.md5) {
+        if (newBeatmap.md5 !== pickedBeatmap?.md5) {
             // Only reset the processor and previews if it's a new beatmap, in which case the spectator data is invalid.
             dataProcessor.reset();
             deletePreviews();
         }
 
         const currentBeatmapsetId = pickedBeatmap?.beatmapSetId;
-        const newBeatmapsetId = newBeatmap?.beatmapSetId;
+        const newBeatmapsetId = newBeatmap.beatmapSetId;
 
         if (!newBeatmapsetId) {
             $("#title a").text("Beatmap not found in mirror, sorry!");
