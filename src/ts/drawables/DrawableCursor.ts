@@ -65,8 +65,16 @@ export class DrawableCursor {
         );
         ctx.scale(this.sizeScale.x, this.sizeScale.y);
 
-        const x = MathUtils.clamp(position.x, 0, Playfield.baseSize.x);
-        const y = MathUtils.clamp(position.y, 0, Playfield.baseSize.y);
+        const x = MathUtils.clamp(
+            position.x,
+            -Playfield.baseSize.x * 0.25,
+            Playfield.baseSize.x * 1.25,
+        );
+        const y = MathUtils.clamp(
+            position.y,
+            -Playfield.baseSize.y * 0.25,
+            Playfield.baseSize.y * 1.25,
+        );
 
         const radius = 15;
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
