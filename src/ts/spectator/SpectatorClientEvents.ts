@@ -28,6 +28,11 @@ export interface SpectatorClientEvents {
     roundStarted: (room: StartingRoundMultiplayerRoom) => void;
 
     /**
+     * Emitted when a skip in gameplay was performed.
+     */
+    skipPerformed: () => void;
+
+    /**
      * Emitted when a round ends.
      */
     roundEnded: () => void;

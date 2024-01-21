@@ -6,6 +6,7 @@ import { SpectatorClientEvents } from "./spectator/SpectatorClientEvents";
 import { dataProcessor } from "./settings/SpectatorSettings";
 import { ChatMessageHandler } from "./spectator/handlers/ChatMessageHandler";
 import { RoundEndHandler } from "./spectator/handlers/RoundEndHandler";
+import { SkipPerformedHandler } from "./spectator/handlers/SkipPerformedHandler";
 
 let socket: Socket<SpectatorClientEvents> | null = null;
 let disconnectTimeout: NodeJS.Timeout | undefined;
@@ -67,6 +68,10 @@ export function askRoomID(messagePrefix?: string): void {
         )
         .on("roundStarted", RoundStartHandler.handle.bind(RoundStartHandler))
         .on("roundEnded", RoundEndHandler.handle.bind(RoundEndHandler))
+        .on(
+            "skipPerformed",
+            SkipPerformedHandler.handle.bind(SkipPerformedHandler),
+        )
         .once("initialConnection", async (room) => {
             console.log("Room info received:");
             console.log(room);
