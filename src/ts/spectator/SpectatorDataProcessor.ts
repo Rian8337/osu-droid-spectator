@@ -14,6 +14,7 @@ import { SpectatorSyncedAccuracyEvent } from "./events/SpectatorSyncedAccuracyEv
 import { SpectatorSyncedComboEvent } from "./events/SpectatorSyncedComboEvent";
 import { MovementType } from "./structures/MovementType";
 import { HitResult } from "./structures/HitResult";
+import { SpectatorClickEvent } from "./events/SpectatorClickCounterEvent";
 
 interface Counter {
     counter: number;
@@ -201,7 +202,7 @@ export class SpectatorDataProcessor {
                 const id: MovementType = time & 3;
                 time >>= 2;
 
-                events.cursor[i].add(
+                events.cursors[i].add(
                     new SpectatorCursorEvent(
                         time,
                         new Vector2(
@@ -215,6 +216,10 @@ export class SpectatorDataProcessor {
                         id,
                     ),
                 );
+
+                if (id === MovementType.down) {
+                    events.clicks[i].add(new SpectatorClickEvent(time));
+                }
             }
         }
         //#endregion

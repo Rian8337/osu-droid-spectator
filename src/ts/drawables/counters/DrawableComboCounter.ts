@@ -1,15 +1,11 @@
 import { Vector2 } from "../../osu-base";
 import { SpectatorComboEvent } from "../../spectator/events/SpectatorComboEvent";
-import { SpectatorSyncedComboEvent } from "../../spectator/events/SpectatorSyncedComboEvent";
-import { DrawableCounter } from "./DrawableCounter";
+import { DrawableSyncedCounter } from "./DrawableSyncedCounter";
 
 /**
  * Represents a combo counter.
  */
-export class DrawableComboCounter extends DrawableCounter<
-    SpectatorComboEvent,
-    SpectatorSyncedComboEvent
-> {
+export class DrawableComboCounter extends DrawableSyncedCounter<SpectatorComboEvent> {
     private static readonly paddingX = 5;
     private static readonly paddingY = 30;
     private static readonly fontSize = 70;
@@ -20,14 +16,7 @@ export class DrawableComboCounter extends DrawableCounter<
         this.setupContext(ctx, new Vector2(0, ctx.canvas.height), fontSize);
 
         ctx.textAlign = "left";
-        ctx.fillText(`${this.getValueAt(time)}x`, paddingX, -paddingY);
+        ctx.fillText(`${this.getEventAt(time).combo}x`, paddingX, -paddingY);
         ctx.restore();
-    }
-
-    protected override getValueAt(time: number): number {
-        const event = this.manager.eventAtOrDefault(time);
-        const syncedEvent = this.syncedManager.eventAtOrDefault(time);
-
-        return (syncedEvent.time > event.time ? syncedEvent : event).combo;
     }
 }

@@ -10,6 +10,7 @@ import { parsedBeatmap } from "./settings/BeatmapSettings";
 import { teamMode } from "./settings/RoomSettings";
 import { MultiplayerTeamMode } from "./spectator/structures/MultiplayerTeamMode";
 import { DrawableHitErrorBar } from "./drawables/DrawableHitErrorBar";
+import { DrawableClickCounter } from "./drawables/counters/DrawableClickCounter";
 
 /**
  * Represents a beatmap preview.
@@ -34,6 +35,11 @@ export class Preview {
      * The drawable cursors responsible for this preview.
      */
     drawableCursors: DrawableCursor[] = [];
+
+    /**
+     * The click counter responsible for this preview.
+     */
+    clickCounter?: DrawableClickCounter;
 
     /**
      * The accuracy counter responsible for this preview.
@@ -137,7 +143,7 @@ export class Preview {
 
         this.drawableCursors.length = 0;
 
-        for (const manager of specDataManager.events.cursor) {
+        for (const manager of specDataManager.events.cursors) {
             this.drawableCursors.push(
                 new DrawableCursor(
                     manager,
@@ -147,6 +153,11 @@ export class Preview {
             );
         }
 
+        this.clickCounter = new DrawableClickCounter(
+            specDataManager.events.cursors,
+            specDataManager.events.clicks,
+            this.sizeScale,
+        );
         this.accuracyCounter = new DrawableAccuracyCounter(
             specDataManager.events.accuracy,
             specDataManager.events.syncedAccuracy,
@@ -184,6 +195,7 @@ export class Preview {
 
         this.applyCanvasPosition();
         this.ctx.clearRect(0, 0, this.screen.width, this.screen.height);
+        this.clickCounter?.draw(this.ctx, time);
         this.accuracyCounter?.draw(this.ctx, time);
         this.comboCounter?.draw(this.ctx, time);
         this.scoreCounter?.draw(this.ctx, time);

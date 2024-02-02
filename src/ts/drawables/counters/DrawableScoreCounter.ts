@@ -1,15 +1,11 @@
 import { Vector2 } from "../../osu-base";
 import { SpectatorScoreEvent } from "../../spectator/events/SpectatorScoreEvent";
-import { SpectatorSyncedScoreEvent } from "../../spectator/events/SpectatorSyncedScoreEvent";
-import { DrawableCounter } from "./DrawableCounter";
+import { DrawableSyncedCounter } from "./DrawableSyncedCounter";
 
 /**
  * Represents a score counter.
  */
-export class DrawableScoreCounter extends DrawableCounter<
-    SpectatorScoreEvent,
-    SpectatorSyncedScoreEvent
-> {
+export class DrawableScoreCounter extends DrawableSyncedCounter<SpectatorScoreEvent> {
     private static readonly fontSize = 60;
     static readonly paddingX = 5;
     static readonly paddingY = this.fontSize;
@@ -21,17 +17,10 @@ export class DrawableScoreCounter extends DrawableCounter<
 
         ctx.textAlign = "right";
         ctx.fillText(
-            this.getValueAt(time).toString().padStart(8, "0"),
+            this.getEventAt(time).score.toString().padStart(8, "0"),
             -paddingX,
             paddingY,
         );
         ctx.restore();
-    }
-
-    protected override getValueAt(time: number): number {
-        const event = this.manager.eventAtOrDefault(time);
-        const syncedEvent = this.syncedManager.eventAtOrDefault(time);
-
-        return (syncedEvent.time > event.time ? syncedEvent : event).score;
     }
 }

@@ -1,16 +1,12 @@
 import { Vector2 } from "../../osu-base";
 import { SpectatorAccuracyEvent } from "../../spectator/events/SpectatorAccuracyEvent";
-import { SpectatorSyncedAccuracyEvent } from "../../spectator/events/SpectatorSyncedAccuracyEvent";
-import { DrawableCounter } from "./DrawableCounter";
 import { DrawableScoreCounter } from "./DrawableScoreCounter";
+import { DrawableSyncedCounter } from "./DrawableSyncedCounter";
 
 /**
  * Represents an accuracy counter.
  */
-export class DrawableAccuracyCounter extends DrawableCounter<
-    SpectatorAccuracyEvent,
-    SpectatorSyncedAccuracyEvent
-> {
+export class DrawableAccuracyCounter extends DrawableSyncedCounter<SpectatorAccuracyEvent> {
     private static readonly fontSize = 40;
     private static readonly paddingX = DrawableScoreCounter.paddingX;
     private static readonly paddingY =
@@ -23,17 +19,10 @@ export class DrawableAccuracyCounter extends DrawableCounter<
 
         ctx.textAlign = "right";
         ctx.fillText(
-            `${(this.getValueAt(time) * 100).toFixed(2)}%`,
+            `${(this.getEventAt(time).accuracy * 100).toFixed(2)}%`,
             -paddingX,
             paddingY,
         );
         ctx.restore();
-    }
-
-    protected override getValueAt(time: number): number {
-        const event = this.manager.eventAtOrDefault(time);
-        const syncedEvent = this.syncedManager.eventAtOrDefault(time);
-
-        return (syncedEvent.time > event.time ? syncedEvent : event).accuracy;
     }
 }

@@ -1,37 +1,15 @@
 import { Vector2 } from "../../osu-base";
-import { SpectatorCountableEvent } from "../../spectator/events/SpectatorCountableEvent";
-import { SpectatorSyncedCountableEvent } from "../../spectator/events/SpectatorSyncedCountableEvent";
-import { SpectatorEventManager } from "../../spectator/managers/SpectatorEventManager";
 
 /**
  * Represents a counter that can be drawn.
  */
-export abstract class DrawableCounter<
-    SpecEvent extends SpectatorCountableEvent,
-    SpecSyncedEvent extends SpectatorSyncedCountableEvent,
-> {
-    /**
-     * The event manager of this drawable counter.
-     */
-    protected readonly manager: SpectatorEventManager<SpecEvent>;
-
-    /**
-     * The synced event manager of this drawable counter.
-     */
-    protected readonly syncedManager: SpectatorEventManager<SpecSyncedEvent>;
-
+export abstract class DrawableCounter {
     /**
      * The size scale of the underlying preview.
      */
     protected readonly sizeScale: Vector2;
 
-    constructor(
-        manager: SpectatorEventManager<SpecEvent>,
-        syncedManager: SpectatorEventManager<SpecSyncedEvent>,
-        sizeScale: Vector2,
-    ) {
-        this.manager = manager;
-        this.syncedManager = syncedManager;
+    constructor(sizeScale: Vector2) {
         this.sizeScale = sizeScale;
     }
 
@@ -39,17 +17,9 @@ export abstract class DrawableCounter<
      * Draws the counter in the canvas.
      *
      * @param ctx The canvas context.
-     * @param time The curent clock time.
+     * @param time The current clock time.
      */
     abstract draw(ctx: CanvasRenderingContext2D, time: number): void;
-
-    /**
-     * Gets the value of an event that occurs in a clock time.
-     *
-     * @param time The clock time.
-     * @returns The value of the event.
-     */
-    protected abstract getValueAt(time: number): unknown;
 
     /**
      * Sets a canvas context up for drawing a counter.

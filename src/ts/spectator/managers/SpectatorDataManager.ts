@@ -9,6 +9,7 @@ import {
 import { parsedBeatmap } from "../../settings/BeatmapSettings";
 import { MultiplayerPlayer } from "../structures/MultiplayerPlayer";
 import { SpectatorAccuracyEventManager } from "./SpectatorAccuracyEventManager";
+import { SpectatorClickEventManager } from "./SpectatorClickEventManager";
 import { SpectatorComboEventManager } from "./SpectatorComboEventManager";
 import { SpectatorCursorEventManager } from "./SpectatorCursorEventManager";
 import { SpectatorEventManagers } from "./SpectatorEventManagers";
@@ -102,7 +103,7 @@ export class SpectatorDataManager {
         );
 
         if (earliestEventTime === Number.POSITIVE_INFINITY) {
-            for (const eventManager of this.events.cursor) {
+            for (const eventManager of this.events.cursors) {
                 earliestEventTime = Math.min(
                     earliestEventTime,
                     eventManager.earliestEventTime ?? Number.POSITIVE_INFINITY,
@@ -125,7 +126,7 @@ export class SpectatorDataManager {
         );
 
         if (latestEventTime === Number.POSITIVE_INFINITY) {
-            for (const eventManager of this.events.cursor) {
+            for (const eventManager of this.events.cursors) {
                 latestEventTime = Math.min(
                     latestEventTime,
                     eventManager.latestEventTime ?? Number.POSITIVE_INFINITY,
@@ -150,7 +151,8 @@ export class SpectatorDataManager {
         this.events = {
             accuracy: new SpectatorAccuracyEventManager(),
             combo: new SpectatorComboEventManager(),
-            cursor: [],
+            clicks: [],
+            cursors: [],
             objectData: new SpectatorObjectDataEventManager(),
             score: new SpectatorScoreEventManager(),
             syncedAccuracy: new SpectatorSyncedAccuracyEventManager(),
@@ -159,7 +161,8 @@ export class SpectatorDataManager {
         };
 
         for (let i = 0; i < 10; ++i) {
-            this.events.cursor.push(new SpectatorCursorEventManager());
+            this.events.clicks.push(new SpectatorClickEventManager());
+            this.events.cursors.push(new SpectatorCursorEventManager());
         }
 
         this.mods = ModUtil.droidStringToMods(player.mods.mods ?? "");
