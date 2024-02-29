@@ -5,7 +5,7 @@ import {
     Slider,
     SliderTick,
     Vector2,
-} from "../../osu-base";
+} from "@rian8337/osu-base";
 import { DrawableBeatmap } from "../DrawableBeatmap";
 import { DrawableCircle } from "./DrawableCircle";
 import { DrawableHitObject } from "./DrawableHitObject";
@@ -28,7 +28,11 @@ export class DrawableSlider extends DrawableCircle {
 
     protected override get fadeOutTime(): number {
         if (this.isHidden) {
-            return this.object.duration + this.approachTime - this.fadeInTime;
+            return (
+                this.object.duration +
+                this.object.timePreempt -
+                this.object.timeFadeIn
+            );
         } else {
             return 240;
         }
@@ -46,7 +50,6 @@ export class DrawableSlider extends DrawableCircle {
             const drawableNestedObject =
                 DrawableBeatmap.convertHitObjectToDrawable(nestedObject, mods);
 
-            drawableNestedObject.approachTime = this.approachTime;
             drawableNestedObject.comboNumber = this.comboNumber;
             drawableNestedObject.color = this.color;
 
@@ -75,12 +78,12 @@ export class DrawableSlider extends DrawableCircle {
         if (time < this.object.endTime) {
             if (this.isHidden) {
                 let timeElapsed =
-                    time - (this.object.startTime - this.approachTime);
+                    time - (this.object.startTime - this.object.timePreempt);
 
-                if (timeElapsed <= this.fadeInTime) {
-                    opacity = timeElapsed / this.fadeInTime;
+                if (timeElapsed <= this.object.timeFadeIn) {
+                    opacity = timeElapsed / this.object.timeFadeIn;
                 } else {
-                    timeElapsed -= this.fadeInTime;
+                    timeElapsed -= this.object.timeFadeIn;
 
                     const t =
                         MathUtils.clamp(
@@ -93,7 +96,8 @@ export class DrawableSlider extends DrawableCircle {
                     opacity = -t * (t - 2);
                 }
             } else {
-                opacity = (this.approachTime - dt) / this.fadeInTime;
+                opacity =
+                    (this.object.timePreempt - dt) / this.object.timeFadeIn;
             }
         } else if (this.isHidden) {
             opacity = 0;
@@ -113,7 +117,7 @@ export class DrawableSlider extends DrawableCircle {
         this.drawCircle(ctx);
 
         const { calculatedPath } = this.object.path;
-        const repetitions = this.object.repeats + 1;
+        const repetitions = this.object.spanCount;
         const repeat = (-dt * repetitions) / this.object.duration;
         if (repetitions > 1 && repeat + 1 <= (repetitions & ~1)) {
             const lastPoint = this.flipPathVertically(calculatedPath.at(-1)!);
@@ -149,7 +153,7 @@ export class DrawableSlider extends DrawableCircle {
         const spanIndex = MathUtils.clamp(
             Math.floor(-dt / this.object.spanDuration),
             0,
-            this.object.repeats,
+            this.object.repeatCount,
         );
         const nestedObjects = this.drawableNestedHitObjects.slice();
 

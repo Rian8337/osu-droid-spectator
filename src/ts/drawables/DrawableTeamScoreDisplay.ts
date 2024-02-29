@@ -1,4 +1,4 @@
-import { MathUtils } from "../osu-base";
+import { MathUtils } from "@rian8337/osu-base";
 import { Preview } from "../Preview";
 import { maxScore } from "../settings/BeatmapSettings";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";

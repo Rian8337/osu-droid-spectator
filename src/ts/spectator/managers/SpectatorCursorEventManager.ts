@@ -1,4 +1,4 @@
-import { Vector2 } from "../../osu-base";
+import { Vector2 } from "@rian8337/osu-base";
 import { SpectatorCursorEvent } from "../events/SpectatorCursorEvent";
 import { MovementType } from "../structures/MovementType";
 import { SpectatorEventManager } from "./SpectatorEventManager";
@@ -9,7 +9,7 @@ import { SpectatorEventManager } from "./SpectatorEventManager";
 export class SpectatorCursorEventManager extends SpectatorEventManager<SpectatorCursorEvent> {
     protected override readonly defaultEvent = new SpectatorCursorEvent(
         Number.NEGATIVE_INFINITY,
-        new Vector2(-1, -1),
+        new Vector2(-1),
         MovementType.up,
     );
 }

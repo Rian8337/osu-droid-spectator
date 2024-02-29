@@ -1,4 +1,4 @@
-import { Vector2 } from "../../osu-base";
+import { Vector2 } from "@rian8337/osu-base";
 import { SpectatorEvent } from "../../spectator/events/SpectatorEvent";
 import { SpectatorEventManager } from "../../spectator/managers/SpectatorEventManager";
 import { DrawableCounter } from "./DrawableCounter";

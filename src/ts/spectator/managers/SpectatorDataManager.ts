@@ -1,11 +1,12 @@
 import {
     DroidHitWindow,
     IModApplicableToDroid,
-    MapStats,
     Mod,
+    ModDifficultyAdjust,
     ModPrecise,
     ModUtil,
-} from "../../osu-base";
+    calculateDroidDifficultyStatistics,
+} from "@rian8337/osu-base";
 import { parsedBeatmap } from "../../settings/BeatmapSettings";
 import { MultiplayerPlayer } from "../structures/MultiplayerPlayer";
 import { SpectatorAccuracyEventManager } from "./SpectatorAccuracyEventManager";
@@ -167,12 +168,28 @@ export class SpectatorDataManager {
 
         this.mods = ModUtil.droidStringToMods(player.mods.mods ?? "");
 
+        const localMods = ModUtil.removeSpeedChangingMods(this.mods);
+
+        if (
+            [this.forceCS, this.forceAR, this.forceOD].some(
+                (v) => v !== undefined,
+            )
+        ) {
+            localMods.push(
+                new ModDifficultyAdjust({
+                    cs: this.forceCS,
+                    ar: this.forceAR,
+                    od: this.forceOD,
+                }),
+            );
+        }
+
         this.hitWindow = new DroidHitWindow(
-            new MapStats({
-                od: this.forceOD ?? parsedBeatmap.difficulty.od,
-                forceOD: this.forceOD !== undefined,
-                mods: ModUtil.removeSpeedChangingMods(this.mods),
-            }).calculate({ convertDroidOD: false }).od!,
+            calculateDroidDifficultyStatistics({
+                overallDifficulty: parsedBeatmap.difficulty.od,
+                mods: localMods,
+                convertOverallDifficulty: false,
+            }).overallDifficulty,
         );
     }
 

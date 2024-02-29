@@ -1,4 +1,4 @@
-import { MathUtils } from "../osu-base";
+import { MathUtils } from "@rian8337/osu-base";
 import { previews } from "../settings/PreviewSettings";
 import { dataProcessor } from "../settings/SpectatorSettings";
 import { audioState } from "./Audio";

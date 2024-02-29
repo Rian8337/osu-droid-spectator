@@ -1,4 +1,4 @@
-import { MathUtils, ModHidden, Playfield } from "../../osu-base";
+import { MathUtils, ModHidden, Playfield } from "@rian8337/osu-base";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/structures/HitResult";
 import { DrawableHitObject } from "./DrawableHitObject";
@@ -7,7 +7,7 @@ import { DrawableHitObject } from "./DrawableHitObject";
  * Represents a spinner that can be drawn.
  */
 export class DrawableSpinner extends DrawableHitObject {
-    protected override readonly fadeInTime = 500;
+    protected readonly fadeInTime = 500;
     protected override readonly fadeOutTime = 150;
 
     private static readonly radius = Playfield.baseSize.y / 2;
@@ -24,7 +24,7 @@ export class DrawableSpinner extends DrawableHitObject {
         let opacity = 1;
 
         if (dt >= 0 && !this.isHit) {
-            opacity = (this.approachTime - dt) / this.fadeInTime;
+            opacity = (this.object.timePreempt - dt) / this.fadeInTime;
         } else if (time > this.object.endTime) {
             opacity = 1 - (time - this.object.endTime) / this.fadeOutTime;
         }

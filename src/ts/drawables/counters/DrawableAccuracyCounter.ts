@@ -1,4 +1,4 @@
-import { Vector2 } from "../../osu-base";
+import { Vector2 } from "@rian8337/osu-base";
 import { SpectatorAccuracyEvent } from "../../spectator/events/SpectatorAccuracyEvent";
 import { DrawableScoreCounter } from "./DrawableScoreCounter";
 import { DrawableSyncedCounter } from "./DrawableSyncedCounter";

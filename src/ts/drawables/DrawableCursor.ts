@@ -5,7 +5,7 @@ import {
     ModHardRock,
     Playfield,
     Vector2,
-} from "../osu-base";
+} from "@rian8337/osu-base";
 import { SpectatorCursorEvent } from "../spectator/events/SpectatorCursorEvent";
 import { MovementType } from "../spectator/structures/MovementType";
 import { SpectatorEventManager } from "../spectator/managers/SpectatorEventManager";

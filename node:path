@@ -1,0 +1,14 @@
+/**
+ * The base osu! module imports the core Node.js `path` module as `node:path`
+ * to avoid conflicts with the `path` module from npm.
+ *
+ * For whatever reason, Browserify is not able recognize the `path` module as a core
+ * Node.js module and instead tries to find it in the root folder of this project.
+ *
+ * As a result, this file is required as a workaround for Browserify to recognize
+ * the `node:path` import as a core Node.js module.
+ *
+ * See {@link https://github.com/browserify/browserify/issues/1986 this} GitHub issue
+ * for more information.
+ */
+module.exports = require("node:path");

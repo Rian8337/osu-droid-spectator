@@ -4,7 +4,7 @@ import {
     RGBColor,
     Slider,
     Spinner,
-} from "../osu-base";
+} from "@rian8337/osu-base";
 import { parsedBeatmap } from "../settings/BeatmapSettings";
 import { hitResultColors } from "../settings/SpectatorSettings";
 import { SpectatorObjectDataEventManager } from "../spectator/managers/SpectatorObjectDataEventManager";

@@ -1,4 +1,4 @@
-import { MapStats, MathUtils, ModHidden, Vector2 } from "../../osu-base";
+import { MathUtils, ModHidden, Vector2 } from "@rian8337/osu-base";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/structures/HitResult";
 import { DrawableHitObject } from "./DrawableHitObject";
@@ -9,21 +9,11 @@ import { DrawableHitObject } from "./DrawableHitObject";
 export class DrawableCircle extends DrawableHitObject {
     protected readonly isHidden = this.mods.some((m) => m instanceof ModHidden);
 
-    protected override get fadeInTime(): number {
-        if (this.isHidden) {
-            return this.approachTime * ModHidden.fadeInDurationMultiplier;
-        } else {
-            // Preempt time can go below 450ms. Normally, this is achieved via the DT mod which uniformly speeds up all animations game wide regardless of AR.
-            // This uniform speedup is hard to match 1:1, however we can at least make AR>10 (via mods) feel good by extending the upper linear function above.
-            // Note that this doesn't exactly match the AR>10 visuals as they're classically known, but it feels good.
-            // This adjustment is necessary for AR>10, otherwise TimePreempt can become smaller leading to hitcircles not fully fading in.
-            return 400 * Math.min(1, this.approachTime / MapStats.arToMS(10));
-        }
-    }
-
     protected override get fadeOutTime(): number {
         if (this.isHidden) {
-            return this.approachTime * ModHidden.fadeOutDurationMultiplier;
+            return (
+                this.object.timePreempt * ModHidden.fadeOutDurationMultiplier
+            );
         } else {
             return 150;
         }
@@ -44,12 +34,13 @@ export class DrawableCircle extends DrawableHitObject {
         if (dt >= 0 && !this.isHit) {
             if (this.isHidden) {
                 const fadeInStartTime =
-                    this.object.startTime - this.approachTime;
-                const fadeOutStartTime = fadeInStartTime + this.fadeInTime;
+                    this.object.startTime - this.object.timePreempt;
+                const fadeOutStartTime =
+                    fadeInStartTime + this.object.timeFadeIn;
 
                 opacity = Math.min(
                     MathUtils.clamp(
-                        (time - fadeInStartTime) / this.fadeInTime,
+                        (time - fadeInStartTime) / this.object.timeFadeIn,
                         0,
                         1,
                     ),
@@ -61,7 +52,8 @@ export class DrawableCircle extends DrawableHitObject {
                         ),
                 );
             } else {
-                opacity = (this.approachTime - dt) / this.fadeInTime;
+                opacity =
+                    (this.object.timePreempt - dt) / this.object.timeFadeIn;
             }
         } else if (!this.isHidden) {
             const fadeDt = hitData ? hitData.time - time : dt + maxHitWindow;
@@ -152,7 +144,7 @@ export class DrawableCircle extends DrawableHitObject {
      */
     protected drawApproach(ctx: CanvasRenderingContext2D, dt: number): void {
         const position = this.stackedPosition;
-        const scale = 1 + (dt / this.approachTime) * 3;
+        const scale = 1 + (dt / this.object.timePreempt) * 3;
 
         ctx.save();
         ctx.beginPath();

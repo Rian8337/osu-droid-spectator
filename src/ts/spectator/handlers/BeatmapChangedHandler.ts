@@ -1,8 +1,8 @@
 import { createHash } from "crypto";
 import { audioState, resetAudio } from "../../elements/Audio";
 import { background, clearBackground } from "../../elements/Background";
-import { JSZipObject } from "../../jszip";
-import { BeatmapDecoder } from "../../osu-base";
+import { JSZipObject } from "jszip";
+import { BeatmapDecoder, Modes } from "@rian8337/osu-base";
 import {
     pickedBeatmap,
     setPickedBeatmap,
@@ -144,7 +144,11 @@ export abstract class BeatmapChangedHandler {
             return;
         }
 
-        const newParsedBeatmap = new BeatmapDecoder().decode(osuFile).result;
+        const newParsedBeatmap = new BeatmapDecoder().decode(
+            osuFile,
+            Modes.droid,
+            false,
+        ).result;
         const { metadata: newMetadata } = newParsedBeatmap;
 
         setPickedBeatmap(newBeatmap);

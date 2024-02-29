@@ -1,5 +1,5 @@
 import { audioState } from "../elements/Audio";
-import { Vector2 } from "../osu-base";
+import { Vector2 } from "@rian8337/osu-base";
 import { parsedBeatmap } from "../settings/BeatmapSettings";
 import { players } from "../settings/PlayerSettings";
 import { SpectatorAccuracyEvent } from "./events/SpectatorAccuracyEvent";

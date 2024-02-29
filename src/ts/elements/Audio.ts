@@ -1,4 +1,4 @@
-import { MapStats } from "../osu-base";
+import { calculateDroidDifficultyStatistics } from "@rian8337/osu-base";
 import { previews } from "../settings/PreviewSettings";
 import { speedMultiplier, mods } from "../settings/RoomSettings";
 import {
@@ -123,10 +123,8 @@ export function resetAudio(resetSrc: boolean): void {
  * Sets the audio playback rate based on currently set required mods and speed multiplier.
  */
 export function setAudioPlaybackRate(): void {
-    const stats = new MapStats({
-        speedMultiplier: speedMultiplier,
+    audio.playbackRate = calculateDroidDifficultyStatistics({
         mods: mods,
-    }).calculate();
-
-    audio.playbackRate = stats.speedMultiplier;
+        customSpeedMultiplier: speedMultiplier,
+    }).overallSpeedMultiplier;
 }

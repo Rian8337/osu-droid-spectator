@@ -1,5 +1,5 @@
+import { Vector2 } from "@rian8337/osu-base";
 import { Preview } from "../Preview";
-import { Vector2 } from "../osu-base";
 import { MultiplayerPlayer } from "../spectator/structures/MultiplayerPlayer";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";

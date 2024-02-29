@@ -1,5 +1,5 @@
+import { RGBColor } from "@rian8337/osu-base";
 import { DrawableTeamScoreDisplay } from "../drawables/DrawableTeamScoreDisplay";
-import { RGBColor } from "../osu-base";
 import { SpectatorDataProcessor } from "../spectator/SpectatorDataProcessor";
 import { HitResult } from "../spectator/structures/HitResult";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";

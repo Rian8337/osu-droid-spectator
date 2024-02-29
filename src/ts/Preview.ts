@@ -1,3 +1,4 @@
+import { ModPrecise, Vector2 } from "@rian8337/osu-base";
 import { DrawableBeatmap } from "./drawables/DrawableBeatmap";
 import { DrawableComboCounter } from "./drawables/counters/DrawableComboCounter";
 import { DrawableCursor } from "./drawables/DrawableCursor";
@@ -5,7 +6,6 @@ import { SpectatorDataManager } from "./spectator/managers/SpectatorDataManager"
 import { DrawableScoreCounter } from "./drawables/counters/DrawableScoreCounter";
 import { DrawableAccuracyCounter } from "./drawables/counters/DrawableAccuracyCounter";
 import { DrawablePlayerInfo } from "./drawables/DrawablePlayerInfo";
-import { ModPrecise, Vector2 } from "./osu-base";
 import { parsedBeatmap } from "./settings/BeatmapSettings";
 import { teamMode } from "./settings/RoomSettings";
 import { MultiplayerTeamMode } from "./spectator/structures/MultiplayerTeamMode";

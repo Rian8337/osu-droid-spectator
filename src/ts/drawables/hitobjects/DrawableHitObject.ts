@@ -1,14 +1,13 @@
 import {
     HitObject,
     IModApplicableToDroid,
-    MapStats,
     Mod,
     ModHardRock,
     ObjectTypes,
     Playfield,
     RGBColor,
     Vector2,
-} from "../../osu-base";
+} from "@rian8337/osu-base";
 import { hitResultColors } from "../../settings/SpectatorSettings";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/structures/HitResult";
@@ -37,11 +36,6 @@ export abstract class DrawableHitObject {
     protected readonly isHardRock: boolean;
 
     /**
-     * The duration at which the object fades in, in milliseconds.
-     */
-    protected abstract get fadeInTime(): number;
-
-    /**
      * The duration at which the object fades out, in milliseconds.
      */
     protected abstract get fadeOutTime(): number;
@@ -55,13 +49,6 @@ export abstract class DrawableHitObject {
      * The color of the object.
      */
     color = new RGBColor(0, 202, 0);
-
-    /**
-     * The approach time of the object.
-     *
-     * This value is unaffected by speed-changing modifications.
-     */
-    approachTime = MapStats.arToMS(5);
 
     /**
      * The stacked position of the object with mods applied.

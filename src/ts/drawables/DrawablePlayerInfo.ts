@@ -1,9 +1,13 @@
-import { MathUtils, RGBColor, Vector2 } from "../osu-base";
+import {
+    Interpolation,
+    MathUtils,
+    RGBColor,
+    Vector2,
+} from "@rian8337/osu-base";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { players } from "../settings/PlayerSettings";
 import { dataProcessor, teamColors } from "../settings/SpectatorSettings";
 import { parsedBeatmap } from "../settings/BeatmapSettings";
-import { Interpolation } from "../osu-base/mathutil/Interpolation";
 import { MultiplayerPlayer } from "../spectator/structures/MultiplayerPlayer";
 
 /**

@@ -1,4 +1,4 @@
-import { Vector2 } from "../../osu-base";
+import { Vector2 } from "@rian8337/osu-base";
 import { SpectatorClickEventManager } from "../../spectator/managers/SpectatorClickEventManager";
 import { SpectatorCursorEventManager } from "../../spectator/managers/SpectatorCursorEventManager";
 import { MovementType } from "../../spectator/structures/MovementType";

@@ -1,5 +1,5 @@
-import JSZip from "../jszip";
-import { Beatmap, MapStats } from "../osu-base";
+import JSZip from "jszip";
+import { Beatmap } from "@rian8337/osu-base";
 import { PickedBeatmap } from "../spectator/rawdata/PickedBeatmap";
 import { mods, speedMultiplier } from "./RoomSettings";
 
@@ -45,10 +45,7 @@ export function setParsedBeatmap(newParsedBeatmap: Beatmap | null): void {
  * Calculates the maximum osu!droid score of the currently picked beatmap.
  */
 export function calculateMaxScore(): void {
-    maxScore =
-        parsedBeatmap?.maxDroidScore(
-            new MapStats({ speedMultiplier: speedMultiplier, mods: mods }),
-        ) ?? 0;
+    maxScore = parsedBeatmap?.maxDroidScore(mods, speedMultiplier) ?? 0;
 }
 
 /**

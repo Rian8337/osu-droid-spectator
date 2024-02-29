@@ -1,5 +1,5 @@
+import { IModApplicableToDroid, Mod, ModUtil } from "@rian8337/osu-base";
 import { setAudioPlaybackRate } from "../elements/Audio";
-import { IModApplicableToDroid, Mod, ModUtil } from "../osu-base";
 import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
 
 /**
