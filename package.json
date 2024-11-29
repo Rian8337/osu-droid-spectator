@@ -16,8 +16,6 @@
     "@types/jquery": "^3.5.14",
     "@types/lodash.clonedeep": "^4.5.7",
     "@types/node": "^20.5.7",
-    "@typescript-eslint/eslint-plugin": "^7.1.0",
-    "@typescript-eslint/parser": "^7.1.0",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
     "eslint": "^8.27.0",
@@ -27,34 +25,11 @@
   },
   "dependencies": {
     "@rian8337/osu-base": "^4.0.0-beta.18",
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
     "dotenv": "^16.3.1",
     "jszip": "^3.10.1",
     "lodash.clonedeep": "^4.5.0",
     "socket.io-client": "^4.7.2"
-  },
-  "eslintConfig": {
-    "env": {
-      "es2022": true,
-      "node": true
-    },
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": 2022,
-      "sourceType": "module"
-    },
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "rules": {
-      "@typescript-eslint/no-inferrable-types": "off",
-      "@typescript-eslint/no-non-null-assertion": "off"
-    }
-  },
-  "prettier": {
-    "tabWidth": 4
   }
 }
