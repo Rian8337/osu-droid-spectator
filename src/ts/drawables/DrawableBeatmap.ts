@@ -1,6 +1,5 @@
 import {
     Beatmap,
-    BeatmapConverter,
     HitObject,
     IModApplicableToDroid,
     Mod,
@@ -89,7 +88,7 @@ export class DrawableBeatmap {
             mods.push(new ModDifficultyAdjust({ cs: forceCS, ar: forceAR }));
         }
 
-        this.beatmap = new BeatmapConverter(beatmap).convert({
+        this.beatmap = beatmap.createPlayableBeatmap({
             mode: Modes.droid,
             mods: mods,
         });
@@ -227,8 +226,8 @@ export class DrawableBeatmap {
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `${this.drawableHitObjects[0].object.radius}px Trebuchet MS, sans-serif`;
-        } catch (e) {
+            ctx.font = `${this.drawableHitObjects[0].object.radius.toString()}px Trebuchet MS, sans-serif`;
+        } catch {
             // Ignore error
         }
         ctx.textAlign = "center";

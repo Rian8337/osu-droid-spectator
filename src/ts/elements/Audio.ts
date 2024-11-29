@@ -1,4 +1,4 @@
-import { calculateDroidDifficultyStatistics } from "@rian8337/osu-base";
+import { ModUtil } from "@rian8337/osu-base";
 import { previews } from "../settings/PreviewSettings";
 import { speedMultiplier, mods } from "../settings/RoomSettings";
 import {
@@ -65,7 +65,6 @@ $(audio)
 
                 if (
                     dataProcessor.earliestEventTime !== null &&
-                    dataProcessor.earliestEventTime !== undefined &&
                     this.currentTime * 1000 < dataProcessor.earliestEventTime
                 ) {
                     this.currentTime = dataProcessor.earliestEventTime / 1000;
@@ -78,7 +77,11 @@ $(audio)
                     console.log("Playback interval stopped");
                     clearInterval(playbackInterval!);
                     playbackInterval = null;
-                    this.play();
+
+                    this.play().catch((e: unknown) => {
+                        console.error(e);
+                        $(this).trigger("manualpause");
+                    });
                 }
             }, 250);
         }
@@ -123,8 +126,5 @@ export function resetAudio(resetSrc: boolean): void {
  * Sets the audio playback rate based on currently set required mods and speed multiplier.
  */
 export function setAudioPlaybackRate(): void {
-    audio.playbackRate = calculateDroidDifficultyStatistics({
-        mods: mods,
-        customSpeedMultiplier: speedMultiplier,
-    }).overallSpeedMultiplier;
+    audio.playbackRate = speedMultiplier * ModUtil.calculateRateWithMods(mods);
 }

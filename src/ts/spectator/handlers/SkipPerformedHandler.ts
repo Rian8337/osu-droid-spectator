@@ -1,4 +1,3 @@
-import { convertApproachRateToMilliseconds } from "@rian8337/osu-base";
 import { audioState } from "../../elements/Audio";
 import { parsedBeatmap } from "../../settings/BeatmapSettings";
 
@@ -14,13 +13,11 @@ export abstract class SkipPerformedHandler {
             return;
         }
 
+        const firstObject = parsedBeatmap.hitObjects.objects[0];
+
         audioState.audio.currentTime = Math.max(
             0,
-            (parsedBeatmap.hitObjects.objects[0].startTime -
-                convertApproachRateToMilliseconds(
-                    parsedBeatmap.difficulty.ar ?? parsedBeatmap.difficulty.od,
-                )) /
-                1000,
+            (firstObject.startTime - firstObject.timePreempt) / 1000,
         );
     }
 }

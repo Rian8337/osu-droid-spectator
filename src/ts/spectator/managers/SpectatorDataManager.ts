@@ -5,7 +5,6 @@ import {
     ModDifficultyAdjust,
     ModPrecise,
     ModUtil,
-    calculateDroidDifficultyStatistics,
 } from "@rian8337/osu-base";
 import { parsedBeatmap } from "../../settings/BeatmapSettings";
 import { MultiplayerPlayer } from "../structures/MultiplayerPlayer";
@@ -184,13 +183,7 @@ export class SpectatorDataManager {
             );
         }
 
-        this.hitWindow = new DroidHitWindow(
-            calculateDroidDifficultyStatistics({
-                overallDifficulty: parsedBeatmap.difficulty.od,
-                mods: localMods,
-                convertOverallDifficulty: false,
-            }).overallDifficulty,
-        );
+        this.hitWindow = new DroidHitWindow(parsedBeatmap.difficulty.od);
     }
 
     /**
