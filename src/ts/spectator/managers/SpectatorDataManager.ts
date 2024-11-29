@@ -1,10 +1,12 @@
 import {
+    BeatmapDifficulty,
     DroidHitWindow,
     IModApplicableToDroid,
     Mod,
     ModDifficultyAdjust,
     ModPrecise,
     ModUtil,
+    Modes,
 } from "@rian8337/osu-base";
 import { parsedBeatmap } from "../../settings/BeatmapSettings";
 import { MultiplayerPlayer } from "../structures/MultiplayerPlayer";
@@ -183,7 +185,15 @@ export class SpectatorDataManager {
             );
         }
 
-        this.hitWindow = new DroidHitWindow(parsedBeatmap.difficulty.od);
+        const difficulty = new BeatmapDifficulty(parsedBeatmap.difficulty);
+
+        ModUtil.applyModsToBeatmapDifficulty(
+            difficulty,
+            Modes.droid,
+            localMods,
+        );
+
+        this.hitWindow = new DroidHitWindow(difficulty.od);
     }
 
     /**
