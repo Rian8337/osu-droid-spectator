@@ -124,8 +124,8 @@ export class DrawableCircle extends DrawableHitObject {
     protected drawText(
         ctx: CanvasRenderingContext2D,
         text: string,
-        position: Vector2 = this.stackedPosition,
-        rotation: number = 0,
+        position = this.stackedPosition,
+        rotation = 0,
     ): void {
         ctx.save();
         ctx.shadowBlur = this.shadowBlur;

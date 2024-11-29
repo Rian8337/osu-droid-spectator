@@ -2,9 +2,7 @@ import {
     HitObject,
     IModApplicableToDroid,
     Mod,
-    ModHardRock,
-    ObjectTypes,
-    Playfield,
+    Modes,
     RGBColor,
     Vector2,
 } from "@rian8337/osu-base";
@@ -31,11 +29,6 @@ export abstract class DrawableHitObject {
     readonly mods: (Mod & IModApplicableToDroid)[];
 
     /**
-     * Whether the Hard Rock mod is active.
-     */
-    protected readonly isHardRock: boolean;
-
-    /**
      * The duration at which the object fades out, in milliseconds.
      */
     protected abstract get fadeOutTime(): number;
@@ -51,21 +44,17 @@ export abstract class DrawableHitObject {
     color = new RGBColor(0, 202, 0);
 
     /**
-     * The stacked position of the object with mods applied.
+     * The stacked position of the object.
      */
     get stackedPosition(): Vector2 {
-        return this.reevaluateStackedPosition(
-            this.flipVertically(this.object.position),
-        );
+        return this.object.getStackedPosition(Modes.droid);
     }
 
     /**
-     * The stacked end position of the object with mods applied.
+     * The stacked end position of the object.
      */
     get stackedEndPosition(): Vector2 {
-        return this.reevaluateStackedPosition(
-            this.flipVertically(this.object.endPosition),
-        );
+        return this.object.getStackedEndPosition(Modes.droid);
     }
 
     /**
@@ -86,7 +75,7 @@ export abstract class DrawableHitObject {
      * The combo color in Canvas string format.
      */
     protected get canvasColor(): string {
-        return `rgb(${this.color})`;
+        return `rgb(${this.color.toString()})`;
     }
 
     /**
@@ -97,7 +86,6 @@ export abstract class DrawableHitObject {
     constructor(object: HitObject, mods: (Mod & IModApplicableToDroid)[]) {
         this.object = object;
         this.mods = mods;
-        this.isHardRock = this.mods.some((m) => m instanceof ModHardRock);
     }
 
     /**
@@ -170,7 +158,7 @@ export abstract class DrawableHitObject {
 
         ctx.globalAlpha = opacity;
         ctx.shadowBlur = this.shadowBlur;
-        ctx.fillStyle = `rgb(${hitResultColors[hitResult]})`;
+        ctx.fillStyle = `rgb(${hitResultColors[hitResult].toString()})`;
 
         let text = "";
 
@@ -189,37 +177,5 @@ export abstract class DrawableHitObject {
         ctx.translate(position.x, position.y);
         ctx.fillText(text, 0, 0);
         ctx.restore();
-    }
-
-    /**
-     * Flips a position vertically with respect to the playfield.
-     *
-     * Will return the input if HR mod is inactive.
-     *
-     * @param position The position to flip.
-     * @returns The supposed position based on the method's description.
-     */
-    protected flipVertically(position: Vector2): Vector2 {
-        if (this.isHardRock) {
-            return new Vector2(position.x, Playfield.baseSize.y - position.y);
-        } else {
-            return position;
-        }
-    }
-
-    /**
-     * Reevaluates the stacked position of the specified position.
-     *
-     * @param position The position to reevaluate.
-     * @returns The stacked position.
-     */
-    private reevaluateStackedPosition(position: Vector2): Vector2 {
-        if (this.object.type & ObjectTypes.spinner) {
-            return position;
-        }
-
-        const coordinate = this.object.stackHeight * 4 * this.object.scale;
-
-        return position.add(new Vector2(coordinate, coordinate));
     }
 }

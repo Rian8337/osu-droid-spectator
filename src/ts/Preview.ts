@@ -94,7 +94,7 @@ export class Preview {
         this.sizeScale = sizeScale;
 
         this.screen = document.createElement("canvas");
-        this.screen.id = `preview${uid}`;
+        this.screen.id = `preview${uid.toString()}`;
 
         this.applyCanvasPosition();
         this.attachToContainer();
@@ -134,6 +134,7 @@ export class Preview {
             specDataManager.forceCS,
             specDataManager.forceAR,
         );
+
         this.specDataManager = specDataManager;
         this.playerInfo = new DrawablePlayerInfo(
             specDataManager.uid,
@@ -219,7 +220,7 @@ export class Preview {
         this.screen.height = this.sizeScale.y * height;
 
         this.screen.style.position = "absolute";
-        this.screen.style.left = `${this.positionScale.x * innerWidth}px`;
-        this.screen.style.top = `${this.positionScale.y * height}px`;
+        this.screen.style.left = `${(this.positionScale.x * innerWidth).toString()}px`;
+        this.screen.style.top = `${(this.positionScale.y * height).toString()}px`;
     }
 }

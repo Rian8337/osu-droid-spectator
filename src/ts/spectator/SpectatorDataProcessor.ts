@@ -284,12 +284,14 @@ export class SpectatorDataProcessor {
         //#endregion
 
         manager.latestDataTime = mSecPassed;
+
         console.log(
             "Received data from uid",
             uid,
             "latest data time is set to",
             manager.latestDataTime,
         );
+
         return true;
     }
 

@@ -4,7 +4,6 @@ import {
     Mod,
     Slider,
     SliderTick,
-    Vector2,
 } from "@rian8337/osu-base";
 import { DrawableBeatmap } from "../DrawableBeatmap";
 import { DrawableCircle } from "./DrawableCircle";
@@ -109,7 +108,7 @@ export class DrawableSlider extends DrawableCircle {
 
         const position = this.stackedPosition;
         const pathEndPosition = this.stackedPosition.add(
-            this.flipPathVertically(this.object.path.positionAt(1)),
+            this.object.path.positionAt(1),
         );
 
         this.drawPath(ctx);
@@ -120,10 +119,8 @@ export class DrawableSlider extends DrawableCircle {
         const repetitions = this.object.spanCount;
         const repeat = (-dt * repetitions) / this.object.duration;
         if (repetitions > 1 && repeat + 1 <= (repetitions & ~1)) {
-            const lastPoint = this.flipPathVertically(calculatedPath.at(-1)!);
-            const secondLastPoint = this.flipPathVertically(
-                calculatedPath.at(-2)!,
-            );
+            const lastPoint = calculatedPath.at(-1)!;
+            const secondLastPoint = calculatedPath.at(-2)!;
 
             this.drawText(
                 ctx,
@@ -137,8 +134,8 @@ export class DrawableSlider extends DrawableCircle {
             repeat > 0 &&
             repeat + 1 <= repetitions - Number(!(repetitions & 1))
         ) {
-            const firstPoint = this.flipPathVertically(calculatedPath[0]);
-            const secondPoint = this.flipPathVertically(calculatedPath[1]);
+            const firstPoint = calculatedPath[0];
+            const secondPoint = calculatedPath[1];
 
             this.drawText(
                 ctx,
@@ -225,9 +222,7 @@ export class DrawableSlider extends DrawableCircle {
         ctx.moveTo(startPosition.x, startPosition.y);
 
         for (const path of this.object.path.calculatedPath.slice(1)) {
-            const drawPosition = this.stackedPosition.add(
-                this.flipPathVertically(path),
-            );
+            const drawPosition = this.stackedPosition.add(path);
             ctx.lineTo(drawPosition.x, drawPosition.y);
         }
 
@@ -302,7 +297,7 @@ export class DrawableSlider extends DrawableCircle {
         }
 
         const drawPosition = this.stackedPosition.add(
-            this.flipPathVertically(this.object.path.positionAt(progress)),
+            this.object.path.positionAt(progress),
         );
 
         ctx.save();
@@ -321,21 +316,5 @@ export class DrawableSlider extends DrawableCircle {
         ctx.lineWidth = this.circleBorder;
         ctx.stroke();
         ctx.restore();
-    }
-
-    /**
-     * Flips a path position vertically.
-     *
-     * Will return the input if HR mod is inactive.
-     *
-     * @param position The position to flip.
-     * @returns The supposed position based on the method's description.
-     */
-    private flipPathVertically(position: Vector2): Vector2 {
-        if (this.isHardRock) {
-            return new Vector2(position.x, -position.y);
-        } else {
-            return position;
-        }
     }
 }

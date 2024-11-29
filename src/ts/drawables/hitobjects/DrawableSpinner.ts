@@ -10,6 +10,7 @@ export class DrawableSpinner extends DrawableHitObject {
     protected readonly fadeInTime = 500;
     protected override readonly fadeOutTime = 150;
 
+    private readonly isHidden = this.mods.some((m) => m instanceof ModHidden);
     private static readonly radius = Playfield.baseSize.y / 2;
     private static readonly borderWidth = this.radius / 20;
 
@@ -55,11 +56,7 @@ export class DrawableSpinner extends DrawableHitObject {
 
         // Approach
         // Only draw approach circle if HD is not used.
-        if (
-            dt < 0 &&
-            time <= this.object.endTime &&
-            !this.mods.some((m) => m instanceof ModHidden)
-        ) {
+        if (dt < 0 && time <= this.object.endTime && !this.isHidden) {
             const scale = 1 + dt / this.object.duration;
 
             ctx.save();
