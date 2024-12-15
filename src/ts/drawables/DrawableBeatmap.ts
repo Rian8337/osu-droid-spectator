@@ -127,21 +127,8 @@ export class DrawableBeatmap {
         while (this.objectDrawIndexes.first < this.drawableHitObjects.length) {
             const object =
                 this.drawableHitObjects[this.objectDrawIndexes.first];
-            const objectData = manager.events.objectData.eventAtIndex(
-                this.objectDrawIndexes.first,
-            );
 
-            let timeThreshold =
-                DrawableHitObject.hitResultFadeOutStartTime +
-                DrawableHitObject.hitResultFadeOutTime;
-
-            if (objectData) {
-                timeThreshold += objectData.time;
-            } else {
-                timeThreshold += object.object.endTime + manager.maxHitWindow;
-            }
-
-            if (time <= timeThreshold) {
+            if (time <= object.lifetimeEnd) {
                 break;
             }
 
@@ -151,10 +138,8 @@ export class DrawableBeatmap {
         while (
             this.objectDrawIndexes.last + 1 < this.drawableHitObjects.length &&
             time >=
-                this.drawableHitObjects[this.objectDrawIndexes.last + 1].object
-                    .startTime -
-                    this.drawableHitObjects[this.objectDrawIndexes.last + 1]
-                        .object.timePreempt
+                this.drawableHitObjects[this.objectDrawIndexes.last + 1]
+                    .lifetimeStart
         ) {
             ++this.objectDrawIndexes.last;
         }
@@ -167,17 +152,7 @@ export class DrawableBeatmap {
             const object = this.drawableHitObjects[i];
             const objectData = manager.events.objectData.eventAtIndex(i);
 
-            let timeThreshold =
-                DrawableHitObject.hitResultFadeOutStartTime +
-                DrawableHitObject.hitResultFadeOutTime;
-
-            if (objectData) {
-                timeThreshold += objectData.time;
-            } else {
-                timeThreshold += object.object.endTime + manager.maxHitWindow;
-            }
-
-            if (time > timeThreshold) {
+            if (time > object.lifetimeEnd) {
                 break;
             }
 

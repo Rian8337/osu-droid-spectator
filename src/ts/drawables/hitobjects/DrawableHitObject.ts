@@ -16,10 +16,6 @@ import { HitResult } from "../../spectator/structures/HitResult";
  * Represents a hitobject that can be drawn.
  */
 export abstract class DrawableHitObject {
-    static readonly hitResultFadeIn = 150;
-    static readonly hitResultFadeOutTime = 250;
-    static readonly hitResultFadeOutStartTime = 500;
-
     /**
      * The underlying object.
      */
@@ -33,7 +29,7 @@ export abstract class DrawableHitObject {
     /**
      * The start time of the object's lifetime.
      */
-    lifetimeStart: number;
+    readonly lifetimeStart: number;
 
     /**
      * The end time of the object's lifetime.
@@ -115,6 +111,20 @@ export abstract class DrawableHitObject {
     ): void;
 
     /**
+     * Updates the lifetime end of this object.
+     *
+     * @param newTime The new time.
+     * @param force Whether to force the update.
+     */
+    protected updateLifetimeEnd(newTime: number, force = false) {
+        if (force) {
+            this.lifetimeEnd = newTime;
+        } else {
+            this.lifetimeEnd = Math.max(this.lifetimeEnd, newTime);
+        }
+    }
+
+    /**
      * Draws the hit result of this object at a given time.
      *
      * @param ctx The canvas context.
@@ -153,10 +163,7 @@ export abstract class DrawableHitObject {
         } else if (dt > fadeOutDelay) {
             opacity = 1 - Math.min(1, (dt - fadeOutDelay) / fadeOutDuration);
 
-            this.lifetimeEnd = Math.max(
-                this.lifetimeEnd,
-                hitTime + fadeOutDuration,
-            );
+            this.updateLifetimeEnd(hitTime + fadeOutDuration);
         }
 
         if (opacity <= 0) {
@@ -180,10 +187,7 @@ export abstract class DrawableHitObject {
 
             rotation = 8.6 * (Math.random() * 2 - 1);
 
-            this.lifetimeEnd = Math.max(
-                this.lifetimeEnd,
-                hitTime + yTranslateDuration,
-            );
+            this.updateLifetimeEnd(hitTime + yTranslateDuration);
         } else {
             scale = 0.6;
             let currentTime = dt;
@@ -222,10 +226,7 @@ export abstract class DrawableHitObject {
                 );
             }
 
-            this.lifetimeEnd = Math.max(
-                this.lifetimeEnd,
-                hitTime + fadeInDuration * 1.4,
-            );
+            this.updateLifetimeEnd(hitTime + fadeInDuration * 1.4);
         }
 
         ctx.save();

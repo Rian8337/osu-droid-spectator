@@ -28,6 +28,8 @@ export class DrawableSpinner extends DrawableHitObject {
             const fadeOutDuration = 240;
 
             opacity = 1 - (time - this.object.endTime) / fadeOutDuration;
+
+            this.updateLifetimeEnd(this.object.endTime + fadeOutDuration);
         }
 
         ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);

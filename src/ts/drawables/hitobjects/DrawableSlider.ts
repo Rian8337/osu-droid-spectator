@@ -74,6 +74,8 @@ export class DrawableSlider extends DrawableCircle {
             const fadeOutDuration = 240;
 
             opacity = 1 - (time - this.object.endTime) / fadeOutDuration;
+
+            this.updateLifetimeEnd(this.object.endTime + fadeOutDuration);
         }
 
         ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
@@ -272,7 +274,7 @@ export class DrawableSlider extends DrawableCircle {
         let opacity = 0;
         let scale = 1;
 
-        const animationDuration = 1500;
+        const animationDuration = 150;
 
         if (time < tick.startTime) {
             opacity = Interpolation.lerp(
@@ -296,14 +298,19 @@ export class DrawableSlider extends DrawableCircle {
                     ) +
                     1,
             );
+
+            this.updateLifetimeEnd(fadeInStartTime + animationDuration * 4);
         } else {
-            const progress = time - tick.startTime;
+            const dt = time - tick.startTime;
+            const progress = dt / animationDuration;
 
             opacity = Interpolation.lerp(1, 0, 1 - Math.pow(1 - progress, 5));
 
             if (isHit) {
                 scale = Interpolation.lerp(1, 1.5, -progress * (progress - 2));
             }
+
+            this.updateLifetimeEnd(tick.startTime + animationDuration);
         }
 
         ctx.save();

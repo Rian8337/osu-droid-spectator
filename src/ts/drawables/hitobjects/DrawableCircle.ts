@@ -57,34 +57,31 @@ export class DrawableCircle extends DrawableHitObject {
             }
         } else if (!this.isHidden) {
             const fadeOutStartTime = hitData?.time ?? maxHitTime;
-            const fadeOutDuration = 100;
+            const dt = time - fadeOutStartTime;
 
-            opacity = MathUtils.clamp(
-                1 - (time - fadeOutStartTime) / fadeOutDuration,
-                0,
-                1,
-            );
+            if (dt > 0) {
+                if (!hitData || hitData.result === HitResult.miss) {
+                    const fadeOutDuration = 100;
+
+                    opacity = MathUtils.clamp(1 - dt / fadeOutDuration, 0, 1);
+
+                    this.updateLifetimeEnd(fadeOutStartTime + fadeOutDuration);
+                } else {
+                    const fadeOutDuration = 240;
+
+                    opacity = MathUtils.clamp(
+                        Interpolation.lerp(1, 0, dt / fadeOutDuration),
+                        0,
+                        1,
+                    );
+
+                    this.updateLifetimeEnd(fadeOutStartTime + fadeOutDuration);
+                }
+            }
         }
 
-        if (this.isHit) {
-            if (!hitData || hitData.result === HitResult.miss) {
-                const fadeOutDuration = 100;
-
-                opacity = MathUtils.clamp(
-                    1 - (time - hitTime) / fadeOutDuration,
-                    0,
-                    1,
-                );
-            } else {
-                const dt = time - hitTime;
-                const fadeOutDuration = 240;
-
-                opacity = MathUtils.clamp(
-                    Interpolation.lerp(1, 0, dt / fadeOutDuration),
-                    0,
-                    1,
-                );
-            }
+        if (opacity <= 0) {
+            return;
         }
 
         ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
