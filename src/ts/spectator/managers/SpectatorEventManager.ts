@@ -7,7 +7,7 @@ export abstract class SpectatorEventManager<T extends SpectatorEvent> {
     /**
      * The default event of this manager.
      */
-    protected abstract readonly defaultEvent: T;
+    abstract readonly defaultEvent: T;
 
     /**
      * The events associated with this manager.
@@ -115,10 +115,30 @@ export abstract class SpectatorEventManager<T extends SpectatorEvent> {
      * @returns The event at the given time, `null` if none found.
      */
     eventAt(time: number): T | null {
-        const l = this.findInsertionIndex(time);
+        const idx = this.eventIndexAt(time);
 
-        // l will be the first event with time > this._events[l].time, but we want the one before it
-        return this._events[l - 1] ?? null;
+        if (idx === null) {
+            return null;
+        }
+
+        return this._events[idx] ?? null;
+    }
+
+    /**
+     * Binary searches the events list to find the index of the active event at the given time.
+     *
+     * @param time The time to find the event at.
+     * @returns The index of the event at the given time.
+     */
+    eventIndexAt(time: number): number | null {
+        // The return will be the first event with time > this._events[idx].time, but we want the one before it.
+        const idx = this.findInsertionIndex(time) - 1;
+
+        if (idx < 0) {
+            return null;
+        }
+
+        return idx;
     }
 
     /**

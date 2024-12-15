@@ -11,16 +11,22 @@ export class DrawableScoreCounter extends DrawableSyncedCounter<SpectatorScoreEv
     static readonly paddingY = this.fontSize;
 
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
+        this.update(time);
+
         const { fontSize, paddingX, paddingY } = DrawableScoreCounter;
 
         this.setupContext(ctx, new Vector2(ctx.canvas.width, 0), fontSize);
 
         ctx.textAlign = "right";
         ctx.fillText(
-            this.getEventAt(time).score.toString().padStart(8, "0"),
+            this.currentValue.toString().padStart(8, "0"),
             -paddingX,
             paddingY,
         );
         ctx.restore();
+    }
+
+    protected override getEventValue(event: SpectatorScoreEvent): number {
+        return event.score;
     }
 }

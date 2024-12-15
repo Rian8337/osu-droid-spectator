@@ -14,15 +14,18 @@ export class DrawableClickCounter extends DrawableCounter {
     private static readonly boxPadding = 10;
     private static readonly fontSize = 30;
 
+    private readonly sizeScale: Vector2;
+
     constructor(
         cursorManagers: SpectatorCursorEventManager[],
         clickManagers: SpectatorClickEventManager[],
         sizeScale: Vector2,
     ) {
-        super(sizeScale);
+        super();
 
         this.cursorManagers = cursorManagers;
         this.clickManagers = clickManagers;
+        this.sizeScale = sizeScale;
     }
 
     override draw(ctx: CanvasRenderingContext2D, time: number) {
@@ -43,6 +46,7 @@ export class DrawableClickCounter extends DrawableCounter {
                     2,
             ),
             fontSize,
+            this.sizeScale,
         );
 
         for (let i = 0; i < counterCount; ++i) {

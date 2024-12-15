@@ -3,20 +3,27 @@ import { Preview } from "../Preview";
 import { maxScore } from "../settings/BeatmapSettings";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { DrawableTeamScoreCounter } from "./counters/DrawableTeamScoreCounter";
+import { DrawableTeamScoreDifferenceCounter } from "./counters/DrawableTeamScoreDifferenceCounter";
 
 /**
  * Represents a display for displaying team score.
  */
 export class DrawableTeamScoreDisplay {
-    /**
-     * The canvas element of this display.
-     */
-    readonly screen: HTMLCanvasElement;
+    private readonly screen: HTMLCanvasElement;
 
-    /**
-     * The score counters of this display.
-     */
-    readonly counters: Record<MultiplayerTeam, DrawableTeamScoreCounter>;
+    private readonly redTeamCounter = new DrawableTeamScoreCounter(
+        MultiplayerTeam.red,
+    );
+
+    private readonly blueTeamCounter = new DrawableTeamScoreCounter(
+        MultiplayerTeam.blue,
+    );
+
+    private readonly scoreDifferenceCounter =
+        new DrawableTeamScoreDifferenceCounter(
+            this.redTeamCounter,
+            this.blueTeamCounter,
+        );
 
     private get ctx(): CanvasRenderingContext2D {
         return this.screen.getContext("2d")!;
@@ -24,14 +31,6 @@ export class DrawableTeamScoreDisplay {
 
     constructor() {
         this.screen = document.createElement("canvas");
-        this.counters = {
-            [MultiplayerTeam.red]: new DrawableTeamScoreCounter(
-                MultiplayerTeam.red,
-            ),
-            [MultiplayerTeam.blue]: new DrawableTeamScoreCounter(
-                MultiplayerTeam.blue,
-            ),
-        };
 
         const container = $("#container")[0];
         container.appendChild(this.screen);
@@ -44,32 +43,32 @@ export class DrawableTeamScoreDisplay {
      *
      * @param time The time to draw the display at.
      */
-    draw(time: number): void {
+    draw(time: number) {
         this.applyCanvasConfig();
         this.drawBackground();
         this.drawBorder();
         this.drawCounters(time);
-        this.drawScoreDifference();
+        this.scoreDifferenceCounter.draw(this.ctx, time);
         this.drawScoreDifferenceLine();
     }
 
     /**
      * Deletes this display from the screen.
      */
-    delete(): void {
+    delete() {
         $(this.screen).remove();
     }
 
-    private applyCanvasConfig(): void {
+    private applyCanvasConfig() {
         this.screen.width = innerWidth;
         this.screen.height = Preview.heightPadding * 2;
 
         this.screen.style.position = "absolute";
         this.screen.style.left = "0px";
-        this.screen.style.top = `${innerHeight - Preview.heightPadding * 2}px`;
+        this.screen.style.top = `${(innerHeight - Preview.heightPadding * 2).toString()}px`;
     }
 
-    private drawBackground(): void {
+    private drawBackground() {
         this.ctx.save();
 
         this.ctx.globalAlpha = 0.8;
@@ -79,7 +78,7 @@ export class DrawableTeamScoreDisplay {
         this.ctx.restore();
     }
 
-    private drawBorder(): void {
+    private drawBorder() {
         this.ctx.save();
 
         this.ctx.strokeStyle = "#cccccc";
@@ -100,68 +99,28 @@ export class DrawableTeamScoreDisplay {
         this.ctx.restore();
     }
 
-    private drawCounters(time: number): void {
-        const redCounter = this.counters[MultiplayerTeam.red];
-        const blueCounter = this.counters[MultiplayerTeam.blue];
+    private drawCounters(time: number) {
+        this.redTeamCounter.calculateTeamScore(time);
+        this.blueTeamCounter.calculateTeamScore(time);
 
-        redCounter.calculateTeamScore(time);
-        blueCounter.calculateTeamScore(time);
+        this.redTeamCounter.bold =
+            this.redTeamCounter.currentValue >
+            this.blueTeamCounter.currentValue;
+        this.blueTeamCounter.bold =
+            this.blueTeamCounter.currentValue >
+            this.redTeamCounter.currentValue;
 
-        redCounter.draw(this.ctx, redCounter.score > blueCounter.score);
-        blueCounter.draw(this.ctx, blueCounter.score > redCounter.score);
+        this.redTeamCounter.draw(this.ctx, time);
+        this.blueTeamCounter.draw(this.ctx, time);
     }
 
-    private drawScoreDifference(): void {
-        const redCounter = this.counters[MultiplayerTeam.red];
-        const blueCounter = this.counters[MultiplayerTeam.blue];
-
-        if (redCounter.score === blueCounter.score) {
-            return;
-        }
-
-        this.ctx.save();
-        const { canvas } = this.ctx;
-
-        this.ctx.textBaseline = "middle";
-        this.ctx.fillStyle = "#ffffff";
-
-        try {
-            // this code will fail in Firefox(<~ 44)
-            // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            this.ctx.font = `bold ${
-                canvas.height / 5
-            }px Trebuchet MS, sans-serif`;
-        } catch (e) {
-            // Ignore error
-        }
-
-        if (redCounter.score > blueCounter.score) {
-            this.ctx.textAlign = "right";
-            this.ctx.translate(
-                canvas.width / 2 - canvas.width / 25,
-                canvas.height / 2 - canvas.height / 4,
-            );
-        } else {
-            this.ctx.textAlign = "right";
-            this.ctx.translate(
-                canvas.width / 2 + canvas.width / 25,
-                canvas.height / 2 - canvas.height / 4,
-            );
-        }
-
-        const diff = Math.abs(redCounter.score - blueCounter.score);
-
-        this.ctx.fillText(diff.toLocaleString("en-US"), 0, 0);
-
-        this.ctx.restore();
-    }
-
-    private drawScoreDifferenceLine(): void {
+    private drawScoreDifferenceLine() {
         this.ctx.save();
 
         const scoreDiff =
-            this.counters[MultiplayerTeam.blue].score -
-            this.counters[MultiplayerTeam.red].score;
+            this.blueTeamCounter.currentValue -
+            this.redTeamCounter.currentValue;
+
         const lineLength = this.screen.width / 2.5;
 
         // Cap score difference line at 50% maximum score.

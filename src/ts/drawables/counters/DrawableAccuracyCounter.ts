@@ -13,16 +13,22 @@ export class DrawableAccuracyCounter extends DrawableSyncedCounter<SpectatorAccu
         DrawableScoreCounter.paddingY + this.fontSize + 5;
 
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
+        this.update(time);
+
         const { fontSize, paddingX, paddingY } = DrawableAccuracyCounter;
 
         this.setupContext(ctx, new Vector2(ctx.canvas.width, 0), fontSize);
 
         ctx.textAlign = "right";
         ctx.fillText(
-            `${(this.getEventAt(time).accuracy * 100).toFixed(2)}%`,
+            `${(this.currentValue * 100).toFixed(2)}%`,
             -paddingX,
             paddingY,
         );
         ctx.restore();
+    }
+
+    protected override getEventValue(event: SpectatorAccuracyEvent): number {
+        return event.accuracy;
     }
 }
