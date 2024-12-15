@@ -140,6 +140,7 @@ export class DrawableSlider extends DrawableCircle {
                 : HitResult.miss,
             pathEndPosition,
         );
+
         // Slider head
         this.drawCircle(ctx, time, hitTime, hitData?.result);
 
@@ -219,6 +220,10 @@ export class DrawableSlider extends DrawableCircle {
      * @param pathCurve The path curve to draw.
      */
     private drawPath(ctx: CanvasRenderingContext2D, pathCurve: Vector2[]) {
+        if (ctx.globalAlpha === 0) {
+            return;
+        }
+
         ctx.save();
 
         // Slider
@@ -315,6 +320,10 @@ export class DrawableSlider extends DrawableCircle {
             }
 
             this.updateLifetimeEnd(tick.startTime + animationDuration);
+        }
+
+        if (opacity <= 0) {
+            return;
         }
 
         ctx.save();

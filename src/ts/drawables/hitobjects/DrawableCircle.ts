@@ -80,17 +80,15 @@ export class DrawableCircle extends DrawableHitObject {
             }
         }
 
-        if (opacity <= 0) {
-            return;
-        }
+        if (opacity > 0) {
+            ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
 
-        ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
+            this.drawCircle(ctx, time, hitTime, hitData?.result);
+            this.drawText(ctx, this.comboNumber.toString());
 
-        this.drawCircle(ctx, time, hitTime, hitData?.result);
-        this.drawText(ctx, this.comboNumber.toString());
-
-        if (dt < 0 && !this.isHit && !this.isHidden) {
-            this.drawApproach(ctx, dt);
+            if (dt < 0 && !this.isHit && !this.isHidden) {
+                this.drawApproach(ctx, dt);
+            }
         }
 
         this.drawHitResult(

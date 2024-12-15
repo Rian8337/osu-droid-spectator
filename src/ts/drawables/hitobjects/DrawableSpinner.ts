@@ -41,50 +41,56 @@ export class DrawableSpinner extends DrawableHitObject {
             this.updateLifetimeEnd(this.object.endTime + fadeOutDuration);
         }
 
-        ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
-        ctx.save();
-
-        // Spinner
-        ctx.beginPath();
-        ctx.arc(
-            this.object.position.x,
-            this.object.position.y,
-            DrawableSpinner.radius - DrawableSpinner.borderWidth / 2,
-            -Math.PI,
-            Math.PI,
-        );
-        ctx.globalCompositeOperation = "destination-over";
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
-        ctx.fill();
-
-        // Border
-        ctx.shadowBlur = DrawableSpinner.borderWidth;
-        ctx.strokeStyle = "#fff";
-        ctx.lineWidth = DrawableSpinner.borderWidth;
-        ctx.stroke();
-        ctx.restore();
-
-        // Approach
-        // Only draw approach circle if HD is not used.
-        if (dt >= 0 && time <= this.object.endTime && !this.isHidden) {
-            const scale = 1 - dt / this.object.duration;
-
+        if (opacity > 0) {
+            ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
             ctx.save();
+
+            // Spinner
             ctx.beginPath();
             ctx.arc(
                 this.object.position.x,
                 this.object.position.y,
-                (DrawableSpinner.radius - DrawableSpinner.borderWidth / 2) *
-                    scale,
+                DrawableSpinner.radius - DrawableSpinner.borderWidth / 2,
                 -Math.PI,
                 Math.PI,
             );
-            ctx.shadowBlur = 3;
+            ctx.globalCompositeOperation = "destination-over";
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+            ctx.fill();
+
+            // Border
+            ctx.shadowBlur = DrawableSpinner.borderWidth;
             ctx.strokeStyle = "#fff";
-            ctx.lineWidth = (DrawableSpinner.borderWidth / 2) * scale;
+            ctx.lineWidth = DrawableSpinner.borderWidth;
             ctx.stroke();
             ctx.restore();
+
+            // Approach
+            // Only draw approach circle if HD is not used.
+            if (dt >= 0 && time <= this.object.endTime && !this.isHidden) {
+                const scale = Interpolation.lerp(
+                    1,
+                    0,
+                    MathUtils.clamp(dt / this.object.duration, 0, 1),
+                );
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(
+                    this.object.position.x,
+                    this.object.position.y,
+                    (DrawableSpinner.radius - DrawableSpinner.borderWidth / 2) *
+                        scale,
+                    -Math.PI,
+                    Math.PI,
+                );
+                ctx.shadowBlur = 3;
+                ctx.strokeStyle = "#fff";
+                ctx.lineWidth = (DrawableSpinner.borderWidth / 2) * scale;
+                ctx.stroke();
+                ctx.restore();
+            }
         }
 
         this.drawHitResult(
