@@ -29,11 +29,6 @@ export abstract class DrawableHitObject {
     readonly mods: (Mod & IModApplicableToDroid)[];
 
     /**
-     * The duration at which the object fades out, in milliseconds.
-     */
-    protected abstract get fadeOutTime(): number;
-
-    /**
      * The combo number of the object.
      */
     comboNumber = 1;

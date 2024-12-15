@@ -7,9 +7,6 @@ import { DrawableHitObject } from "./DrawableHitObject";
  * Represents a spinner that can be drawn.
  */
 export class DrawableSpinner extends DrawableHitObject {
-    protected readonly fadeInTime = 500;
-    protected override readonly fadeOutTime = 150;
-
     private readonly isHidden = this.mods.some((m) => m instanceof ModHidden);
     private static readonly radius = Playfield.baseSize.y / 2;
     private static readonly borderWidth = this.radius / 20;
@@ -21,13 +18,16 @@ export class DrawableSpinner extends DrawableHitObject {
     ): void {
         this.isHit = time >= this.object.endTime;
 
-        const dt = this.object.startTime - time;
+        const dt = time - this.object.startTime;
         let opacity = 1;
 
-        if (dt >= 0 && !this.isHit) {
-            opacity = (this.object.timePreempt - dt) / this.fadeInTime;
+        if (dt < 0) {
+            // We are in approach time.
+            opacity = -dt / this.object.timePreempt;
         } else if (time > this.object.endTime) {
-            opacity = 1 - (time - this.object.endTime) / this.fadeOutTime;
+            const fadeOutDuration = 240;
+
+            opacity = 1 - (time - this.object.endTime) / fadeOutDuration;
         }
 
         ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
@@ -56,8 +56,8 @@ export class DrawableSpinner extends DrawableHitObject {
 
         // Approach
         // Only draw approach circle if HD is not used.
-        if (dt < 0 && time <= this.object.endTime && !this.isHidden) {
-            const scale = 1 + dt / this.object.duration;
+        if (dt >= 0 && time <= this.object.endTime && !this.isHidden) {
+            const scale = 1 - dt / this.object.duration;
 
             ctx.save();
             ctx.beginPath();
@@ -80,7 +80,7 @@ export class DrawableSpinner extends DrawableHitObject {
             ctx,
             time,
             this.object.position,
-            hitData?.time ?? this.object.endTime,
+            this.object.endTime,
             hitData?.result ?? HitResult.miss,
         );
     }

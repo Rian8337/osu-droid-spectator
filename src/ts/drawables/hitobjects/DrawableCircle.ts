@@ -1,4 +1,4 @@
-import { MathUtils, ModHidden, Vector2 } from "@rian8337/osu-base";
+import { Interpolation, MathUtils, ModHidden } from "@rian8337/osu-base";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/structures/HitResult";
 import { DrawableHitObject } from "./DrawableHitObject";
@@ -9,30 +9,31 @@ import { DrawableHitObject } from "./DrawableHitObject";
 export class DrawableCircle extends DrawableHitObject {
     protected readonly isHidden = this.mods.some((m) => m instanceof ModHidden);
 
-    protected override get fadeOutTime(): number {
-        if (this.isHidden) {
-            return (
-                this.object.timePreempt * ModHidden.fadeOutDurationMultiplier
-            );
-        } else {
-            return 150;
-        }
-    }
-
     override draw(
         ctx: CanvasRenderingContext2D,
         time: number,
         hitData: SpectatorObjectDataEvent | null,
-        maxHitWindow: number,
     ): void {
-        const maxHitTime = this.object.startTime + maxHitWindow;
-        this.isHit = time >= (hitData?.time ?? maxHitTime);
+        if (!this.object.hitWindow) {
+            return;
+        }
 
-        const dt = this.object.startTime - time;
+        const maxHitTime =
+            this.object.startTime + this.object.hitWindow.mehWindow;
+        const hitTime = hitData?.time ?? maxHitTime;
+
+        this.isHit = time >= hitTime;
+
+        const dt = time - this.object.startTime;
         let opacity = 0;
 
-        if (dt >= 0 && !this.isHit) {
+        if (dt < 0) {
+            // We are in approach time.
             if (this.isHidden) {
+                const fadeOutDuration =
+                    ModHidden.fadeOutDurationMultiplier *
+                    this.object.timePreempt;
+
                 const fadeInStartTime =
                     this.object.startTime - this.object.timePreempt;
                 const fadeOutStartTime =
@@ -46,27 +47,52 @@ export class DrawableCircle extends DrawableHitObject {
                     ),
                     1 -
                         MathUtils.clamp(
-                            (time - fadeOutStartTime) / this.fadeOutTime,
+                            (time - fadeOutStartTime) / fadeOutDuration,
                             0,
                             1,
                         ),
                 );
             } else {
-                opacity =
-                    (this.object.timePreempt - dt) / this.object.timeFadeIn;
+                opacity = 1 + dt / this.object.timeFadeIn;
             }
         } else if (!this.isHidden) {
-            const fadeDt = hitData ? hitData.time - time : dt + maxHitWindow;
+            const fadeOutStartTime = hitData?.time ?? maxHitTime;
+            const fadeOutDuration = 100;
 
-            opacity = 1 + fadeDt / this.fadeOutTime;
+            opacity = MathUtils.clamp(
+                1 - (time - fadeOutStartTime) / fadeOutDuration,
+                0,
+                1,
+            );
+        }
+
+        if (this.isHit) {
+            if (!hitData || hitData.result === HitResult.miss) {
+                const fadeOutDuration = 100;
+
+                opacity = MathUtils.clamp(
+                    1 - (time - hitTime) / fadeOutDuration,
+                    0,
+                    1,
+                );
+            } else {
+                const dt = time - hitTime;
+                const fadeOutDuration = 240;
+
+                opacity = MathUtils.clamp(
+                    Interpolation.lerp(1, 0, dt / fadeOutDuration),
+                    0,
+                    1,
+                );
+            }
         }
 
         ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
 
-        this.drawCircle(ctx, this.stackedPosition);
+        this.drawCircle(ctx, time, hitTime, hitData?.result);
         this.drawText(ctx, this.comboNumber.toString());
 
-        if (dt >= 0 && !this.isHit && !this.isHidden) {
+        if (dt < 0 && !this.isHit && !this.isHidden) {
             this.drawApproach(ctx, dt);
         }
 
@@ -74,7 +100,7 @@ export class DrawableCircle extends DrawableHitObject {
             ctx,
             time,
             this.stackedEndPosition,
-            hitData?.time ?? maxHitTime,
+            hitTime,
             hitData?.result ?? HitResult.miss,
         );
     }
@@ -83,12 +109,31 @@ export class DrawableCircle extends DrawableHitObject {
      * Draws this circle.
      *
      * @param ctx The canvas context.
+     * @param time The time to draw.
+     * @param hitTime The time at which the object was hit.
+     * @param hitResult The hit result of the object. Defaults to miss.
      * @param position The position to draw. Defaults to the object's stacked position.
      */
     protected drawCircle(
         ctx: CanvasRenderingContext2D,
-        position: Vector2 = this.stackedPosition,
+        time: number,
+        hitTime: number,
+        hitResult = HitResult.miss,
+        position = this.stackedPosition,
     ): void {
+        let scale = 1;
+
+        if (time > hitTime && hitResult !== HitResult.miss) {
+            const dt = time - hitTime;
+            const fadeOutDuration = 240;
+
+            scale = MathUtils.clamp(
+                Interpolation.lerp(1, 1.4, dt / fadeOutDuration),
+                1,
+                1.4,
+            );
+        }
+
         ctx.save();
 
         // Hit circle
@@ -96,7 +141,7 @@ export class DrawableCircle extends DrawableHitObject {
         ctx.arc(
             position.x,
             position.y,
-            this.object.radius - this.circleBorder / 2,
+            this.object.radius * scale - this.circleBorder / 2,
             -Math.PI,
             Math.PI,
         );
@@ -140,13 +185,35 @@ export class DrawableCircle extends DrawableHitObject {
      * Draws the approach circle of this object.
      *
      * @param ctx The canvas context.
-     * @param dt The time between the object's start time and current clock time.
+     * @param dt The time difference between the current clock time and the object's start time.
      */
     protected drawApproach(ctx: CanvasRenderingContext2D, dt: number): void {
+        dt = Math.abs(dt);
+
         const position = this.stackedPosition;
-        const scale = 1 + (dt / this.object.timePreempt) * 3;
+
+        const scale = MathUtils.clamp(
+            Interpolation.lerp(3, 1, dt / this.object.timePreempt),
+            1,
+            3,
+        );
+
+        const opacity = MathUtils.clamp(
+            Interpolation.lerp(
+                0,
+                0.9,
+                dt /
+                    Math.min(
+                        this.object.timePreempt,
+                        this.object.timeFadeIn * 2,
+                    ),
+            ),
+            0,
+            0.9,
+        );
 
         ctx.save();
+        ctx.globalAlpha = opacity;
         ctx.beginPath();
         ctx.arc(
             position.x,
