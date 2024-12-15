@@ -1,5 +1,6 @@
 import {
     DroidHitWindow,
+    HitWindow,
     MathUtils,
     RGBColor,
     Slider,
@@ -22,23 +23,16 @@ export class DrawableHitErrorBar {
     /**
      * The hit window to draw for.
      */
-    readonly hitWindow: DroidHitWindow;
-
-    /**
-     * Whether to draw the hit window for the Precise mod.
-     */
-    readonly isPrecise: boolean;
+    readonly hitWindow: HitWindow;
 
     private readonly maxDrawTime = 3000;
 
     constructor(
         manager: SpectatorObjectDataEventManager,
-        hitWindow: DroidHitWindow,
-        isPrecise: boolean,
+        hitWindow: HitWindow,
     ) {
         this.manager = manager;
         this.hitWindow = hitWindow;
-        this.isPrecise = isPrecise;
     }
 
     /**
@@ -64,7 +58,7 @@ export class DrawableHitErrorBar {
     private drawMehRange(ctx: CanvasRenderingContext2D): void {
         this.drawRange(
             ctx,
-            this.hitWindow.hitWindowFor50(this.isPrecise),
+            this.hitWindow.mehWindow,
             hitResultColors[HitResult.meh],
         );
     }
@@ -72,7 +66,7 @@ export class DrawableHitErrorBar {
     private drawGoodRange(ctx: CanvasRenderingContext2D): void {
         this.drawRange(
             ctx,
-            this.hitWindow.hitWindowFor100(this.isPrecise),
+            this.hitWindow.okWindow,
             hitResultColors[HitResult.good],
         );
     }
@@ -80,7 +74,7 @@ export class DrawableHitErrorBar {
     private drawGreatRange(ctx: CanvasRenderingContext2D): void {
         this.drawRange(
             ctx,
-            this.hitWindow.hitWindowFor300(this.isPrecise),
+            this.hitWindow.greatWindow,
             hitResultColors[HitResult.great],
         );
     }
@@ -94,7 +88,7 @@ export class DrawableHitErrorBar {
 
         ctx.globalAlpha = 1;
         ctx.lineWidth = ctx.canvas.height / 75;
-        ctx.strokeStyle = `rgb(${color})`;
+        ctx.strokeStyle = `rgb(${color.toString()})`;
         ctx.beginPath();
         ctx.moveTo(-drawDistance, 0);
         ctx.lineTo(drawDistance, 0);
@@ -136,8 +130,7 @@ export class DrawableHitErrorBar {
             // Check for slider head break.
             if (
                 object instanceof Slider &&
-                event.accuracy >
-                    Math.floor(this.hitWindow.hitWindowFor50(this.isPrecise))
+                event.accuracy > Math.floor(this.hitWindow.mehWindow)
             ) {
                 continue;
             }
@@ -165,7 +158,7 @@ export class DrawableHitErrorBar {
 
             ctx.globalAlpha = opacity;
             ctx.lineWidth = ctx.canvas.width / 125;
-            ctx.strokeStyle = `rgb(${hitResultColors[event.result]})`;
+            ctx.strokeStyle = `rgb(${hitResultColors[event.result].toString()})`;
             ctx.beginPath();
             ctx.moveTo(distanceFromCenter, -ctx.canvas.height / 30);
             ctx.lineTo(distanceFromCenter, ctx.canvas.height / 30);
@@ -182,7 +175,7 @@ export class DrawableHitErrorBar {
     ): number {
         const maxDistance = ctx.canvas.width / 2;
         // The highest hit window the player can achieve with mods.
-        const maxMs = new DroidHitWindow(0).hitWindowFor50();
+        const maxMs = new DroidHitWindow(0).mehWindow;
 
         return MathUtils.clamp(ms / maxMs, -1, 1) * maxDistance;
     }

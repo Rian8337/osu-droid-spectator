@@ -1,4 +1,4 @@
-import { ModPrecise, Vector2 } from "@rian8337/osu-base";
+import { Vector2 } from "@rian8337/osu-base";
 import { DrawableBeatmap } from "./drawables/DrawableBeatmap";
 import { DrawableComboCounter } from "./drawables/counters/DrawableComboCounter";
 import { DrawableCursor } from "./drawables/DrawableCursor";
@@ -177,7 +177,6 @@ export class Preview {
         this.hitErrorBar = new DrawableHitErrorBar(
             specDataManager.events.objectData,
             specDataManager.hitWindow,
-            specDataManager.mods.some((m) => m instanceof ModPrecise),
         );
 
         this.at(0);

@@ -1,12 +1,14 @@
 import {
     BeatmapDifficulty,
     DroidHitWindow,
+    HitWindow,
     IModApplicableToDroid,
     Mod,
     ModDifficultyAdjust,
     ModPrecise,
     ModUtil,
     Modes,
+    PreciseDroidHitWindow,
 } from "@rian8337/osu-base";
 import { parsedBeatmap } from "../../settings/BeatmapSettings";
 import { MultiplayerPlayer } from "../structures/MultiplayerPlayer";
@@ -63,7 +65,7 @@ export class SpectatorDataManager {
     /**
      * The hit window of this player.
      */
-    readonly hitWindow: DroidHitWindow;
+    readonly hitWindow: HitWindow;
 
     /**
      * The duration at which the preview can use this manager to play.
@@ -76,9 +78,7 @@ export class SpectatorDataManager {
      * The maximum hit window of this player.
      */
     get maxHitWindow(): number {
-        return this.hitWindow.hitWindowFor50(
-            this.mods.some((m) => m instanceof ModPrecise),
-        );
+        return this.hitWindow.mehWindow;
     }
 
     /**
@@ -193,7 +193,11 @@ export class SpectatorDataManager {
             localMods,
         );
 
-        this.hitWindow = new DroidHitWindow(difficulty.od);
+        if (this.mods.some((m) => m instanceof ModPrecise)) {
+            this.hitWindow = new PreciseDroidHitWindow(difficulty.od);
+        } else {
+            this.hitWindow = new DroidHitWindow(difficulty.od);
+        }
     }
 
     /**
