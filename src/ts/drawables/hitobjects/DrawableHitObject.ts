@@ -1,6 +1,8 @@
 import {
     HitObject,
     IModApplicableToDroid,
+    Interpolation,
+    MathUtils,
     Mod,
     Modes,
     RGBColor,
@@ -27,6 +29,16 @@ export abstract class DrawableHitObject {
      * The mods used by the player.
      */
     readonly mods: (Mod & IModApplicableToDroid)[];
+
+    /**
+     * The start time of the object's lifetime.
+     */
+    lifetimeStart: number;
+
+    /**
+     * The end time of the object's lifetime.
+     */
+    lifetimeEnd: number;
 
     /**
      * The combo number of the object.
@@ -81,6 +93,9 @@ export abstract class DrawableHitObject {
     constructor(object: HitObject, mods: (Mod & IModApplicableToDroid)[]) {
         this.object = object;
         this.mods = mods;
+
+        this.lifetimeStart = object.startTime - object.timePreempt;
+        this.lifetimeEnd = object.endTime + (object.hitWindow?.mehWindow ?? 0);
     }
 
     /**
@@ -124,34 +139,106 @@ export abstract class DrawableHitObject {
             return;
         }
 
+        const fadeInDuration = 120;
+        const fadeOutDuration = 600;
+        const fadeOutDelay = 500;
+
         let opacity = 1;
+        let scale = 1;
+        let yPos = position.y;
+        let rotation = 0;
 
-        const {
-            hitResultFadeIn,
-            hitResultFadeOutTime,
-            hitResultFadeOutStartTime,
-        } = DrawableHitObject;
+        if (dt < fadeInDuration) {
+            opacity = dt / fadeInDuration;
+        } else if (dt > fadeOutDelay) {
+            opacity = 1 - Math.min(1, (dt - fadeOutDelay) / fadeOutDuration);
 
-        if (dt <= hitResultFadeIn) {
-            // Consider fade in first.
-            opacity = dt / hitResultFadeIn;
-        } else if (dt >= hitResultFadeOutStartTime) {
-            // Then fade out.
-            opacity =
-                1 -
-                Math.min(
-                    1,
-                    (dt - hitResultFadeOutStartTime) / hitResultFadeOutTime,
-                );
+            this.lifetimeEnd = Math.max(
+                this.lifetimeEnd,
+                hitTime + fadeOutDuration,
+            );
         }
 
-        if (opacity === 0) {
+        if (opacity <= 0) {
             return;
+        }
+
+        if (hitResult === HitResult.miss) {
+            scale = Interpolation.lerp(
+                1.6,
+                1,
+                MathUtils.clamp(Math.pow(dt / 100, 2), 0, 1),
+            );
+
+            const yTranslateDuration = fadeOutDelay + fadeOutDuration;
+
+            yPos = Interpolation.lerp(
+                yPos - 5,
+                yPos + 80,
+                MathUtils.clamp(Math.pow(dt / yTranslateDuration, 2), 0, 1),
+            );
+
+            rotation = 8.6 * (Math.random() * 2 - 1);
+
+            this.lifetimeEnd = Math.max(
+                this.lifetimeEnd,
+                hitTime + yTranslateDuration,
+            );
+        } else {
+            scale = 0.6;
+            let currentTime = dt;
+
+            // Start at t = 0.8
+            scale = Interpolation.lerp(
+                0.6,
+                1.1,
+                MathUtils.clamp(dt / (fadeInDuration * 0.8), 0, 1),
+            );
+
+            currentTime -= fadeInDuration * 0.8;
+
+            // Delay for t = 0.2
+            currentTime -= fadeInDuration * 0.2;
+
+            // t = 1.2
+            if (currentTime > 0) {
+                scale = Interpolation.lerp(
+                    1.1,
+                    0.9,
+                    MathUtils.clamp(currentTime / (fadeInDuration * 0.2), 0, 1),
+                );
+
+                currentTime -= fadeInDuration * 0.2;
+            }
+
+            // Stable dictates scale of 0.9->1 over time 1.0 to 1.4, but we are already at 1.2.
+            // so we need to force the current value to be correct at 1.2 (0.95) then complete the
+            // second half of the animation.
+            if (currentTime > 0) {
+                scale = Interpolation.lerp(
+                    0.95,
+                    1,
+                    MathUtils.clamp(currentTime / (fadeInDuration * 0.2), 0, 1),
+                );
+            }
+
+            this.lifetimeEnd = Math.max(
+                this.lifetimeEnd,
+                hitTime + fadeInDuration * 1.4,
+            );
         }
 
         ctx.save();
 
-        ctx.globalAlpha = opacity;
+        try {
+            // this code will fail in Firefox(<~ 44)
+            // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
+            ctx.font = `${(this.object.radius * scale).toString()}px Trebuchet MS, sans-serif`;
+        } catch {
+            // Ignore error
+        }
+
+        ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
         ctx.shadowBlur = this.shadowBlur;
         ctx.fillStyle = `rgb(${hitResultColors[hitResult].toString()})`;
 
@@ -169,7 +256,8 @@ export abstract class DrawableHitObject {
                 break;
         }
 
-        ctx.translate(position.x, position.y);
+        ctx.translate(position.x, yPos);
+        ctx.rotate(MathUtils.degreesToRadians(rotation));
         ctx.fillText(text, 0, 0);
         ctx.restore();
     }
