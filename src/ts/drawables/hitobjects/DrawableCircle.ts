@@ -136,7 +136,7 @@ export class DrawableCircle extends DrawableHitObject {
         ctx.arc(
             position.x,
             position.y,
-            this.object.radius * scale - this.circleBorder / 2,
+            (this.object.radius - this.circleBorder / 2) * scale,
             -Math.PI,
             Math.PI,
         );
@@ -147,7 +147,7 @@ export class DrawableCircle extends DrawableHitObject {
         // Overlay
         ctx.shadowBlur = this.shadowBlur;
         ctx.strokeStyle = "#fff";
-        ctx.lineWidth = this.circleBorder;
+        ctx.lineWidth = this.circleBorder * scale;
         ctx.stroke();
 
         ctx.restore();
