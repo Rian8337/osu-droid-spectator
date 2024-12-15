@@ -1,4 +1,9 @@
-import { MathUtils, ModHidden, Playfield } from "@rian8337/osu-base";
+import {
+    Interpolation,
+    MathUtils,
+    ModHidden,
+    Playfield,
+} from "@rian8337/osu-base";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/structures/HitResult";
 import { DrawableHitObject } from "./DrawableHitObject";
@@ -27,7 +32,11 @@ export class DrawableSpinner extends DrawableHitObject {
         } else if (time > this.object.endTime) {
             const fadeOutDuration = 240;
 
-            opacity = 1 - (time - this.object.endTime) / fadeOutDuration;
+            opacity = Interpolation.lerp(
+                1,
+                0,
+                (time - this.object.endTime) / fadeOutDuration,
+            );
 
             this.updateLifetimeEnd(this.object.endTime + fadeOutDuration);
         }

@@ -1,4 +1,5 @@
 import {
+    Easing,
     Interpolation,
     MathUtils,
     Modes,
@@ -9,6 +10,7 @@ import {
 import { DrawableCircle } from "./DrawableCircle";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/structures/HitResult";
+import { interpolateEasing } from "../../utils/EasingInterpolator";
 
 /**
  * Represents a slider that can be drawn.
@@ -55,15 +57,13 @@ export class DrawableSlider extends DrawableCircle {
                         this.object.timePreempt -
                         this.object.timeFadeIn;
 
-                    const t =
-                        MathUtils.clamp(
-                            fadeOutDuration - timeElapsed,
-                            0,
-                            fadeOutDuration,
-                        ) / fadeOutDuration;
+                    const t = timeElapsed / fadeOutDuration;
 
-                    // Sliders apply quad out easing with HD (https://easings.net/#easeOutQuad).
-                    opacity = -t * (t - 2);
+                    opacity = Interpolation.lerp(
+                        1,
+                        0,
+                        interpolateEasing(Easing.out, t),
+                    );
                 }
             } else {
                 opacity = -dt / this.object.timeFadeIn;
@@ -292,11 +292,7 @@ export class DrawableSlider extends DrawableCircle {
             scale = Interpolation.lerp(
                 0.5,
                 1,
-                Math.pow(2, -10 * scaleProgress) *
-                    Math.sin(
-                        (0.5 * scaleProgress - 0.3 / 4) * ((2 * Math.PI) / 0.3),
-                    ) +
-                    1,
+                interpolateEasing(Easing.outElasticHalf, scaleProgress),
             );
 
             this.updateLifetimeEnd(fadeInStartTime + animationDuration * 4);
@@ -304,10 +300,18 @@ export class DrawableSlider extends DrawableCircle {
             const dt = time - tick.startTime;
             const progress = dt / animationDuration;
 
-            opacity = Interpolation.lerp(1, 0, 1 - Math.pow(1 - progress, 5));
+            opacity = Interpolation.lerp(
+                1,
+                0,
+                interpolateEasing(Easing.outQuint, progress),
+            );
 
             if (isHit) {
-                scale = Interpolation.lerp(1, 1.5, -progress * (progress - 2));
+                scale = Interpolation.lerp(
+                    1,
+                    1.5,
+                    interpolateEasing(Easing.out, progress),
+                );
             }
 
             this.updateLifetimeEnd(tick.startTime + animationDuration);
