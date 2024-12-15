@@ -215,7 +215,7 @@ export class DrawableCircle extends DrawableHitObject {
         ctx.arc(
             position.x,
             position.y,
-            this.object.radius * scale - this.circleBorder / 2,
+            (this.object.radius - this.circleBorder / 2) * scale,
             -Math.PI,
             Math.PI,
         );
