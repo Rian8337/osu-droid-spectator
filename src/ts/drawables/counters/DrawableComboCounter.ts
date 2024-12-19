@@ -1,11 +1,11 @@
 import { Vector2 } from "@rian8337/osu-base";
 import { SpectatorComboEvent } from "../../spectator/events/SpectatorComboEvent";
-import { DrawableSyncedCounter } from "./DrawableSyncedCounter";
+import { DrawableStatisticsCounter } from "./DrawableStatisticsCounter";
 
 /**
  * Represents a combo counter.
  */
-export class DrawableComboCounter extends DrawableSyncedCounter<SpectatorComboEvent> {
+export class DrawableComboCounter extends DrawableStatisticsCounter<SpectatorComboEvent> {
     private static readonly paddingX = 5;
     private static readonly paddingY = 30;
     private static readonly fontSize = 70;

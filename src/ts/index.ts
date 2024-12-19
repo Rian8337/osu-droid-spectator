@@ -5,4 +5,4 @@ import { openDatabase } from "./settings/DatabaseSettings";
     await openDatabase();
 
     askRoomID();
-})();
+})().catch(console.error);

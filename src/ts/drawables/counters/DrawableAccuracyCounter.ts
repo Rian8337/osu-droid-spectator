@@ -1,12 +1,12 @@
 import { Vector2 } from "@rian8337/osu-base";
 import { SpectatorAccuracyEvent } from "../../spectator/events/SpectatorAccuracyEvent";
 import { DrawableScoreCounter } from "./DrawableScoreCounter";
-import { DrawableSyncedCounter } from "./DrawableSyncedCounter";
+import { DrawableStatisticsCounter } from "./DrawableStatisticsCounter";
 
 /**
  * Represents an accuracy counter.
  */
-export class DrawableAccuracyCounter extends DrawableSyncedCounter<SpectatorAccuracyEvent> {
+export class DrawableAccuracyCounter extends DrawableStatisticsCounter<SpectatorAccuracyEvent> {
     private static readonly fontSize = 40;
     private static readonly paddingX = DrawableScoreCounter.paddingX;
     private static readonly paddingY =

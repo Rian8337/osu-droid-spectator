@@ -19,9 +19,6 @@ import { SpectatorCursorEventManager } from "./SpectatorCursorEventManager";
 import { SpectatorEventManagers } from "./SpectatorEventManagers";
 import { SpectatorObjectDataEventManager } from "./SpectatorObjectDataEventManager";
 import { SpectatorScoreEventManager } from "./SpectatorScoreEventManager";
-import { SpectatorSyncedAccuracyEventManager } from "./SpectatorSyncedAccuracyEventManager";
-import { SpectatorSyncedComboEventManager } from "./SpectatorSyncedComboEventManager";
-import { SpectatorSyncedScoreEventManager } from "./SpectatorSyncedScoreEventManager";
 
 /**
  * Represents a manager for spectator data of a player.
@@ -157,9 +154,6 @@ export class SpectatorDataManager {
             cursors: [],
             objectData: new SpectatorObjectDataEventManager(),
             score: new SpectatorScoreEventManager(),
-            syncedAccuracy: new SpectatorSyncedAccuracyEventManager(),
-            syncedCombo: new SpectatorSyncedComboEventManager(),
-            syncedScore: new SpectatorSyncedScoreEventManager(),
         };
 
         for (let i = 0; i < 10; ++i) {

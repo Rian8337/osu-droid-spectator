@@ -2,7 +2,7 @@ const background = new Image();
 const container = $("#container")[0];
 background.setAttribute("crossOrigin", "anonymous");
 
-let originalImageURL: string = "";
+let originalImageURL = "";
 
 background.addEventListener("load", () => {
     originalImageURL = background.src;

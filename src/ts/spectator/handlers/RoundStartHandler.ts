@@ -10,10 +10,7 @@ import {
     setSpeedMultiplier,
     setTeamMode,
 } from "../../settings/RoomSettings";
-import {
-    dataProcessor,
-    initTeamScoreDisplay,
-} from "../../settings/SpectatorSettings";
+import { dataProcessor } from "../../settings/SpectatorSettings";
 import { StartingRoundMultiplayerRoom } from "../rawdata/StartingRoundMultiplayerRoom";
 import { ChatMessageHandler } from "./ChatMessageHandler";
 
@@ -51,7 +48,6 @@ export abstract class RoundStartHandler {
             preview.attachToContainer();
         }
 
-        initTeamScoreDisplay();
         resetAudio(false);
 
         ChatMessageHandler.hideChat();

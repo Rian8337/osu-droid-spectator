@@ -85,7 +85,10 @@ export class Preview {
      * The height padding with respect to team mode.
      */
     static get heightPadding(): number {
-        return teamMode === MultiplayerTeamMode.teamVS ? 50 : 0;
+        // Reserve 10% of the screen for information display - 20% for team mode.
+        return (
+            innerHeight * (teamMode === MultiplayerTeamMode.teamVS ? 0.2 : 0.1)
+        );
     }
 
     constructor(uid: number, positionScale: Vector2, sizeScale: Vector2) {
@@ -161,17 +164,14 @@ export class Preview {
         );
         this.accuracyCounter = new DrawableAccuracyCounter(
             specDataManager.events.accuracy,
-            specDataManager.events.syncedAccuracy,
             this.sizeScale,
         );
         this.comboCounter = new DrawableComboCounter(
             specDataManager.events.combo,
-            specDataManager.events.syncedCombo,
             this.sizeScale,
         );
         this.scoreCounter = new DrawableScoreCounter(
             specDataManager.events.score,
-            specDataManager.events.syncedScore,
             this.sizeScale,
         );
         this.hitErrorBar = new DrawableHitErrorBar(

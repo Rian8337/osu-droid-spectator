@@ -9,9 +9,6 @@ import { SpectatorObjectDataEvent } from "./events/SpectatorObjectDataEvent";
 import { SpectatorScoreEvent } from "./events/SpectatorScoreEvent";
 import { MultiplayerPlayer } from "./structures/MultiplayerPlayer";
 import { SpectatorDataManager } from "./managers/SpectatorDataManager";
-import { SpectatorSyncedScoreEvent } from "./events/SpectatorSyncedScoreEvent";
-import { SpectatorSyncedAccuracyEvent } from "./events/SpectatorSyncedAccuracyEvent";
-import { SpectatorSyncedComboEvent } from "./events/SpectatorSyncedComboEvent";
 import { MovementType } from "./structures/MovementType";
 import { HitResult } from "./structures/HitResult";
 import { SpectatorClickEvent } from "./events/SpectatorClickCounterEvent";
@@ -165,31 +162,7 @@ export class SpectatorDataProcessor {
         const { events } = manager;
         const view = new DataView(data);
         const counter: Counter = { counter: 0 };
-
-        //#region Parse seconds passed, current score, combo, acc
         const mSecPassed = this.readFloat(view, counter) * 1000;
-
-        events.syncedScore.add(
-            new SpectatorSyncedScoreEvent(
-                mSecPassed,
-                this.readInt(view, counter),
-            ),
-        );
-
-        events.syncedCombo.add(
-            new SpectatorSyncedComboEvent(
-                mSecPassed,
-                this.readInt(view, counter),
-            ),
-        );
-
-        events.syncedAccuracy.add(
-            new SpectatorSyncedAccuracyEvent(
-                mSecPassed,
-                this.readFloat(view, counter),
-            ),
-        );
-        //#endregion
 
         //#region Parse movement data
         const cursorAmount = this.readInt(view, counter);

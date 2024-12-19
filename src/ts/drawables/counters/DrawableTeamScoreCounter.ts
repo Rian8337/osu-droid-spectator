@@ -43,7 +43,7 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
         this.update(time);
 
         this.applyCanvasConfig(ctx);
-        ctx.fillText(this.score.toLocaleString("en-US"), 0, 0);
+        ctx.fillText(this.currentValue.toLocaleString("en-US"), 0, 0);
         ctx.restore();
     }
 
@@ -70,16 +70,7 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
                 continue;
             }
 
-            const scoreEvent = manager.events.score.eventAtOrDefault(time);
-            const syncedScoreEvent =
-                manager.events.syncedScore.eventAtOrDefault(time);
-
-            let score = scoreEvent.score;
-            if (syncedScoreEvent.time > scoreEvent.time) {
-                score = syncedScoreEvent.score;
-            }
-
-            this.score += score;
+            this.score += manager.events.score.eventAtOrDefault(time).score;
         }
     }
 

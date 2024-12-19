@@ -4,7 +4,7 @@ import { speedMultiplier, mods } from "../settings/RoomSettings";
 import {
     getBackgroundDim,
     dataProcessor,
-    teamScoreDisplay,
+    infoDisplay,
 } from "../settings/SpectatorSettings";
 
 const audio = new Audio();
@@ -28,6 +28,7 @@ $(audio)
     .on("play", () => {
         requestAnimationFrame(function foo() {
             const currentTime = audio.currentTime * 1000;
+            infoDisplay.draw(currentTime);
 
             if (!dataProcessor.isAvailableAt(currentTime) || audio.ended) {
                 $(audio).trigger("manualpause");
@@ -45,7 +46,6 @@ $(audio)
             }
 
             backgroundDimElement.remove();
-            teamScoreDisplay?.draw(currentTime);
             requestAnimationFrame(foo);
         });
     })

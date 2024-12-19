@@ -1,11 +1,11 @@
 import { Vector2 } from "@rian8337/osu-base";
 import { SpectatorScoreEvent } from "../../spectator/events/SpectatorScoreEvent";
-import { DrawableSyncedCounter } from "./DrawableSyncedCounter";
+import { DrawableStatisticsCounter } from "./DrawableStatisticsCounter";
 
 /**
  * Represents a score counter.
  */
-export class DrawableScoreCounter extends DrawableSyncedCounter<SpectatorScoreEvent> {
+export class DrawableScoreCounter extends DrawableStatisticsCounter<SpectatorScoreEvent> {
     private static readonly fontSize = 60;
     static readonly paddingX = 5;
     static readonly paddingY = this.fontSize;

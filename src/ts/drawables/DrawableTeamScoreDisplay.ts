@@ -1,5 +1,4 @@
 import { MathUtils } from "@rian8337/osu-base";
-import { Preview } from "../Preview";
 import { maxScore } from "../settings/BeatmapSettings";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { DrawableTeamScoreCounter } from "./counters/DrawableTeamScoreCounter";
@@ -9,7 +8,7 @@ import { DrawableTeamScoreDifferenceCounter } from "./counters/DrawableTeamScore
  * Represents a display for displaying team score.
  */
 export class DrawableTeamScoreDisplay {
-    private readonly screen: HTMLCanvasElement;
+    private readonly ctx: CanvasRenderingContext2D;
 
     private readonly redTeamCounter = new DrawableTeamScoreCounter(
         MultiplayerTeam.red,
@@ -25,17 +24,8 @@ export class DrawableTeamScoreDisplay {
             this.blueTeamCounter,
         );
 
-    private get ctx(): CanvasRenderingContext2D {
-        return this.screen.getContext("2d")!;
-    }
-
-    constructor() {
-        this.screen = document.createElement("canvas");
-
-        const container = $("#container")[0];
-        container.appendChild(this.screen);
-
-        this.draw(0);
+    constructor(ctx: CanvasRenderingContext2D) {
+        this.ctx = ctx;
     }
 
     /**
@@ -44,59 +34,9 @@ export class DrawableTeamScoreDisplay {
      * @param time The time to draw the display at.
      */
     draw(time: number) {
-        this.applyCanvasConfig();
-        this.drawBackground();
-        this.drawBorder();
         this.drawCounters(time);
         this.scoreDifferenceCounter.draw(this.ctx, time);
         this.drawScoreDifferenceLine();
-    }
-
-    /**
-     * Deletes this display from the screen.
-     */
-    delete() {
-        $(this.screen).remove();
-    }
-
-    private applyCanvasConfig() {
-        this.screen.width = innerWidth;
-        this.screen.height = Preview.heightPadding * 2;
-
-        this.screen.style.position = "absolute";
-        this.screen.style.left = "0px";
-        this.screen.style.top = `${(innerHeight - Preview.heightPadding * 2).toString()}px`;
-    }
-
-    private drawBackground() {
-        this.ctx.save();
-
-        this.ctx.globalAlpha = 0.8;
-        this.ctx.fillStyle = "#000";
-        this.ctx.fillRect(0, 0, this.screen.width, this.screen.height);
-
-        this.ctx.restore();
-    }
-
-    private drawBorder() {
-        this.ctx.save();
-
-        this.ctx.strokeStyle = "#cccccc";
-        this.ctx.lineWidth = this.screen.height / 20;
-
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, 0);
-        this.ctx.lineTo(this.screen.width, 0);
-        this.ctx.stroke();
-        this.ctx.closePath();
-
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, this.screen.height);
-        this.ctx.lineTo(this.screen.width, this.screen.height);
-        this.ctx.stroke();
-        this.ctx.closePath();
-
-        this.ctx.restore();
     }
 
     private drawCounters(time: number) {
@@ -115,13 +55,15 @@ export class DrawableTeamScoreDisplay {
     }
 
     private drawScoreDifferenceLine() {
+        const { canvas } = this.ctx;
+
         this.ctx.save();
 
         const scoreDiff =
             this.blueTeamCounter.currentValue -
             this.redTeamCounter.currentValue;
 
-        const lineLength = this.screen.width / 2.5;
+        const lineLength = canvas.width / 2.5;
 
         // Cap score difference line at 50% maximum score.
         const lineLengthMultiplier = MathUtils.clamp(
@@ -141,10 +83,10 @@ export class DrawableTeamScoreDisplay {
         gradient.addColorStop(0.5, "#ffff00");
         gradient.addColorStop(1, "#ff0000");
 
-        this.ctx.lineWidth = this.screen.height / 15;
+        this.ctx.lineWidth = canvas.height / 15;
         this.ctx.strokeStyle = gradient;
 
-        this.ctx.translate(this.screen.width / 2, this.ctx.lineWidth / 2);
+        this.ctx.translate(canvas.width / 2, this.ctx.lineWidth / 2);
         this.ctx.beginPath();
         this.ctx.moveTo(0, 0);
         this.ctx.lineTo(lineLength * lineLengthMultiplier, 0);

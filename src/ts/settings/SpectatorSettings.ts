@@ -1,10 +1,8 @@
 import { RGBColor } from "@rian8337/osu-base";
-import { DrawableTeamScoreDisplay } from "../drawables/DrawableTeamScoreDisplay";
 import { SpectatorDataProcessor } from "../spectator/SpectatorDataProcessor";
 import { HitResult } from "../spectator/structures/HitResult";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
-import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
-import { teamMode } from "./RoomSettings";
+import { DrawableInfoDisplay } from "../drawables/DrawableInfoDisplay";
 
 /**
  * Whether the user has interacted with the play button.
@@ -17,9 +15,9 @@ export let userHasInteracted = false;
 export const dataProcessor = new SpectatorDataProcessor();
 
 /**
- * The team score display. Not `null` if the team mode is TeamVS.
+ * The beatmap and team information display.
  */
-export let teamScoreDisplay: DrawableTeamScoreDisplay | null = null;
+export const infoDisplay = new DrawableInfoDisplay();
 
 /**
  * Colors for each team.
@@ -76,18 +74,6 @@ export function getBackgroundDim(): HTMLCanvasElement {
     }
 
     return backgroundDim;
-}
-
-/**
- * Initializes the team score display.
- */
-export function initTeamScoreDisplay(): void {
-    if (teamMode === MultiplayerTeamMode.headToHead) {
-        teamScoreDisplay?.delete();
-        teamScoreDisplay = null;
-    } else {
-        teamScoreDisplay = new DrawableTeamScoreDisplay();
-    }
 }
 
 /**
