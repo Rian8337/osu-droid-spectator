@@ -32,6 +32,13 @@ export class Transform<
      */
     readonly easing: Easing;
 
+    /**
+     * The time at which this `Transform` should end with respect to the `ITransformable`'s observed time.
+     */
+    get endTime(): number {
+        return this.startTime + this.duration;
+    }
+
     private readonly startValueGetter: TransformPropertyGetter<TValue>;
     private readonly onUpdate: TransformApplicator<TValue>;
 

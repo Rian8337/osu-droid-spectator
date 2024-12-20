@@ -434,7 +434,7 @@ export abstract class Drawable
 
     //#endregion
 
-    //#region Transforms
+    //#region Timekeeping
 
     /**
      * The clock that is used to provide the timing for this object's `Transform`s.
@@ -443,6 +443,68 @@ export abstract class Drawable
 
     override get currentTime(): number {
         return this.clock.currentTime;
+    }
+
+    private _lifetimeStart = Number.MIN_SAFE_INTEGER;
+
+    /**
+     * The time at which this `Drawable` becomes valid (and should be considered for drawing).
+     */
+    get lifetimeStart(): number {
+        return this._lifetimeStart;
+    }
+
+    set lifetimeStart(value: number) {
+        this._lifetimeStart = value;
+    }
+
+    private _lifetimeEnd = Number.MAX_SAFE_INTEGER;
+
+    /**
+     * The time at which this `Drawable` becomes invalid (and should not be considered for drawing).
+     */
+    get lifetimeEnd(): number {
+        return this._lifetimeEnd;
+    }
+
+    set lifetimeEnd(value: number) {
+        this._lifetimeEnd = value;
+    }
+
+    /**
+     * Whether this `Drawable` should currently be alive.
+     */
+    get shouldBeAlive(): boolean {
+        return (
+            this.currentTime >= this.lifetimeStart &&
+            this.currentTime < this.lifetimeEnd
+        );
+    }
+
+    //#endregion
+
+    //#region Transforms
+
+    /**
+     * Makes this `Drawable` invalid for drawing up after all `Transform`s have finished playing.
+     *
+     * @param calculateLifetimeStart Whether to calculate the lifetime start of this `Drawable`.
+     */
+    expire(calculateLifetimeStart = false) {
+        this.lifetimeEnd = this.latestTransformEndTime;
+
+        if (calculateLifetimeStart) {
+            let min = Number.MAX_SAFE_INTEGER;
+
+            for (const tracker of this.transformTrackers.values()) {
+                for (const transform of tracker.transforms) {
+                    min = Math.min(min, transform.startTime);
+                }
+            }
+
+            this.lifetimeStart =
+                min < Number.MAX_SAFE_INTEGER ? min : Number.MIN_SAFE_INTEGER;
+        }
     }
 
     protected override createTransformSequence(): DrawableTransformSequence {

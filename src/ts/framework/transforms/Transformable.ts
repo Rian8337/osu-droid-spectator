@@ -29,6 +29,25 @@ export abstract class Transformable<
     abstract get currentTime(): number;
 
     /**
+     * The end time in milliseconds of the latest `Transform` enqueued for this `Transformable`.
+     * Will return the current time value if no `Transform`s are present.
+     */
+    get latestTransformEndTime(): number {
+        let max = this.currentTime;
+
+        for (const tracker of this._transformTrackers.values()) {
+            for (const transform of tracker.transforms) {
+                const { endTime } = transform;
+
+                // Adding 1ms here ensures we can expire on the current frame without issue.
+                max = Math.max(max, endTime + 1);
+            }
+        }
+
+        return max;
+    }
+
+    /**
      * Starts a `TransformSequence` from an absolute time value.
      *
      * @param startTime The time in milliseconds to start the new `TransformSequence`.
