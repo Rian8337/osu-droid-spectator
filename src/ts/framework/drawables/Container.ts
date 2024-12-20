@@ -180,7 +180,7 @@ export class Container extends Drawable {
         const newSize = new Vector2(0);
 
         for (const child of this.children) {
-            if (child.relativeSizeAxes === Axes.both) {
+            if (!child.shouldBeAlive || child.relativeSizeAxes === Axes.both) {
                 continue;
             }
 
