@@ -721,6 +721,10 @@ export abstract class Drawable
      * Draws this `Drawable` to the canvas.
      */
     draw() {
+        if (!this.shouldBeAlive) {
+            return;
+        }
+
         const { ctx } = this;
 
         if (!ctx) {
