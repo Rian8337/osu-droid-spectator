@@ -5,9 +5,14 @@ import { Transform } from "./Transform";
  * Tracks the lifetime of `Transform`s for one specified target member.
  */
 export class TargetGroupingTransformTracker {
-    private readonly _transforms = new SortedArray<Transform>(
-        (a, b) => a.startTime - b.startTime,
-    );
+    private readonly _transforms = new SortedArray<Transform>((a, b) => {
+        if (a.startTime === b.startTime) {
+            // If both transforms start at the same time, prioritize the one with the shorter duration.
+            return a.duration - b.duration;
+        }
+
+        return a.startTime - b.startTime;
+    });
 
     /**
      * A list of `Transform`s applied to this target member.
@@ -34,7 +39,8 @@ export class TargetGroupingTransformTracker {
      * @param transform The `Transform` to add.
      */
     addTransform(transform: Transform) {
-        // Remove any transforms that start at the same time as the new transform.
+        // Remove any transforms that start at the same time as the new transform, unless
+        // that transform is applied instantly.
         for (let i = 0; i < this._transforms.length; i++) {
             const t = this._transforms.get(i);
 
@@ -44,6 +50,10 @@ export class TargetGroupingTransformTracker {
 
             if (t.startTime > transform.startTime) {
                 break;
+            }
+
+            if (t.duration === 0) {
+                continue;
             }
 
             this._transforms.removeAt(i--);
