@@ -65,6 +65,10 @@ export class SortedArray<T> {
         this._array.splice(index, 1);
     }
 
+    [Symbol.iterator]() {
+        return this._array[Symbol.iterator]();
+    }
+
     private findInsertionIndex(item: T): number {
         let low = 0;
         let high = this._array.length;
