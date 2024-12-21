@@ -129,4 +129,8 @@ export class TargetGroupingTransformTracker {
             }
         }
     }
+
+    [Symbol.iterator]() {
+        return this._transforms[Symbol.iterator]();
+    }
 }

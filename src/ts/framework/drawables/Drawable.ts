@@ -497,7 +497,7 @@ export abstract class Drawable
             let min = Number.MAX_SAFE_INTEGER;
 
             for (const tracker of this.transformTrackers.values()) {
-                for (const transform of tracker.transforms) {
+                for (const transform of tracker) {
                     min = Math.min(min, transform.startTime);
                 }
             }
