@@ -1,7 +1,7 @@
 import { Easing } from "@rian8337/osu-base";
 import { TransformApplicator } from "./TransformApplicator";
 import { TransformPropertyGetter } from "./TransformPropertyGetter";
-import { interpolateEasing } from "./EasingInterpolator";
+import { interpolateEasing } from "../utils/EasingInterpolator";
 
 /**
  * Takes an `ITransformable` and adjusts its properties over a period of time.

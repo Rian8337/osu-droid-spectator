@@ -4,7 +4,7 @@ import { Transformable } from "../transforms/Transformable";
 import { Container } from "./Container";
 import { DrawableTransformSequence } from "./DrawableTransformSequence";
 import { IDrawableTransform } from "./IDrawableTransform";
-import { convertAnchor } from "./AnchorConverter";
+import { convertAnchor } from "../utils/AnchorConverter";
 import { Axes } from "./Axes";
 
 /**
