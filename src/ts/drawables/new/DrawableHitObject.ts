@@ -15,6 +15,7 @@ import { SpectatorObjectData } from "../../spectator/rawdata/SpectatorObjectData
  *
  * @template THitObject The type of the underlying hitobject.
  */
+// TODO: pooling
 export abstract class DrawableHitObject<
     THitObject extends HitObject = HitObject,
 > extends Container {
@@ -98,7 +99,7 @@ export abstract class DrawableHitObject<
     }
 
     /**
-     * Applies a `HitObject` along wit its `HitWindow` to this `DrawableHitObject`.
+     * Applies a `HitObject` to this `DrawableHitObject`.
      *
      * Deriving classes should override `applyHitObjectInternal` to apply the `HitObject`
      * rather than this method.
