@@ -61,8 +61,7 @@ export class DrawableHitCircle extends DrawableHitObject<HitCircle> {
         this.circlePiece.radius = hitObject.radius;
         this.approachCircle.radius = hitObject.radius;
 
-        // TODO: combo index
-        this.numberText.text = "2";
+        this.numberText.text = hitObject.comboIndex + 1;
         this.numberText.fontSize = hitObject.radius / 16;
     }
 

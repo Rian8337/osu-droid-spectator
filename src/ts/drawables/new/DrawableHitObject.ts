@@ -43,19 +43,6 @@ export abstract class DrawableHitObject<
         );
     }
 
-    private _comboNumber = 1;
-
-    /**
-     * The combo number of the object.
-     */
-    get comboNumber(): number {
-        return this._comboNumber;
-    }
-
-    set comboNumber(value: number) {
-        this._comboNumber = value;
-    }
-
     private _comboColor = new RGBColor(0, 0, 0);
 
     /**
