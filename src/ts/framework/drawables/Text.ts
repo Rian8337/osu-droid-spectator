@@ -1,5 +1,6 @@
 import { Vector2 } from "@rian8337/osu-base";
 import { Drawable } from "./Drawable";
+import { Stringable } from "./Stringable";
 
 /**
  * Represents text.
@@ -14,8 +15,8 @@ export class Text extends Drawable {
         return this._text;
     }
 
-    set text(value: string) {
-        this._text = value;
+    set text(value: Stringable) {
+        this._text = value.toString();
         this.isSizeValid = false;
     }
 
