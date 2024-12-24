@@ -104,6 +104,8 @@ export class DrawableHitCircle extends DrawableHitObject<HitCircle> {
             .beginAbsoluteSequence(transformStartTime)
             .fadeOut(fadeOutDuration / 4);
 
+        const sequence = this.beginAbsoluteSequence(transformStartTime);
+
         switch (newState) {
             case ArmedState.hit:
                 this.approachCircle
@@ -112,12 +114,12 @@ export class DrawableHitCircle extends DrawableHitObject<HitCircle> {
                 break;
 
             case ArmedState.miss:
-                this.beginAbsoluteSequence(transformStartTime).fadeOut(100);
+                sequence.fadeOut(100);
                 break;
         }
 
         // TODO: Temporary / arbitrary, used for lifetime optimization.
-        this.beginAbsoluteSequence(transformStartTime + 800).fadeOut();
+        sequence.delay(800).fadeOut();
         this.expire();
     }
 
