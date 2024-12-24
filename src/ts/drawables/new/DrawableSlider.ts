@@ -8,11 +8,11 @@ import { DrawableHitObject } from "./DrawableHitObject";
 import { DrawableSliderHead } from "./DrawableSliderHead";
 import { DrawableSliderPath } from "./DrawableSliderPath";
 import { DrawableFollowCircle } from "./DrawableFollowCircle";
-import { SpectatorObjectData } from "../../spectator/rawdata/SpectatorObjectData";
 import { DrawableNestedHitObject } from "./DrawableNestedHitObject";
 import { DrawableSliderRepeat } from "./DrawableSliderRepeat";
 import { DrawableSliderTick } from "./DrawableSliderTick";
 import { DrawableSliderTail } from "./DrawableSliderTail";
+import { ArmedState } from "./ArmedState";
 
 /**
  * Represents a slider that can be drawn.
@@ -30,10 +30,8 @@ export class DrawableSlider extends DrawableHitObject<Slider> {
         );
     }
 
-    override applySpectatorData(data: SpectatorObjectData) {
-        for (const nestedHitObject of this.nestedHitObjects) {
-            nestedHitObject.applySpectatorData(data);
-        }
+    protected override applySpectatorDataInternal() {
+        // Spectator data is applied to individual nested hit objects.
     }
 
     protected override applyHitObjectInternal(hitObject: Slider) {
@@ -62,5 +60,46 @@ export class DrawableSlider extends DrawableHitObject<Slider> {
 
         this.path.applySlider(this);
         this.followCircle.slider = hitObject;
+    }
+
+    protected override updateInitialTransforms(transformStartTime: number) {
+        super.updateInitialTransforms(transformStartTime);
+
+        const { baseObject: slider } = this;
+
+        if (!slider) {
+            return;
+        }
+
+        this.path
+            .beginAbsoluteSequence(transformStartTime)
+            .fadeInFromZero(slider.timeFadeIn);
+    }
+
+    protected override updateStartTimeTransforms(transformStartTime: number) {
+        super.updateStartTimeTransforms(transformStartTime);
+
+        const { baseObject: slider } = this;
+
+        if (!slider) {
+            return;
+        }
+
+        this.followCircle
+            .beginAbsoluteSequence(transformStartTime)
+            .fadeIn()
+            .scaleTo(slider.scale);
+    }
+
+    protected override updateHitStateTransforms(
+        transformStartTime: number,
+        newState: ArmedState,
+    ) {
+        super.updateHitStateTransforms(transformStartTime, newState);
+
+        const fadeOutDuration = 240;
+
+        this.beginAbsoluteSequence(transformStartTime).fadeOut(fadeOutDuration);
+        this.expire();
     }
 }

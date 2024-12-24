@@ -102,9 +102,27 @@ export abstract class DrawableHitObject<
     /**
      * Applies spectator data to this `DrawableHitObject`.
      *
+     * Deriving classes should override `applySpectatorDataInternal` to apply the spectator data
+     * rather than this method.
+     *
      * @param data The spectator data to apply.
      */
-    abstract applySpectatorData(data: SpectatorObjectData): void;
+    applySpectatorData(data: SpectatorObjectData) {
+        this.applySpectatorDataInternal(data);
+
+        for (const nestedHitObject of this.nestedHitObjects) {
+            nestedHitObject.applySpectatorData(data);
+        }
+    }
+
+    /**
+     * Applies spectator data to this `DrawableHitObject`.
+     *
+     * @param data The spectator data to apply.
+     */
+    protected abstract applySpectatorDataInternal(
+        data: SpectatorObjectData,
+    ): void;
 
     /**
      * Applies a `HitObject` to this `DrawableHitObject`.

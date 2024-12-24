@@ -28,13 +28,10 @@ export class DrawableHitCircle extends DrawableHitObject<HitCircle> {
         this.numberText.origin = Anchor.center;
         this.numberText.color = new RGBColor(255, 255, 255);
 
-        // TODO: combo index
-        this.numberText.text = "2";
-
         this.addAll(this.circlePiece, this.numberText, this.approachCircle);
     }
 
-    override applySpectatorData(data: SpectatorObjectData) {
+    protected override applySpectatorDataInternal(data: SpectatorObjectData) {
         if (!this.baseObject?.hitWindow) {
             return;
         }
@@ -89,6 +86,8 @@ export class DrawableHitCircle extends DrawableHitObject<HitCircle> {
         this.approachCircle
             .beginAbsoluteSequence(transformStartTime)
             .fadeOut(50);
+
+        this.approachCircle.expire(true);
     }
     protected override updateHitStateTransforms(
         transformStartTime: number,
@@ -116,6 +115,10 @@ export class DrawableHitCircle extends DrawableHitObject<HitCircle> {
                 this.beginAbsoluteSequence(transformStartTime).fadeOut(100);
                 break;
         }
+
+        // TODO: Temporary / arbitrary, used for lifetime optimization.
+        this.beginAbsoluteSequence(transformStartTime + 800).fadeOut();
+        this.expire();
     }
 
     protected override reset() {

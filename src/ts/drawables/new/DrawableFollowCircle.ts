@@ -1,11 +1,24 @@
-import { Anchor, RGBColor, Slider } from "@rian8337/osu-base";
+import { Anchor, MathUtils, RGBColor, Slider } from "@rian8337/osu-base";
 import { HollowCircle } from "../../framework/drawables/HollowCircle";
 
 /**
  * Represents the follow circle of a slider.
  */
 export class DrawableFollowCircle extends HollowCircle {
-    slider: Slider | null = null;
+    private _slider: Slider | null = null;
+
+    get slider(): Slider | null {
+        return this._slider;
+    }
+
+    set slider(value: Slider | null) {
+        this._slider = value;
+
+        if (value) {
+            this.radius = value.radius;
+            this.borderThickness = value.radius / 8;
+        }
+    }
 
     constructor() {
         super();
@@ -14,22 +27,27 @@ export class DrawableFollowCircle extends HollowCircle {
         this.color = new RGBColor(255, 255, 255);
     }
 
-    /**
-     * Updates this `DrawableFollowCircle`.
-     *
-     * @param completionProgress The completion progress of the slider.
-     */
-    updateProgress(completionProgress: number) {
-        if (!this.slider) {
+    override update(time: number) {
+        super.update(time);
+
+        const { slider } = this;
+
+        if (!slider) {
             return;
         }
 
-        this.position = this.slider.curvePositionAt(completionProgress);
+        const completionProgress = MathUtils.clamp(
+            (time - slider.startTime) / slider.duration,
+            0,
+            1,
+        );
+
+        this.position = slider.curvePositionAt(completionProgress);
 
         // 0.1 / slider.distance is the additional progress needed to ensure the diff length is 0.1
         const diff = this.position.subtract(
-            this.slider.curvePositionAt(
-                Math.min(1, completionProgress + 0.1 / this.slider.distance),
+            slider.curvePositionAt(
+                Math.min(1, completionProgress + 0.1 / slider.distance),
             ),
         );
 
