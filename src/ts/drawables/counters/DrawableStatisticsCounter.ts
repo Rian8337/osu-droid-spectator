@@ -51,7 +51,9 @@ export abstract class DrawableStatisticsCounter<
                 this.currentEventIndex++;
             }
 
-            event = this.manager.events[this.currentEventIndex];
+            event =
+                this.manager.events.at(this.currentEventIndex) ??
+                this.manager.defaultEvent;
         }
 
         return this.getEventValue(event);

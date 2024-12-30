@@ -11,6 +11,7 @@ import { teamMode } from "./settings/RoomSettings";
 import { MultiplayerTeamMode } from "./spectator/structures/MultiplayerTeamMode";
 import { DrawableHitErrorBar } from "./drawables/DrawableHitErrorBar";
 import { DrawableClickCounter } from "./drawables/counters/DrawableClickCounter";
+import { isPlaying } from "./settings/SpectatorSettings";
 
 /**
  * Represents a beatmap preview.
@@ -87,7 +88,8 @@ export class Preview {
     static get heightPadding(): number {
         // Reserve 10% of the screen for information display - 20% for team mode.
         return (
-            innerHeight * (teamMode === MultiplayerTeamMode.teamVS ? 0.2 : 0.1)
+            innerHeight *
+            (teamMode === MultiplayerTeamMode.teamVS && isPlaying ? 0.2 : 0.1)
         );
     }
 

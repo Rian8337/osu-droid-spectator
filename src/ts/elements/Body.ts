@@ -1,20 +1,23 @@
-import { audioState } from "./Audio";
-
 $(document.body).on("mousemove", function (e) {
     if (e.clientY < 0.95 * innerHeight && e.clientY > 0.05 * innerHeight) {
         return;
     }
 
-    const self = $(this);
+    toggleControlBar();
+});
 
-    clearTimeout(self.data("h"));
+/**
+ * Toggles the control bar.
+ */
+export function toggleControlBar() {
+    const body = $(document.body);
 
-    self.addClass("h").data(
+    clearTimeout(body.data("h"));
+
+    body.addClass("h").data(
         "h",
         setTimeout(() => {
-            if (!audioState.audio.paused) {
-                self.removeClass("h");
-            }
+            body.removeClass("h");
         }, 1500),
     );
-});
+}

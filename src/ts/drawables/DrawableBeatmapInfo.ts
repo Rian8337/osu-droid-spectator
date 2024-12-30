@@ -45,8 +45,8 @@ export class DrawableBeatmapInfo {
 
         // Name
         let beatmapName = `${parsedBeatmap.metadata.artist} - ${parsedBeatmap.metadata.title}`;
-        let yPos = 0;
         const yPosOffset = fontHeight + this.screen.height / 50;
+        let yPos = yPosOffset;
 
         // Trim if too long
         while (this.ctx.measureText(beatmapName).width > this.screen.width) {
@@ -79,28 +79,24 @@ export class DrawableBeatmapInfo {
         const firstStatisticsLine =
             `CS ${parsedBeatmap.difficulty.cs.toString()} // ` +
             `AR ${parsedBeatmap.difficulty.ar.toString()} // ` +
-            `OD ${parsedBeatmap.difficulty.od.toString()} // `;
+            `OD ${parsedBeatmap.difficulty.od.toString()} // ` +
+            `${mostCommonBPM?.toFixed(2) ?? "Unknown"} BPM // ` +
+            `${pickedBeatmap.starRating?.toFixed(2) ?? "Unknown"} ★`;
 
         this.ctx.fillText(firstStatisticsLine, 0, yPos);
         yPos += yPosOffset;
 
-        const secondStatisticsLine =
-            `${mostCommonBPM?.toFixed(2) ?? "Unknown"} BPM // ` +
-            `${pickedBeatmap.starRating?.toFixed(2) ?? "Unknown"} ★`;
-
-        this.ctx.fillText(secondStatisticsLine, 0, yPos);
-        yPos += yPosOffset;
-
-        const lengthDate = new Date(
+        const duration =
             parsedBeatmap.hitObjects.objects[
                 parsedBeatmap.hitObjects.objects.length - 1
-            ].endTime,
-        );
+            ].endTime;
 
-        const thirdStatisticsLine = `Length: ${lengthDate.getMinutes().toString().padStart(2, "0")}:${lengthDate.getSeconds().toString().padStart(2, "0")}`;
+        const minutes = Math.floor(duration / 60000);
+        const seconds = Math.floor((duration % 60000) / 1000);
 
-        this.ctx.fillText(thirdStatisticsLine, 0, yPos);
+        const secondStatisticsLine = `Length: ${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
+        this.ctx.fillText(secondStatisticsLine, 0, yPos);
         this.ctx.restore();
     }
 }

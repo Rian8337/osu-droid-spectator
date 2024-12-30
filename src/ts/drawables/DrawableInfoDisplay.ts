@@ -1,5 +1,6 @@
 import { Preview } from "../Preview";
 import { teamMode } from "../settings/RoomSettings";
+import { isPlaying } from "../settings/SpectatorSettings";
 import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
 import { DrawableBeatmapInfo } from "./DrawableBeatmapInfo";
 import { DrawableTeamScoreDisplay } from "./DrawableTeamScoreDisplay";
@@ -17,6 +18,16 @@ export class DrawableInfoDisplay {
     }
 
     constructor() {
+        this.screen.id = "infoDisplay";
+        this.attachToContainer();
+    }
+
+    /**
+     * Attaches the screen to the container.
+     */
+    attachToContainer() {
+        this.delete();
+
         const container = $("#container")[0];
         container.appendChild(this.screen);
     }
@@ -31,7 +42,7 @@ export class DrawableInfoDisplay {
         this.drawBackground();
         this.drawBorder();
 
-        if (teamMode === MultiplayerTeamMode.teamVS) {
+        if (teamMode === MultiplayerTeamMode.teamVS && isPlaying) {
             this.teamScoreInfo.draw(time);
 
             // Move beatmap info down if team mode is enabled.
@@ -41,7 +52,7 @@ export class DrawableInfoDisplay {
 
         this.beatmapInfo.draw();
 
-        if (teamMode === MultiplayerTeamMode.teamVS) {
+        if (teamMode === MultiplayerTeamMode.teamVS && isPlaying) {
             this.ctx.restore();
         }
     }

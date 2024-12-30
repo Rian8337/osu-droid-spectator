@@ -15,7 +15,9 @@ export const previews = new Map<number, Preview>();
  * Deletes all previews.
  */
 export function deletePreviews(): void {
-    $("#container").empty();
+    for (const preview of previews.values()) {
+        preview.detachFromContainer();
+    }
 
     previews.clear();
 }

@@ -4,17 +4,13 @@ import { dataProcessor } from "../settings/SpectatorSettings";
 import { audioState } from "./Audio";
 
 $<HTMLInputElement>("#progress").on("change", function () {
-    let value = parseInt(this.value);
-
-    if (dataProcessor) {
-        // Don't go too behind or too far if spectator data is not available (yet).
-        // Cap at earliest and latest event time.
-        value = MathUtils.clamp(
-            value * 1000,
-            dataProcessor.earliestEventTime ?? 0,
-            dataProcessor.latestEventTime ?? 0,
-        );
-    }
+    // Don't go too behind or too far if spectator data is not available (yet).
+    // Cap at earliest and latest event time.
+    const value = MathUtils.clamp(
+        parseInt(this.value) * 1000,
+        dataProcessor.earliestEventTime ?? 0,
+        dataProcessor.latestEventTime ?? 0,
+    );
 
     audioState.audio.pause();
 

@@ -19,10 +19,12 @@ import {
 } from "../../settings/DatabaseSettings";
 import {
     dataProcessor,
+    infoDisplay,
     userHasInteracted,
 } from "../../settings/SpectatorSettings";
 import { PickedBeatmap } from "../rawdata/PickedBeatmap";
 import { deletePreviews } from "../../settings/PreviewSettings";
+import { toggleControlBar } from "../../elements/Body";
 
 /**
  * A handler responsible for handling beatmap changed events.
@@ -172,6 +174,9 @@ export abstract class BeatmapChangedHandler {
         if (!userHasInteracted) {
             $("#play").addClass("e");
         }
+
+        infoDisplay.draw(0);
+        toggleControlBar();
     }
 
     /**
