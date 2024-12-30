@@ -126,7 +126,6 @@ export class SpectatorDataProcessor {
             return true;
         }
 
-        let isAvailable = true;
         // Use pause duration to check the need to continue playing despite the lack of data.
         const playDespiteData = audioState.pauseDuration >= 15 * 1000;
 
@@ -136,13 +135,12 @@ export class SpectatorDataProcessor {
                     // Set to infinity until the next data comes.
                     manager.latestDataTime = Number.POSITIVE_INFINITY;
                 } else {
-                    isAvailable = false;
-                    break;
+                    return false;
                 }
             }
         }
 
-        return isAvailable;
+        return true;
     }
 
     /**
