@@ -18,9 +18,9 @@ export class DrawableCircle extends DrawableHitObject {
             return;
         }
 
-        const maxHitTime =
+        const hitTime =
+            hitData?.time ??
             this.object.startTime + this.object.hitWindow.mehWindow;
-        const hitTime = hitData?.time ?? maxHitTime;
 
         this.isHit = time >= hitTime;
 
@@ -29,13 +29,14 @@ export class DrawableCircle extends DrawableHitObject {
 
         if (dt < 0) {
             // We are in approach time.
+            const fadeInStartTime =
+                this.object.startTime - this.object.timePreempt;
+
             if (this.isHidden) {
                 const fadeOutDuration =
                     ModHidden.fadeOutDurationMultiplier *
                     this.object.timePreempt;
 
-                const fadeInStartTime =
-                    this.object.startTime - this.object.timePreempt;
                 const fadeOutStartTime =
                     fadeInStartTime + this.object.timeFadeIn;
 
@@ -53,10 +54,10 @@ export class DrawableCircle extends DrawableHitObject {
                         ),
                 );
             } else {
-                opacity = 1 + dt / this.object.timeFadeIn;
+                opacity = (time - fadeInStartTime) / this.object.timeFadeIn;
             }
         } else if (!this.isHidden) {
-            const fadeOutStartTime = hitData?.time ?? maxHitTime;
+            const fadeOutStartTime = hitTime;
             const dt = time - fadeOutStartTime;
 
             if (dt > 0) {
@@ -183,7 +184,8 @@ export class DrawableCircle extends DrawableHitObject {
      * @param dt The time difference between the current clock time and the object's start time.
      */
     protected drawApproach(ctx: CanvasRenderingContext2D, dt: number): void {
-        dt = Math.abs(dt);
+        // Adjust the start time to the approach time.
+        dt = this.object.timePreempt - Math.abs(dt);
 
         const position = this.stackedPosition;
 
