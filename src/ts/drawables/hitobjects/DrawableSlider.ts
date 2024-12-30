@@ -45,13 +45,13 @@ export class DrawableSlider extends DrawableCircle {
         // When the object is still in time
         if (time < this.object.endTime) {
             if (this.isHidden) {
-                let timeElapsed =
-                    time - (this.object.startTime - this.object.timePreempt);
+                let timeElapsed = time - this.lifetimeStart;
 
                 if (timeElapsed <= this.object.timeFadeIn) {
                     opacity = timeElapsed / this.object.timeFadeIn;
                 } else {
                     timeElapsed -= this.object.timeFadeIn;
+
                     const fadeOutDuration =
                         this.object.duration +
                         this.object.timePreempt -
@@ -66,7 +66,7 @@ export class DrawableSlider extends DrawableCircle {
                     );
                 }
             } else {
-                opacity = -dt / this.object.timeFadeIn;
+                opacity = (time - this.lifetimeStart) / this.object.timeFadeIn;
             }
         } else if (this.isHidden) {
             opacity = 0;
@@ -84,8 +84,7 @@ export class DrawableSlider extends DrawableCircle {
 
         // Obtain the current path to draw.
         const snakingInProgress = MathUtils.clamp(
-            (time - (this.object.startTime - this.object.timePreempt)) /
-                (this.object.timePreempt / 3),
+            (time - this.lifetimeStart) / (this.object.timePreempt / 3),
             0,
             1,
         );
