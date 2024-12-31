@@ -81,11 +81,6 @@ export abstract class DrawableHitObject {
         return `rgb(${this.color.toString()})`;
     }
 
-    /**
-     * Whether the object was hit.
-     */
-    isHit = false;
-
     constructor(object: HitObject, mods: (Mod & IModApplicableToDroid)[]) {
         this.object = object;
         this.mods = mods;

@@ -22,8 +22,6 @@ export class DrawableCircle extends DrawableHitObject {
             hitData?.time ??
             this.object.startTime + this.object.hitWindow.mehWindow;
 
-        this.isHit = time >= hitTime;
-
         const dt = time - this.object.startTime;
         let opacity = 0;
 
@@ -87,7 +85,7 @@ export class DrawableCircle extends DrawableHitObject {
             this.drawCircle(ctx, time, hitTime, hitData?.result);
             this.drawComboNumber(ctx, time, hitTime);
 
-            if (dt < 0 && !this.isHit && !this.isHidden) {
+            if (dt < 0 && time < hitTime && !this.isHidden) {
                 this.drawApproach(ctx, dt);
             }
         }

@@ -21,8 +21,6 @@ export class DrawableSpinner extends DrawableHitObject {
         time: number,
         hitData: SpectatorObjectDataEvent | null,
     ): void {
-        this.isHit = time >= this.object.endTime;
-
         const dt = time - this.object.startTime;
         let opacity = 1;
 

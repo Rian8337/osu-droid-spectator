@@ -37,8 +37,6 @@ export class DrawableSlider extends DrawableCircle {
 
         const hitTime = hitData?.time ?? maxHitTime;
 
-        this.isHit = time >= hitTime;
-
         const dt = time - this.object.startTime;
         let opacity = 1;
 
