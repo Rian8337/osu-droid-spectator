@@ -10,7 +10,7 @@ import {
     setSpeedMultiplier,
     setTeamMode,
 } from "../../settings/RoomSettings";
-import { dataProcessor, setIsPlaying } from "../../settings/SpectatorSettings";
+import { dataProcessor } from "../../settings/SpectatorSettings";
 import { StartingRoundMultiplayerRoom } from "../rawdata/StartingRoundMultiplayerRoom";
 import { ChatMessageHandler } from "./ChatMessageHandler";
 
@@ -27,7 +27,6 @@ export abstract class RoundStartHandler {
         console.log("Round started");
         console.log(room);
 
-        setIsPlaying(true);
         setIgnoredPlayersFromRoomName(room.name);
         setPlayers(room.playingPlayers);
         setMods(room.mods.mods ?? "");

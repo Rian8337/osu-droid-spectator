@@ -1,6 +1,5 @@
 import { Preview } from "../Preview";
 import { teamMode } from "../settings/RoomSettings";
-import { isPlaying } from "../settings/SpectatorSettings";
 import { MultiplayerTeamMode } from "../spectator/structures/MultiplayerTeamMode";
 import { DrawableBeatmapInfo } from "./DrawableBeatmapInfo";
 import { DrawableTeamScoreDisplay } from "./DrawableTeamScoreDisplay";
@@ -42,7 +41,7 @@ export class DrawableInfoDisplay {
         this.drawBackground();
         this.drawBorder();
 
-        if (teamMode === MultiplayerTeamMode.teamVS && isPlaying) {
+        if (teamMode === MultiplayerTeamMode.teamVS) {
             this.teamScoreInfo.draw(time);
 
             // Move beatmap info down if team mode is enabled.
@@ -52,7 +51,7 @@ export class DrawableInfoDisplay {
 
         this.beatmapInfo.draw();
 
-        if (teamMode === MultiplayerTeamMode.teamVS && isPlaying) {
+        if (teamMode === MultiplayerTeamMode.teamVS) {
             this.ctx.restore();
         }
     }

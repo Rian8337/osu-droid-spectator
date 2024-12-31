@@ -10,11 +10,6 @@ import { DrawableInfoDisplay } from "../drawables/DrawableInfoDisplay";
 export let userHasInteracted = false;
 
 /**
- * Whether gameplay is currently commencing.
- */
-export let isPlaying = false;
-
-/**
  * The spectator data processor.
  */
 export const dataProcessor = new SpectatorDataProcessor();
@@ -88,13 +83,4 @@ export function getBackgroundDim(): HTMLCanvasElement {
  */
 export function setUserHasInteracted(value: boolean): void {
     userHasInteracted = value;
-}
-
-/**
- * Sets the is playing setting value.
- *
- * @param value The new value.
- */
-export function setIsPlaying(value: boolean): void {
-    isPlaying = value;
 }
