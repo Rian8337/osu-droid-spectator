@@ -38,9 +38,11 @@ export class DrawableClickCounter extends DrawableCounter {
         this.setupContext(
             ctx,
             new Vector2(
-                ctx.canvas.width - boxLength - boxPadding * 2,
+                ctx.canvas.width -
+                    boxLength * this.sizeScale.y -
+                    boxPadding * 2,
                 (ctx.canvas.height -
-                    counterCount * boxLength -
+                    counterCount * boxLength * this.sizeScale.y -
                     // Padding is only applied to n - 1 boxes.
                     (counterCount - 1) * boxPadding) /
                     2,
