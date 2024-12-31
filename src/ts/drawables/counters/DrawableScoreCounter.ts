@@ -10,6 +10,8 @@ export class DrawableScoreCounter extends DrawableStatisticsCounter<SpectatorSco
     static readonly paddingX = 5;
     static readonly paddingY = this.fontSize;
 
+    protected override readonly rollingDuration = 1000;
+
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
         this.update(time);
 

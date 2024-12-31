@@ -19,7 +19,7 @@ export abstract class DrawableStatisticsCounter<
      */
     protected readonly manager: SpectatorEventManager<TEvent>;
 
-    protected override readonly rollingDuration = 1000;
+    protected override readonly rollingDuration: number = 1000;
 
     private currentEventIndex = 0;
 

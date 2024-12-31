@@ -13,6 +13,7 @@ export class DrawableAccuracyCounter extends DrawableStatisticsCounter<Spectator
         DrawableScoreCounter.paddingY + this.fontSize + 5;
 
     protected override readonly allowFractional = true;
+    protected override readonly rollingDuration = 375;
 
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
         this.update(time);
