@@ -206,6 +206,7 @@ a:hover {
 }
 
 #chat-container {
+    font-family: Torus;
     position: absolute;
     z-index: 9;
     background-color: rgb(47, 47, 47);
