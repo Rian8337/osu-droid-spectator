@@ -3,6 +3,7 @@ import { maxScore } from "../settings/BeatmapSettings";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 import { DrawableTeamScoreCounter } from "./counters/DrawableTeamScoreCounter";
 import { DrawableTeamScoreDifferenceCounter } from "./counters/DrawableTeamScoreDifferenceCounter";
+import { teamColors } from "../settings/SpectatorSettings";
 
 /**
  * Represents a display for displaying team score.
@@ -72,19 +73,22 @@ export class DrawableTeamScoreDisplay {
             1,
         );
 
-        const gradient = this.ctx.createLinearGradient(
-            0,
-            0,
-            Math.sign(scoreDiff) * lineLength,
-            0,
-        );
-
-        gradient.addColorStop(0, "#00ff44");
-        gradient.addColorStop(0.5, "#ffff00");
-        gradient.addColorStop(1, "#ff0000");
-
         this.ctx.lineWidth = canvas.height / 25;
-        this.ctx.strokeStyle = gradient;
+
+        switch (true) {
+            case this.redTeamCounter.currentValue >
+                this.blueTeamCounter.currentValue:
+                this.ctx.strokeStyle = `rgb(${teamColors[MultiplayerTeam.red].toString()})`;
+                break;
+
+            case this.redTeamCounter.currentValue <
+                this.blueTeamCounter.currentValue:
+                this.ctx.strokeStyle = `rgb(${teamColors[MultiplayerTeam.blue].toString()})`;
+                break;
+
+            default:
+                this.ctx.strokeStyle = "#ffffff";
+        }
 
         this.ctx.translate(canvas.width / 2, this.ctx.lineWidth / 2);
         this.ctx.beginPath();
