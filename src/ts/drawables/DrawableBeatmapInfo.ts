@@ -55,7 +55,7 @@ export class DrawableBeatmapInfo {
 
         // Beatmap name
         this.setFont(true);
-        let beatmapName = `${parsedBeatmap.metadata.artist} - ${parsedBeatmap.metadata.title}`;
+        let beatmapName = `${parsedBeatmap.metadata.artist}  -  ${parsedBeatmap.metadata.title}`;
 
         // Trim if too long
         while (
@@ -71,7 +71,8 @@ export class DrawableBeatmapInfo {
         this.moveDown();
 
         this.write(
-            "Mapper",
+            // Artificially increase prefix length
+            "Mapper   ",
             parsedBeatmap.metadata.creator,
             " ".repeat(10),
             true,
@@ -79,7 +80,8 @@ export class DrawableBeatmapInfo {
 
         // Difficulty
         this.write(
-            "Difficulty",
+            // Artificially increase prefix length
+            "Difficulty   ",
             parsedBeatmap.metadata.version,
             undefined,
             true,
