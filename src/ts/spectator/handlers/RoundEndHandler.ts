@@ -1,5 +1,6 @@
 import { audioState } from "../../elements/Audio";
-import { setIsPlaying } from "../../settings/SpectatorSettings";
+import { previews } from "../../settings/PreviewSettings";
+import { infoDisplay, setIsPlaying } from "../../settings/SpectatorSettings";
 import { ChatMessageHandler } from "./ChatMessageHandler";
 
 /**
@@ -14,7 +15,16 @@ export abstract class RoundEndHandler {
 
         audioState.audio.addEventListener(
             "ended",
-            ChatMessageHandler.showChat,
+            () => {
+                ChatMessageHandler.showChat();
+
+                // Ensure previews are in the latest state.
+                for (const preview of previews.values()) {
+                    preview.at(Number.POSITIVE_INFINITY);
+                }
+
+                infoDisplay.draw(Number.POSITIVE_INFINITY);
+            },
             { once: true },
         );
     }
