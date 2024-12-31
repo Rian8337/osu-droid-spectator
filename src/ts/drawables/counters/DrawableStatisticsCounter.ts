@@ -45,7 +45,7 @@ export abstract class DrawableStatisticsCounter<
                     : this.manager.events[eventIndex];
         } else {
             while (
-                this.currentEventIndex < this.manager.events.length &&
+                this.currentEventIndex < this.manager.events.length - 1 &&
                 this.manager.events[this.currentEventIndex].time <= time
             ) {
                 this.currentEventIndex++;
