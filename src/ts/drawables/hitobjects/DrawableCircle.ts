@@ -131,6 +131,8 @@ export class DrawableCircle extends DrawableHitObject {
                 1,
                 1.4,
             );
+
+            this.updateLifetimeEnd(hitTime + fadeOutDuration);
         }
 
         ctx.save();
@@ -179,6 +181,8 @@ export class DrawableCircle extends DrawableHitObject {
                 0,
                 1,
             );
+
+            this.updateLifetimeEnd(hitTime + fadeOutDuration);
         }
 
         ctx.save();
