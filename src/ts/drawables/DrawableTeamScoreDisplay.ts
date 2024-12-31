@@ -83,7 +83,7 @@ export class DrawableTeamScoreDisplay {
         gradient.addColorStop(0.5, "#ffff00");
         gradient.addColorStop(1, "#ff0000");
 
-        this.ctx.lineWidth = canvas.height / 15;
+        this.ctx.lineWidth = canvas.height / 25;
         this.ctx.strokeStyle = gradient;
 
         this.ctx.translate(canvas.width / 2, this.ctx.lineWidth / 2);
