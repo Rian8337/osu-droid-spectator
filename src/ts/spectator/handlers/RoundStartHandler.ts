@@ -10,7 +10,7 @@ import {
     setSpeedMultiplier,
     setTeamMode,
 } from "../../settings/RoomSettings";
-import { dataProcessor } from "../../settings/SpectatorSettings";
+import { dataProcessor, infoDisplay } from "../../settings/SpectatorSettings";
 import { StartingRoundMultiplayerRoom } from "../rawdata/StartingRoundMultiplayerRoom";
 import { ChatMessageHandler } from "./ChatMessageHandler";
 
@@ -47,6 +47,8 @@ export abstract class RoundStartHandler {
             preview.load(manager);
             preview.attachToContainer();
         }
+
+        infoDisplay.draw(0);
 
         resetAudio(false);
 
