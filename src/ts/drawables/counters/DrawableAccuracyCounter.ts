@@ -41,11 +41,13 @@ export class DrawableAccuracyCounter extends DrawableStatisticsCounter<Spectator
             new Vector2(
                 ctx.canvas.width -
                     // Dots and percentage signs do not obey longest character width.
-                    value.replace(/.%/, "").length * this.longestCharWidth -
-                    (this.charLengthMap.get(".") ?? this.longestCharWidth) -
-                    (this.charLengthMap.get("%") ?? this.longestCharWidth) -
+                    (value.replace(/.%/, "").length * this.longestCharWidth +
+                        (this.charLengthMap.get(".") ?? this.longestCharWidth) +
+                        (this.charLengthMap.get("%") ??
+                            this.longestCharWidth)) *
+                        this.sizeScale.y -
                     paddingX,
-                paddingY,
+                paddingY * this.sizeScale.y,
             ),
             fontSize,
         );
