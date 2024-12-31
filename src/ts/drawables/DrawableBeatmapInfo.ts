@@ -177,7 +177,7 @@ export class DrawableBeatmapInfo {
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            this.ctx.font = `${bold ? "bold " : ""}${this.fontHeight.toString()}px Trebuchet MS, sans-serif`;
+            this.ctx.font = `${bold ? "bold " : ""}${this.fontHeight.toString()}px Torus`;
         } catch {
             // Ignore error
         }

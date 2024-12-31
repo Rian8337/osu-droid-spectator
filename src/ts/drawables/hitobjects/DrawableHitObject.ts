@@ -234,7 +234,7 @@ export abstract class DrawableHitObject {
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `${(this.object.radius * scale).toString()}px Trebuchet MS, sans-serif`;
+            ctx.font = `${(this.object.radius * scale).toString()}px Torus`;
         } catch {
             // Ignore error
         }

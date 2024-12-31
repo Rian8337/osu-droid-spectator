@@ -1,3 +1,45 @@
+@font-face {
+    font-family: Torus;
+    font-weight: 100;
+    src: url(../assets/Torus-Thin.otf);
+}
+
+@font-face {
+    font-family: Torus;
+    font-weight: 600;
+    src: url(../assets/Torus-SemiBold.otf);
+}
+
+@font-face {
+    font-family: Torus;
+    font-weight: 700;
+    src: url(../assets/Torus-SemiBold.otf);
+}
+
+@font-face {
+    font-family: Torus;
+    font-weight: 400;
+    src: url(../assets/Torus-Regular.otf);
+}
+
+@font-face {
+    font-family: Torus;
+    font-weight: 300;
+    src: url(../assets/Torus-Light.otf);
+}
+
+@font-face {
+    font-family: Torus;
+    font-weight: 900;
+    src: url(../assets/Torus-Heavy.otf);
+}
+
+@font-face {
+    font-family: Torus;
+    font-weight: 800;
+    src: url(../assets/Torus-Bold.otf);
+}
+
 html,
 body {
     height: 100%;
@@ -19,7 +61,7 @@ button {
     cursor: pointer;
     width: 40px;
     height: 40px;
-    font: 14px sans-serif;
+    font: 14px Torus;
 }
 
 button::-moz-focus-inner {
@@ -123,7 +165,7 @@ img {
 }
 
 a {
-    font: 14px/40px sans-serif;
+    font: 14px/40px Torus;
     border-bottom: 1px dashed transparent;
     color: #fff;
     text-decoration: none;
