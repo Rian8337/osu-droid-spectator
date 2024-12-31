@@ -89,7 +89,7 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
             ctx.font = `${this.bold ? "bold " : ""}${(
-                canvas.height / 4
+                canvas.height / 5
             ).toString()}px Torus`;
         } catch {
             // Ignore error
@@ -102,13 +102,13 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
             ctx.textAlign = "right";
             ctx.translate(
                 canvas.width / 2 - canvas.width / 50,
-                canvas.height / 2 - canvas.height / 20,
+                canvas.height / 2 - canvas.height / 10,
             );
         } else {
             ctx.textAlign = "left";
             ctx.translate(
                 canvas.width / 2 + canvas.width / 50,
-                canvas.height / 2 - canvas.height / 20,
+                canvas.height / 2 - canvas.height / 10,
             );
         }
     }
