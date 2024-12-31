@@ -175,7 +175,10 @@ export class DrawableSlider extends DrawableCircle {
             this.drawComboNumber(ctx, time, hitTime);
         }
 
-        const spanIndex = this.object.spanAt(dt / this.object.duration);
+        const spanIndex = this.object.spanAt(
+            Math.max(dt, 0) / this.object.duration,
+        );
+
         const ticksPerSpan = nestedObjects.length - 2 / this.object.spanCount;
 
         const spanStartIndex =
