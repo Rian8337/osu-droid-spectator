@@ -37,9 +37,9 @@ export class DrawableScoreCounter extends DrawableStatisticsCounter<SpectatorSco
             ctx,
             new Vector2(
                 ctx.canvas.width -
-                    value.length * this.longestCharWidth -
+                    value.length * this.longestCharWidth * this.sizeScale.y -
                     paddingX,
-                paddingY,
+                paddingY * this.sizeScale.y,
             ),
             fontSize,
         );
