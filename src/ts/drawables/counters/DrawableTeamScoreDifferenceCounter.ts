@@ -42,14 +42,14 @@ export class DrawableTeamScoreDifferenceCounter extends DrawableRollingCounter {
         if (this.redCounter.score > this.blueCounter.score) {
             ctx.textAlign = "right";
             ctx.translate(
-                canvas.width / 2 - canvas.width / 25,
-                canvas.height / 2 - canvas.height / 4,
+                canvas.width / 2 - canvas.width / 50,
+                canvas.height / 5,
             );
         } else {
             ctx.textAlign = "left";
             ctx.translate(
-                canvas.width / 2 + canvas.width / 25,
-                canvas.height / 2 - canvas.height / 4,
+                canvas.width / 2 + canvas.width / 50,
+                canvas.height / 5,
             );
         }
 
