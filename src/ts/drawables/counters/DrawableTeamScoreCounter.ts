@@ -43,8 +43,8 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
         }
 
         this.update(time);
-
         this.applyCanvasConfig(ctx);
+
         ctx.fillText(this.currentValue.toLocaleString("en-US"), 0, 0);
         ctx.restore();
     }
@@ -89,7 +89,7 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
             ctx.font = `${this.bold ? "bold " : ""}${(
-                canvas.height / 2.5
+                canvas.height / 4
             ).toString()}px Torus`;
         } catch {
             // Ignore error
@@ -101,14 +101,14 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
         if (this.team === MultiplayerTeam.red) {
             ctx.textAlign = "right";
             ctx.translate(
-                canvas.width / 2 - canvas.width / 25,
-                canvas.height / 2 + canvas.height / 10,
+                canvas.width / 2 - canvas.width / 50,
+                canvas.height / 2 - canvas.height / 20,
             );
         } else {
             ctx.textAlign = "left";
             ctx.translate(
-                canvas.width / 2 + canvas.width / 25,
-                canvas.height / 2 + canvas.height / 10,
+                canvas.width / 2 + canvas.width / 50,
+                canvas.height / 2 - canvas.height / 20,
             );
         }
     }
