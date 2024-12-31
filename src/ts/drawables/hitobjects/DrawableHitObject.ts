@@ -145,6 +145,7 @@ export abstract class DrawableHitObject {
         }
 
         const dt = time - hitTime;
+
         if (dt < 0) {
             return;
         }
@@ -156,7 +157,6 @@ export abstract class DrawableHitObject {
         let opacity = 1;
         let scale = 1;
         let yPos = position.y;
-        let rotation = 0;
 
         if (dt < fadeInDuration) {
             opacity = dt / fadeInDuration;
@@ -184,8 +184,6 @@ export abstract class DrawableHitObject {
                 yPos + 80,
                 MathUtils.clamp(Math.pow(dt / yTranslateDuration, 2), 0, 1),
             );
-
-            rotation = 8.6 * (Math.random() * 2 - 1);
 
             this.updateLifetimeEnd(hitTime + yTranslateDuration);
         } else {
@@ -258,7 +256,6 @@ export abstract class DrawableHitObject {
         }
 
         ctx.translate(position.x, yPos);
-        ctx.rotate(MathUtils.degreesToRadians(rotation));
         ctx.fillText(text, 0, 0);
         ctx.restore();
     }
