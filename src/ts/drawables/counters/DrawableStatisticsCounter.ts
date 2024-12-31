@@ -31,7 +31,13 @@ export abstract class DrawableStatisticsCounter<
     protected override getTargetValue(time: number): number {
         let event: TEvent;
 
-        if (time < this.lastTargetValueChangeTime) {
+        const { earliestEventTime } = this.manager;
+
+        if (earliestEventTime !== null && time < earliestEventTime) {
+            event = this.manager.defaultEvent;
+
+            this.currentEventIndex = 0;
+        } else if (time < this.lastTargetValueChangeTime) {
             // Currently rewinding, binary search the current index.
             const eventIndex = this.manager.eventIndexAt(time);
 
