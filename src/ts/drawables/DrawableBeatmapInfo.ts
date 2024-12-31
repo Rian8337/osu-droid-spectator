@@ -1,4 +1,3 @@
-import { Preview } from "../Preview";
 import {
     mostCommonBPM,
     parsedBeatmap,
@@ -20,11 +19,11 @@ export class DrawableBeatmapInfo {
     }
 
     private get heightMargin(): number {
-        return this.screen.height / 30;
+        return innerHeight / 300;
     }
 
     private get fontHeight(): number {
-        return Preview.heightPadding / 4;
+        return innerHeight / 40;
     }
 
     private get yPosOffset(): number {
