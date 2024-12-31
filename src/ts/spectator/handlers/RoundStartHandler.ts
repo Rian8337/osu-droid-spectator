@@ -51,7 +51,7 @@ export abstract class RoundStartHandler {
 
         resetAudio(false);
 
-        ChatMessageHandler.hideChat();
+        ChatMessageHandler.onRoundStart();
 
         $(audioState.audio).trigger("manualpause");
     }

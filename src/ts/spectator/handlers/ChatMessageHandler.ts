@@ -2,6 +2,9 @@
  * A handler responsible for handling new chat messages.
  */
 export abstract class ChatMessageHandler {
+    private static wasShownBeforePlaying = false;
+    private static readonly className = "chat-container-hide";
+
     /**
      * Handles a new chat message.
      *
@@ -49,13 +52,35 @@ export abstract class ChatMessageHandler {
      * Displays the chat box.
      */
     static showChat() {
-        $<HTMLDivElement>("#chat-container").removeClass("chat-container-hide");
+        $<HTMLDivElement>("#chat-container").removeClass(this.className);
     }
 
     /**
      * Hides the chat box.
      */
     static hideChat() {
-        $<HTMLDivElement>("#chat-container").addClass("chat-container-hide");
+        $<HTMLDivElement>("#chat-container").addClass(this.className);
+    }
+
+    /**
+     * Called when a round starts.
+     */
+    static onRoundStart() {
+        this.wasShownBeforePlaying = !$<HTMLDivElement>(
+            "#chat-container",
+        ).hasClass(this.className);
+
+        console.log(this.wasShownBeforePlaying);
+
+        this.hideChat();
+    }
+
+    /**
+     * Called when a round ends.
+     */
+    static onRoundEnd() {
+        if (this.wasShownBeforePlaying) {
+            this.showChat();
+        }
     }
 }

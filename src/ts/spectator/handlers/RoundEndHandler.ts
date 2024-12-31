@@ -16,7 +16,7 @@ export abstract class RoundEndHandler {
         audioState.audio.addEventListener(
             "ended",
             () => {
-                ChatMessageHandler.showChat();
+                ChatMessageHandler.onRoundEnd();
 
                 // Ensure previews are in the latest state.
                 for (const preview of previews.values()) {
