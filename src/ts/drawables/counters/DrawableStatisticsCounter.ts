@@ -19,8 +19,6 @@ export abstract class DrawableStatisticsCounter<
      */
     protected readonly manager: SpectatorEventManager<TEvent>;
 
-    protected override readonly rollingDuration: number = 1000;
-
     private currentEventIndex = 0;
 
     constructor(manager: SpectatorEventManager<TEvent>, sizeScale: Vector2) {
