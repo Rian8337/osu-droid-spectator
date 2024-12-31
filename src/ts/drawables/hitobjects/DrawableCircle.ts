@@ -85,7 +85,7 @@ export class DrawableCircle extends DrawableHitObject {
             ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
 
             this.drawCircle(ctx, time, hitTime, hitData?.result);
-            this.drawText(ctx, this.comboNumber.toString());
+            this.drawComboNumber(ctx, time, hitTime);
 
             if (dt < 0 && !this.isHit && !this.isHidden) {
                 this.drawApproach(ctx, dt);
@@ -153,6 +153,38 @@ export class DrawableCircle extends DrawableHitObject {
         ctx.strokeStyle = "#fff";
         ctx.lineWidth = this.circleBorder * scale;
         ctx.stroke();
+
+        ctx.restore();
+    }
+
+    /**
+     * Draws the combo number of this object.
+     *
+     * @param ctx The canvas context.
+     */
+    protected drawComboNumber(
+        ctx: CanvasRenderingContext2D,
+        time: number,
+        hitTime: number,
+    ) {
+        // Note: this is not equal to what is used in the game, but it looks good.
+        let opacity = ctx.globalAlpha;
+
+        if (time > hitTime) {
+            const dt = time - hitTime;
+            const fadeOutDuration = 60;
+
+            opacity = MathUtils.clamp(
+                Interpolation.lerp(opacity, 0, dt / fadeOutDuration),
+                0,
+                1,
+            );
+        }
+
+        ctx.save();
+
+        ctx.globalAlpha = opacity;
+        this.drawText(ctx, this.comboNumber.toString());
 
         ctx.restore();
     }

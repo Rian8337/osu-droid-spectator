@@ -172,7 +172,7 @@ export class DrawableSlider extends DrawableCircle {
                 firstPoint.getAngle(secondPoint),
             );
         } else if (dt < 0) {
-            this.drawText(ctx, this.comboNumber.toString());
+            this.drawComboNumber(ctx, time, hitTime);
         }
 
         const spanIndex = this.object.spanAt(dt / this.object.duration);
