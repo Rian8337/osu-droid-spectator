@@ -171,7 +171,7 @@ export class DrawableSlider extends DrawableCircle {
                 position,
                 firstPoint.getAngle(secondPoint),
             );
-        } else if (dt >= 0) {
+        } else if (dt < 0) {
             this.drawText(ctx, this.comboNumber.toString());
         }
 
@@ -196,7 +196,7 @@ export class DrawableSlider extends DrawableCircle {
             this.drawTick(ctx, time, tick, hitData?.tickset[i - 1] ?? false);
         }
 
-        if (dt >= 0 && !this.isHidden) {
+        if (dt < 0 && !this.isHidden) {
             this.drawApproach(ctx, dt);
         } else if (time < this.object.endTime) {
             this.drawFollowCircle(ctx, repeat);
