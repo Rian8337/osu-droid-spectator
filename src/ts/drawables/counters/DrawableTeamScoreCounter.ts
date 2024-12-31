@@ -23,6 +23,8 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
      */
     bold = false;
 
+    protected override readonly rollingDuration = 1000;
+
     constructor(team: MultiplayerTeam) {
         super();
 
