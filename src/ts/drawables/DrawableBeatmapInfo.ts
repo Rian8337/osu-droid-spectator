@@ -15,6 +15,25 @@ export class DrawableBeatmapInfo {
         return this.ctx.canvas;
     }
 
+    private get widthMargin(): number {
+        return this.screen.width / 50;
+    }
+
+    private get heightMargin(): number {
+        return this.screen.height / 30;
+    }
+
+    private get fontHeight(): number {
+        return Preview.heightPadding / 4;
+    }
+
+    private get yPosOffset(): number {
+        return this.fontHeight + this.heightMargin * 2;
+    }
+
+    private xPos = 0;
+    private yPos = 0;
+
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
     }
@@ -29,62 +48,61 @@ export class DrawableBeatmapInfo {
 
         this.ctx.save();
 
-        this.ctx.translate(this.screen.width / 2, 0);
-        this.ctx.textAlign = "center";
+        this.translateTo(this.widthMargin, this.heightMargin);
+
+        this.ctx.textAlign = "left";
         this.ctx.fillStyle = "#FFFFFF";
 
-        const fontHeight = Preview.heightPadding / 5;
-
-        try {
-            // this code will fail in Firefox(<~ 44)
-            // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            this.ctx.font = `bold ${fontHeight.toString()}px Trebuchet MS, sans-serif`;
-        } catch {
-            // Ignore error
-        }
-
-        // Name
+        // Beatmap name
+        this.setFont(true);
         let beatmapName = `${parsedBeatmap.metadata.artist} - ${parsedBeatmap.metadata.title}`;
-        const yPosOffset = fontHeight + this.screen.height / 50;
-        let yPos = yPosOffset;
 
         // Trim if too long
-        while (this.ctx.measureText(beatmapName).width > this.screen.width) {
+        while (
+            this.ctx.measureText(beatmapName).width >
+            this.screen.width / 2 - this.widthMargin
+        ) {
             beatmapName = beatmapName.slice(0, -3) + "...";
         }
 
-        this.ctx.fillText(beatmapName, 0, yPos);
-        yPos += yPosOffset;
+        this.ctx.fillText(beatmapName, this.xPos, this.yPos);
 
-        // Mapper and Difficulty
-        let mapperAndDiff = `Mapped by ${parsedBeatmap.metadata.creator} // ${parsedBeatmap.metadata.version}`;
+        // Mapper
+        this.moveDown();
 
-        // Trim if too long
-        while (this.ctx.measureText(mapperAndDiff).width > this.screen.width) {
-            mapperAndDiff = `Mapped by ${parsedBeatmap.metadata.creator} // ${parsedBeatmap.metadata.version.slice(0, -3)}...`;
-        }
+        this.write(
+            "Mapper",
+            parsedBeatmap.metadata.creator,
+            " ".repeat(10),
+            true,
+        );
 
-        this.ctx.fillText(mapperAndDiff, 0, yPos);
-        yPos += yPosOffset;
+        // Difficulty
+        this.write(
+            "Difficulty",
+            parsedBeatmap.metadata.version,
+            undefined,
+            true,
+        );
 
-        try {
-            // this code will fail in Firefox(<~ 44)
-            // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            this.ctx.font = `bold ${fontHeight.toString()}px Trebuchet MS, sans-serif`;
-        } catch {
-            // Ignore error
-        }
+        // Beatmap statistics
+        this.translateTo(this.screen.width / 2, 0);
 
-        // Statistics (CS/AR/OD/BPM/Star Rating/Length)
-        const firstStatisticsLine =
-            `CS ${parsedBeatmap.difficulty.cs.toString()} // ` +
-            `AR ${parsedBeatmap.difficulty.ar.toString()} // ` +
-            `OD ${parsedBeatmap.difficulty.od.toString()} // ` +
-            `${mostCommonBPM?.toFixed(2) ?? "Unknown"} BPM // ` +
-            `${pickedBeatmap.starRating?.toFixed(2) ?? "Unknown"} ★`;
+        // CS, AR, OD
+        this.write("CS", parsedBeatmap.difficulty.cs.toString(), " / ");
+        this.write("AR", parsedBeatmap.difficulty.ar.toString(), " / ");
+        this.write("OD", parsedBeatmap.difficulty.od.toString());
 
-        this.ctx.fillText(firstStatisticsLine, 0, yPos);
-        yPos += yPosOffset;
+        // Star Rating
+        this.moveDown();
+
+        this.write(
+            "Star Rating",
+            pickedBeatmap.starRating?.toFixed(2) ?? "Unknown",
+        );
+
+        // Length
+        this.translateTo(this.screen.width / 4, 0);
 
         const duration =
             parsedBeatmap.hitObjects.objects[
@@ -94,9 +112,74 @@ export class DrawableBeatmapInfo {
         const minutes = Math.floor(duration / 60000);
         const seconds = Math.floor((duration % 60000) / 1000);
 
-        const secondStatisticsLine = `Length: ${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        this.write(
+            "Length",
+            [minutes, seconds]
+                .map((v) => v.toString().padStart(2, "0"))
+                .join(":"),
+        );
 
-        this.ctx.fillText(secondStatisticsLine, 0, yPos);
+        // BPM
+        this.moveDown();
+
+        this.write(
+            "BPM",
+            mostCommonBPM?.toFixed(2).replace(/\.?0+$/, "") ?? "Unknown",
+        );
+
         this.ctx.restore();
+    }
+
+    private write(
+        prefix: string,
+        value: string,
+        paddingText?: string,
+        trimIfTooLong?: boolean,
+    ) {
+        this.setFont(false);
+        this.ctx.fillText(prefix, this.xPos, this.yPos);
+        this.xPos += this.ctx.measureText(prefix + " ").width;
+
+        this.setFont(true);
+
+        if (trimIfTooLong) {
+            while (
+                this.ctx.measureText(value).width >
+                this.screen.width / 4 - this.widthMargin
+            ) {
+                value = value.slice(0, -3) + "...";
+            }
+        }
+
+        this.ctx.fillText(value, this.xPos, this.yPos);
+        this.xPos += this.ctx.measureText(value).width;
+
+        if (paddingText) {
+            this.setFont(false);
+            this.ctx.fillText(paddingText, this.xPos, this.yPos);
+            this.xPos += this.ctx.measureText(paddingText).width;
+        }
+    }
+
+    private translateTo(x: number, y: number) {
+        this.ctx.translate(x, y);
+
+        this.xPos = 0;
+        this.yPos = this.yPosOffset;
+    }
+
+    private moveDown() {
+        this.xPos = 0;
+        this.yPos += this.yPosOffset;
+    }
+
+    private setFont(bold: boolean) {
+        try {
+            // this code will fail in Firefox(<~ 44)
+            // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
+            this.ctx.font = `${bold ? "bold " : ""}${this.fontHeight.toString()}px Trebuchet MS, sans-serif`;
+        } catch {
+            // Ignore error
+        }
     }
 }
