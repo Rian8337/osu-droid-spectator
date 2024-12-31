@@ -209,7 +209,7 @@ export class DrawableSlider extends DrawableCircle {
             ctx,
             time,
             this.stackedEndPosition,
-            hitData?.time ?? this.object.endTime,
+            this.object.endTime,
             hitData?.result ?? HitResult.miss,
         );
     }
