@@ -10,8 +10,6 @@ export class DrawableComboCounter extends DrawableStatisticsCounter<SpectatorCom
     private static readonly paddingY = 30;
     private static readonly fontSize = 70;
 
-    protected override readonly rollingDuration = 250;
-
     override draw(ctx: CanvasRenderingContext2D, time: number): void {
         this.update(time);
 
