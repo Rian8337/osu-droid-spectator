@@ -23,8 +23,6 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
      */
     bold = false;
 
-    protected override readonly rollingDuration = 1000;
-
     private readonly charLengthMap = new Map<string, number>();
     private longestCharWidth = 0;
 
