@@ -25,6 +25,12 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
 
     protected override readonly rollingDuration = 1000;
 
+    private readonly charLengthMap = new Map<string, number>();
+    private longestCharWidth = 0;
+
+    private lastCanvasWidth = 0;
+    private lastCanvasHeight = 0;
+
     constructor(team: MultiplayerTeam) {
         super();
 
@@ -45,7 +51,19 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
         this.update(time);
         this.applyCanvasConfig(ctx);
 
-        ctx.fillText(this.currentValue.toLocaleString("en-US"), 0, 0);
+        for (const char of this.currentValue.toLocaleString("en-US")) {
+            const width = this.charLengthMap.get(char) ?? this.longestCharWidth;
+
+            if (char === ",") {
+                ctx.fillText(char, 0, 0);
+                ctx.translate(width, 0);
+            } else {
+                // Center the character.
+                ctx.fillText(char, (this.longestCharWidth - width) / 2, 0);
+                ctx.translate(this.longestCharWidth, 0);
+            }
+        }
+
         ctx.restore();
     }
 
@@ -95,21 +113,57 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
             // Ignore error
         }
 
+        ctx.textAlign = "left";
         ctx.textBaseline = "middle";
         ctx.fillStyle = `rgb(${teamColors[this.team].toString()})`;
 
+        // We are not using addEventListener here to prevent instances of this class
+        // from not being garbage collected due to reference in the event listener.
+        if (
+            this.lastCanvasWidth !== canvas.width ||
+            this.lastCanvasHeight !== canvas.height
+        ) {
+            this.charLengthMap.clear();
+
+            this.lastCanvasWidth = canvas.width;
+            this.lastCanvasHeight = canvas.height;
+        }
+
+        if (this.charLengthMap.size === 0) {
+            this.updateLongestCharWidth(ctx);
+        }
+
         if (this.team === MultiplayerTeam.red) {
-            ctx.textAlign = "right";
             ctx.translate(
-                canvas.width / 2 - canvas.width / 50,
+                canvas.width / 2 -
+                    canvas.width / 50 - // Commas do not obey longest character width.
+                    (this.currentValue.toString().replace(",", "").length *
+                        this.longestCharWidth +
+                        (this.charLengthMap.get(",") ?? this.longestCharWidth)),
                 canvas.height / 2 - canvas.height / 10,
             );
         } else {
-            ctx.textAlign = "left";
             ctx.translate(
                 canvas.width / 2 + canvas.width / 50,
                 canvas.height / 2 - canvas.height / 10,
             );
         }
+    }
+
+    private updateLongestCharWidth(ctx: CanvasRenderingContext2D): void {
+        const loadChar = (char: string) => {
+            const { width } = ctx.measureText(char);
+
+            this.charLengthMap.set(char, width);
+            this.longestCharWidth = Math.max(width, this.longestCharWidth);
+        };
+
+        this.longestCharWidth = 0;
+
+        for (let i = 0; i < 10; ++i) {
+            loadChar(i.toString());
+        }
+
+        loadChar(",");
     }
 }
