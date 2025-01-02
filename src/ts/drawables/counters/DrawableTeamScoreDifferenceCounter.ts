@@ -39,7 +39,7 @@ export class DrawableTeamScoreDifferenceCounter extends DrawableRollingCounter {
             // Ignore error
         }
 
-        if (this.redCounter.score > this.blueCounter.score) {
+        if (this.currentValue > 0) {
             ctx.textAlign = "right";
             ctx.translate(
                 canvas.width / 2 - canvas.width / 50,
@@ -53,9 +53,7 @@ export class DrawableTeamScoreDifferenceCounter extends DrawableRollingCounter {
             );
         }
 
-        const diff = Math.abs(this.currentValue);
-
-        ctx.fillText(diff.toLocaleString("en-US"), 0, 0);
+        ctx.fillText(Math.abs(this.currentValue).toLocaleString("en-US"), 0, 0);
         ctx.restore();
     }
 
