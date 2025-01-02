@@ -15,8 +15,23 @@ export class DrawableScoreCounter extends DrawableStatisticsCounter<SpectatorSco
     private readonly charLengthMap = new Map<string, number>();
     private longestCharWidth = 0;
 
-    override draw(ctx: CanvasRenderingContext2D, time: number): void {
+    private lastCanvasWidth = 0;
+    private lastCanvasHeight = 0;
+
+    override draw(ctx: CanvasRenderingContext2D, time: number) {
         this.update(time);
+
+        // We are not using addEventListener here to prevent instances of this class
+        // from not being garbage collected due to reference in the event listener.
+        if (
+            this.lastCanvasWidth !== ctx.canvas.width ||
+            this.lastCanvasHeight !== ctx.canvas.height
+        ) {
+            this.charLengthMap.clear();
+
+            this.lastCanvasWidth = ctx.canvas.width;
+            this.lastCanvasHeight = ctx.canvas.height;
+        }
 
         const { fontSize, paddingX, paddingY } = DrawableScoreCounter;
 
