@@ -58,11 +58,13 @@ export class DrawableTeamScoreDisplay {
     private drawScoreDifferenceLine() {
         const { canvas } = this.ctx;
 
-        this.ctx.save();
-
         const scoreDiff =
             this.blueTeamCounter.currentValue -
             this.redTeamCounter.currentValue;
+
+        if (scoreDiff === 0) {
+            return;
+        }
 
         const lineLength = canvas.width / 2.5;
 
@@ -73,7 +75,9 @@ export class DrawableTeamScoreDisplay {
             1,
         );
 
+        this.ctx.save();
         this.ctx.lineWidth = canvas.height / 25;
+        this.ctx.lineCap = "round";
 
         switch (true) {
             case this.redTeamCounter.currentValue >
