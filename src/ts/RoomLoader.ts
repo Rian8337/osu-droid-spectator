@@ -11,12 +11,15 @@ import { SkipPerformedHandler } from "./spectator/handlers/SkipPerformedHandler"
 let socket: Socket<SpectatorClientEvents> | null = null;
 let disconnectTimeout: NodeJS.Timeout | undefined;
 
-export function askRoomID(messagePrefix?: string): void {
+export function askRoomID(
+    messagePrefix?: string,
+    existingId?: string | null,
+): void {
     const message =
         (messagePrefix ? `${messagePrefix}\n\n` : "") +
         "Enter the ID of the multiplayer room that you want to spectate.";
 
-    let roomId: string | null = null;
+    let roomId = existingId ?? null;
     while (!roomId) {
         roomId = prompt(message);
     }

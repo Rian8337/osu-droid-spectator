@@ -32,5 +32,7 @@ import { openDatabase } from "./settings/DatabaseSettings";
 
     await openDatabase();
 
-    askRoomID();
+    const searchParams = new URLSearchParams(location.search);
+
+    askRoomID(undefined, searchParams.get("id"));
 })().catch(console.error);
