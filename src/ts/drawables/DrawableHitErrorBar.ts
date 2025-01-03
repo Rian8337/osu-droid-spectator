@@ -130,7 +130,10 @@ export class DrawableHitErrorBar {
             // Check for slider head break.
             if (
                 object instanceof Slider &&
-                event.accuracy > Math.floor(this.hitWindow.mehWindow)
+                event.accuracy >
+                    Math.floor(
+                        Math.min(this.hitWindow.mehWindow, object.duration),
+                    )
             ) {
                 continue;
             }
