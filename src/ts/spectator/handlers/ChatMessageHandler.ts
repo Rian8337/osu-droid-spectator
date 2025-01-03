@@ -70,8 +70,6 @@ export abstract class ChatMessageHandler {
             "#chat-container",
         ).hasClass(this.className);
 
-        console.log(this.wasShownBeforePlaying);
-
         this.hideChat();
     }
 
