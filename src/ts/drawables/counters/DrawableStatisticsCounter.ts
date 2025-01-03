@@ -50,7 +50,7 @@ export abstract class DrawableStatisticsCounter<
         } else {
             while (
                 this.currentEventIndex < this.manager.events.length - 1 &&
-                this.manager.events[this.currentEventIndex].time <= time
+                this.manager.events[this.currentEventIndex + 1].time <= time
             ) {
                 this.currentEventIndex++;
             }
