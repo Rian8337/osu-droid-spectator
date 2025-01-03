@@ -18,6 +18,10 @@ import { interpolateEasing } from "../../utils/EasingInterpolator";
 export class DrawableSlider extends DrawableCircle {
     private static readonly reverseArrow = String.fromCharCode(10132);
 
+    private sliderPath = new Path2D();
+    private readonly sliderCurve: Vector2[] = [];
+    private lastSnakingInProgress = -1;
+
     override draw(
         ctx: CanvasRenderingContext2D,
         time: number,
@@ -87,44 +91,54 @@ export class DrawableSlider extends DrawableCircle {
             1,
         );
 
-        let currentCurve: Vector2[] = [];
+        if (snakingInProgress !== this.lastSnakingInProgress) {
+            this.lastSnakingInProgress = snakingInProgress;
+            this.sliderPath = new Path2D();
 
-        // Slider path
-        if (snakingInProgress < 1) {
+            // TODO: optimize this (don't just outright remove all points)
+            this.sliderCurve.length = 0;
+
             const { calculatedPath } = this.object.path;
 
-            for (let i = 0; i < calculatedPath.length; ++i) {
-                const currentVertex = calculatedPath[i];
+            for (let i = 1; i < calculatedPath.length; ++i) {
+                const path = calculatedPath[i];
                 const progress = i / calculatedPath.length;
 
-                if (
-                    progress > snakingInProgress ||
-                    i === calculatedPath.length - 1
-                ) {
+                if (progress > snakingInProgress) {
                     // Interpolate the current position of the path.
-                    const prevVertex = calculatedPath[i - 1];
+                    const prevPath = calculatedPath[i - 1];
+                    const prevProgress = (i - 1) / calculatedPath.length;
 
-                    const vertex = prevVertex.add(
-                        currentVertex.subtract(prevVertex),
+                    const pathProgress =
+                        (snakingInProgress - prevProgress) /
+                        (progress - prevProgress);
+
+                    const interpolatedPath = Interpolation.lerp(
+                        prevPath,
+                        path,
+                        pathProgress,
                     );
 
-                    currentCurve.push(vertex);
+                    const drawPosition = position.add(interpolatedPath);
+
+                    this.sliderCurve.push(interpolatedPath);
+                    this.sliderPath.lineTo(drawPosition.x, drawPosition.y);
+
                     break;
                 }
 
-                currentCurve.push(currentVertex);
+                const drawPosition = position.add(path);
+
+                this.sliderCurve.push(path);
+                this.sliderPath.lineTo(drawPosition.x, drawPosition.y);
             }
-
-            this.drawPath(ctx, currentCurve);
-        } else {
-            currentCurve = this.object.path.calculatedPath;
-
-            this.drawPath(ctx, this.object.path.calculatedPath);
         }
+
+        this.drawPath(ctx);
 
         const nestedObjects = this.object.nestedHitObjects;
         const pathEndPosition = this.stackedPosition.add(
-            currentCurve[currentCurve.length - 1],
+            this.sliderCurve[this.sliderCurve.length - 1],
         );
 
         // Slider tail
@@ -144,8 +158,8 @@ export class DrawableSlider extends DrawableCircle {
         const repetitions = this.object.spanCount;
         const repeat = (dt * repetitions) / this.object.duration;
         if (repetitions > 1 && repeat + 1 <= (repetitions & ~1)) {
-            const lastPoint = currentCurve[currentCurve.length - 1];
-            const secondLastPoint = currentCurve.at(-2) ?? position;
+            const lastPoint = this.sliderCurve[this.sliderCurve.length - 1];
+            const secondLastPoint = this.sliderCurve.at(-2) ?? position;
 
             this.drawText(
                 ctx,
@@ -222,7 +236,7 @@ export class DrawableSlider extends DrawableCircle {
      * @param time The current time.
      * @param pathCurve The path curve to draw.
      */
-    private drawPath(ctx: CanvasRenderingContext2D, pathCurve: Vector2[]) {
+    private drawPath(ctx: CanvasRenderingContext2D) {
         if (ctx.globalAlpha === 0) {
             return;
         }
@@ -230,29 +244,20 @@ export class DrawableSlider extends DrawableCircle {
         ctx.save();
 
         // Slider
-        const startPosition = this.stackedPosition;
-        const radius = this.object.radius;
+        const { radius } = this.object;
 
         ctx.globalAlpha *= 0.3;
-        ctx.beginPath();
-        ctx.moveTo(startPosition.x, startPosition.y);
-
-        for (const path of pathCurve.slice(1)) {
-            const drawPosition = this.stackedPosition.add(path);
-            ctx.lineTo(drawPosition.x, drawPosition.y);
-        }
-
         ctx.shadowBlur = 0;
         ctx.strokeStyle = this.canvasColor;
         ctx.lineWidth = (radius - this.circleBorder) * 2;
-        ctx.stroke();
+        ctx.stroke(this.sliderPath);
 
         // Border
         ctx.globalCompositeOperation = "source-over";
         ctx.shadowBlur = 0;
         ctx.strokeStyle = "#fff";
         ctx.lineWidth = radius * 2;
-        ctx.stroke();
+        ctx.stroke(this.sliderPath);
         ctx.restore();
     }
 
