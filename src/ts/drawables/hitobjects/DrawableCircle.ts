@@ -59,23 +59,16 @@ export class DrawableCircle extends DrawableHitObject {
             const dt = time - fadeOutStartTime;
 
             if (dt > 0) {
-                if (!hitData || hitData.result === HitResult.miss) {
-                    const fadeOutDuration = 100;
+                const fadeOutDuration =
+                    !hitData || hitData.result === HitResult.miss ? 100 : 240;
 
-                    opacity = MathUtils.clamp(1 - dt / fadeOutDuration, 0, 1);
+                opacity = MathUtils.clamp(
+                    Interpolation.lerp(1, 0, dt / fadeOutDuration),
+                    0,
+                    1,
+                );
 
-                    this.updateLifetimeEnd(fadeOutStartTime + fadeOutDuration);
-                } else {
-                    const fadeOutDuration = 240;
-
-                    opacity = MathUtils.clamp(
-                        Interpolation.lerp(1, 0, dt / fadeOutDuration),
-                        0,
-                        1,
-                    );
-
-                    this.updateLifetimeEnd(fadeOutStartTime + fadeOutDuration);
-                }
+                this.updateLifetimeEnd(fadeOutStartTime + fadeOutDuration);
             }
         }
 
