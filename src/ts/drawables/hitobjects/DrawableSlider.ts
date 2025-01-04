@@ -32,6 +32,16 @@ export class DrawableSlider extends DrawableCircle {
             return;
         }
 
+        const maxHitTime =
+            this.object.startTime +
+            Math.min(
+                this.object.head.hitWindow.mehWindow,
+                this.object.duration,
+            );
+
+        const hitTime = hitData?.time ?? maxHitTime;
+
+        const dt = time - this.object.startTime;
         let opacity = 1;
 
         // When the object is still in time
@@ -70,43 +80,7 @@ export class DrawableSlider extends DrawableCircle {
             this.updateLifetimeEnd(this.object.endTime + fadeOutDuration);
         }
 
-        if (opacity > 0) {
-            ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
-
-            this.drawSlider(ctx, time, hitData);
-        }
-
-        this.drawHitResult(
-            ctx,
-            time,
-            this.stackedEndPosition,
-            this.object.endTime,
-            hitData?.result ?? HitResult.miss,
-        );
-
-        // Temporary, used for lifetime optimization.
-        this.updateLifetimeEnd(this.lifetimeEnd + 800);
-    }
-
-    private drawSlider(
-        ctx: CanvasRenderingContext2D,
-        time: number,
-        hitData: SpectatorObjectDataEvent | null,
-    ) {
-        // Allow TypeScript to type narrow.
-        if (!(this.object instanceof Slider) || !this.object.head.hitWindow) {
-            return;
-        }
-
-        const maxHitTime =
-            this.object.startTime +
-            Math.min(
-                this.object.head.hitWindow.mehWindow,
-                this.object.duration,
-            );
-
-        const hitTime = hitData?.time ?? maxHitTime;
-        const dt = time - this.object.startTime;
+        ctx.globalAlpha = MathUtils.clamp(opacity, 0, 1);
 
         const position = this.stackedPosition;
 
@@ -126,7 +100,7 @@ export class DrawableSlider extends DrawableCircle {
 
             const { calculatedPath } = this.object.path;
 
-            for (let i = 0; i < calculatedPath.length; ++i) {
+            for (let i = 1; i < calculatedPath.length; ++i) {
                 const path = calculatedPath[i];
                 const progress = i / calculatedPath.length;
 
@@ -242,6 +216,17 @@ export class DrawableSlider extends DrawableCircle {
         } else if (time < this.object.endTime) {
             this.drawFollowCircle(ctx, repeat);
         }
+
+        this.drawHitResult(
+            ctx,
+            time,
+            this.stackedEndPosition,
+            this.object.endTime,
+            hitData?.result ?? HitResult.miss,
+        );
+
+        // Temporary, used for lifetime optimization.
+        this.updateLifetimeEnd(this.lifetimeEnd + 800);
     }
 
     /**
