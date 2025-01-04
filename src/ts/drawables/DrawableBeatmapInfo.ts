@@ -1,8 +1,10 @@
+import { BeatmapDifficulty, Modes, ModUtil } from "@rian8337/osu-base";
 import {
     mostCommonBPM,
     parsedBeatmap,
     pickedBeatmap,
 } from "../settings/BeatmapSettings";
+import { mods } from "../settings/RoomSettings";
 
 /**
  * A drawable used to display beatmap information.
@@ -89,17 +91,28 @@ export class DrawableBeatmapInfo {
         // Beatmap statistics
         this.translateTo(this.screen.width / 2, 0);
 
+        const difficulty = new BeatmapDifficulty(parsedBeatmap.difficulty);
+
+        ModUtil.applyModsToBeatmapDifficulty(
+            difficulty,
+            Modes.droid,
+            mods,
+            undefined,
+            true,
+        );
+
         // CS, AR, OD
-        this.write("CS", parsedBeatmap.difficulty.cs.toString(), " / ");
-        this.write("AR", parsedBeatmap.difficulty.ar.toString(), " / ");
-        this.write("OD", parsedBeatmap.difficulty.od.toString());
+        this.write("CS", difficulty.cs.toFixed(2).replace(/\.?0+$/, ""), " / ");
+        this.write("AR", difficulty.ar.toFixed(2).replace(/\.?0+$/, ""), " / ");
+        this.write("OD", difficulty.od.toFixed(2).replace(/\.?0+$/, ""));
 
         // Star Rating
         this.moveDown();
 
         this.write(
             "Star Rating",
-            pickedBeatmap.starRating?.toFixed(2) ?? "Unknown",
+            (pickedBeatmap.starRating?.toFixed(2) ?? "Unknown") +
+                (mods.length > 0 ? "*" : ""),
         );
 
         // Length
@@ -108,7 +121,7 @@ export class DrawableBeatmapInfo {
         const duration =
             parsedBeatmap.hitObjects.objects[
                 parsedBeatmap.hitObjects.objects.length - 1
-            ].endTime;
+            ].endTime / ModUtil.calculateRateWithMods(mods);
 
         const minutes = Math.floor(duration / 60000);
         const seconds = Math.floor((duration % 60000) / 1000);
