@@ -226,7 +226,9 @@ export class DrawableSlider extends DrawableCircle {
         );
 
         // Temporary, used for lifetime optimization.
-        this.updateLifetimeEnd(this.lifetimeEnd + 800);
+        this.updateLifetimeEnd(
+            this.object.endTime + this.object.head.hitWindow.mehWindow + 800,
+        );
     }
 
     /**
