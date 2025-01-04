@@ -7,6 +7,11 @@ import { dataProcessor } from "./settings/SpectatorSettings";
 import { ChatMessageHandler } from "./spectator/handlers/ChatMessageHandler";
 import { RoundEndHandler } from "./spectator/handlers/RoundEndHandler";
 import { SkipPerformedHandler } from "./spectator/handlers/SkipPerformedHandler";
+import {
+    setMods,
+    setSpeedMultiplier,
+    setTeamMode,
+} from "./settings/RoomSettings";
 
 let socket: Socket<SpectatorClientEvents> | null = null;
 let disconnectTimeout: NodeJS.Timeout | undefined;
@@ -82,6 +87,9 @@ export function askRoomID(
             ChatMessageHandler.emptyChat();
 
             setPickedBeatmap(room.beatmap);
+            setMods(room.mods.mods ?? "");
+            setSpeedMultiplier(room.mods.speedMultiplier);
+            setTeamMode(room.teamMode);
 
             if (room.beatmap) {
                 await BeatmapChangedHandler.handle(room.beatmap);
