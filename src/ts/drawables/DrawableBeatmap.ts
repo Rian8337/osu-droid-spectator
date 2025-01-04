@@ -128,7 +128,7 @@ export class DrawableBeatmap {
             const object =
                 this.drawableHitObjects[this.objectDrawIndexes.first];
 
-            if (time <= object.lifetimeEnd) {
+            if (time < object.lifetimeEnd) {
                 break;
             }
 
@@ -136,11 +136,16 @@ export class DrawableBeatmap {
         }
 
         while (
-            this.objectDrawIndexes.last + 1 < this.drawableHitObjects.length &&
-            time >=
-                this.drawableHitObjects[this.objectDrawIndexes.last + 1]
-                    .lifetimeStart
+            this.objectDrawIndexes.last <
+            this.drawableHitObjects.length - 1
         ) {
+            const object =
+                this.drawableHitObjects[this.objectDrawIndexes.last + 1];
+
+            if (time < object.lifetimeStart) {
+                break;
+            }
+
             ++this.objectDrawIndexes.last;
         }
 
