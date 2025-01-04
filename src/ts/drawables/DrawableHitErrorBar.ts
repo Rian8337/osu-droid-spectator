@@ -112,8 +112,43 @@ export class DrawableHitErrorBar {
             throw new Error("No beatmaps have been parsed yet");
         }
 
+        // We need to seek forward to the next object(s) as events are based on the end time of the
+        // object, whereas hit error bars are drawn based on the start time of the object.
+        const { objects } = parsedBeatmap.hitObjects;
+        let event = this.manager.eventAt(time);
+
+        while (event && event.index < objects.length - 1) {
+            const nextEvent = this.manager.eventAtIndex(event.index + 1);
+
+            if (!nextEvent) {
+                break;
+            }
+
+            const nextObject = objects[event.index + 1];
+
+            // Check for slider head break.
+            if (
+                nextObject instanceof Slider &&
+                nextEvent.accuracy >
+                    Math.floor(
+                        Math.min(this.hitWindow.mehWindow, nextObject.duration),
+                    )
+            ) {
+                event = nextEvent;
+                continue;
+            }
+
+            const nextEventTime = nextObject.startTime + nextEvent.accuracy;
+
+            if (nextEventTime > time) {
+                break;
+            }
+
+            event = nextEvent;
+        }
+
         for (
-            let event = this.manager.eventAt(time);
+            ;
             event && event.index >= 0;
             event = this.manager.eventAtIndex(event.index - 1)
         ) {
