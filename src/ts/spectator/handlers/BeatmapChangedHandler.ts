@@ -98,6 +98,10 @@ export abstract class BeatmapChangedHandler {
             }
 
             if (!beatmapsetBlob) {
+                console.error(
+                    "Beatmapset not found (already attempted download)",
+                );
+
                 beatmapTitle
                     .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
                     .text(notFoundText);
@@ -116,6 +120,10 @@ export abstract class BeatmapChangedHandler {
 
         if (!osuFile) {
             if (alreadyAttemptDownload) {
+                console.error(
+                    "Beatmapset not found (already attempted download)",
+                );
+
                 beatmapTitle
                     .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
                     .text(notFoundText);
@@ -140,6 +148,8 @@ export abstract class BeatmapChangedHandler {
         }
 
         if (!osuFile) {
+            console.error("Beatmap not found in beatmapset");
+
             beatmapTitle
                 .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
                 .text(notFoundText);
@@ -150,6 +160,8 @@ export abstract class BeatmapChangedHandler {
         const audioBlob = await this.getAudioBlob(entries, osuFile);
 
         if (!backgroundBlob || !audioBlob) {
+            console.error("Background or audio not found in beatmapset");
+
             beatmapTitle
                 .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
                 .text(`${beatmapText} (an error has occurred)`);
