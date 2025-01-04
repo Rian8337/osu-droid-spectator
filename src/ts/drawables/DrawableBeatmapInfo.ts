@@ -1,8 +1,10 @@
 import { BeatmapDifficulty, Modes, ModUtil } from "@rian8337/osu-base";
 import {
+    droidStarRating,
     mostCommonBPM,
     parsedBeatmap,
     pickedBeatmap,
+    standardStarRating,
 } from "../settings/BeatmapSettings";
 import { mods } from "../settings/RoomSettings";
 
@@ -111,8 +113,9 @@ export class DrawableBeatmapInfo {
 
         this.write(
             "Star Rating",
-            (pickedBeatmap.starRating?.toFixed(2) ?? "Unknown") +
-                (mods.length > 0 ? "*" : ""),
+            this.formatNullableDecimal(droidStarRating) +
+                " / " +
+                this.formatNullableDecimal(standardStarRating),
         );
 
         // Length
@@ -136,10 +139,7 @@ export class DrawableBeatmapInfo {
         // BPM
         this.moveDown();
 
-        this.write(
-            "BPM",
-            mostCommonBPM?.toFixed(2).replace(/\.?0+$/, "") ?? "Unknown",
-        );
+        this.write("BPM", this.formatNullableDecimal(mostCommonBPM));
 
         this.ctx.restore();
     }
@@ -173,6 +173,12 @@ export class DrawableBeatmapInfo {
             this.ctx.fillText(paddingText, this.xPos, this.yPos);
             this.xPos += this.ctx.measureText(paddingText).width;
         }
+    }
+
+    private formatNullableDecimal(value: number | null) {
+        return value === null
+            ? "Unknown"
+            : value.toFixed(2).replace(/\.?0+$/, "");
     }
 
     private translateTo(x: number, y: number) {

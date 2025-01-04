@@ -19,6 +19,16 @@ export let maxScore = 0;
 export let pickedBeatmap: PickedBeatmap | null = null;
 
 /**
+ * The osu!droid star rating of the beatmap.
+ */
+export let droidStarRating: number | null = null;
+
+/**
+ * The osu!standard star rating of the beatmap.
+ */
+export let standardStarRating: number | null = null;
+
+/**
  * The most common BPM of the beatmap.
  */
 export let mostCommonBPM: number | null = null;
@@ -50,6 +60,26 @@ export function setParsedBeatmap(newParsedBeatmap: Beatmap | null): void {
     } else {
         mostCommonBPM = null;
     }
+}
+
+/**
+ * Sets the osu!droid star rating.
+ *
+ * @param newDroidStarRating The osu!droid star rating.
+ */
+export function setDroidStarRating(newDroidStarRating: number | null): void {
+    droidStarRating = newDroidStarRating;
+}
+
+/**
+ * Sets the osu!standard star rating.
+ *
+ * @param newStandardStarRating The osu!standard star rating.
+ */
+export function setStandardStarRating(
+    newStandardStarRating: number | null,
+): void {
+    standardStarRating = newStandardStarRating;
 }
 
 /**

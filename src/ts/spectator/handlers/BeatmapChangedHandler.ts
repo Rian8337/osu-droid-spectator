@@ -12,6 +12,8 @@ import {
     downloadBeatmapset,
     parsedBeatmap,
     cancelBeatmapsetDownload,
+    setDroidStarRating,
+    setStandardStarRating,
 } from "../../settings/BeatmapSettings";
 import {
     getBeatmapsetFromDB,
@@ -25,6 +27,11 @@ import {
 import { PickedBeatmap } from "../rawdata/PickedBeatmap";
 import { deletePreviews } from "../../settings/PreviewSettings";
 import { toggleControlBar } from "../../elements/Body";
+import {
+    DroidDifficultyCalculator,
+    OsuDifficultyCalculator,
+} from "@rian8337/osu-difficulty-calculator";
+import { mods } from "../../settings/RoomSettings";
 
 /**
  * A handler responsible for handling beatmap changed events.
@@ -101,6 +108,9 @@ export abstract class BeatmapChangedHandler {
         }
 
         setParsedBeatmap(null);
+        setDroidStarRating(null);
+        setStandardStarRating(null);
+
         let entries = Object.values(beatmapset.files);
         let osuFile = await this.getOsuFile(entries, newBeatmap.md5);
 
@@ -153,8 +163,18 @@ export abstract class BeatmapChangedHandler {
         ).result;
         const { metadata: newMetadata } = newParsedBeatmap;
 
+        const droidDifficultyCalculator = new DroidDifficultyCalculator(
+            newParsedBeatmap,
+        ).calculate({ mods: mods });
+
+        const standardDifficultyCalculator = new OsuDifficultyCalculator(
+            newParsedBeatmap,
+        ).calculate({ mods: mods });
+
         setPickedBeatmap(newBeatmap);
         setParsedBeatmap(newParsedBeatmap);
+        setDroidStarRating(droidDifficultyCalculator.total);
+        setStandardStarRating(standardDifficultyCalculator.total);
 
         background.src = backgroundBlob;
         audioState.audio.src = audioBlob;

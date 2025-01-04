@@ -31,9 +31,4 @@ export interface PickedBeatmap {
      * The beatmap set ID of this beatmap.
      */
     readonly beatmapSetId?: number;
-
-    /**
-     * The star rating of the beatmap.
-     */
-    readonly starRating?: number;
 }
