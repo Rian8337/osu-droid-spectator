@@ -64,6 +64,13 @@ $(audio)
                 }
 
                 if (
+                    dataProcessor.earliestEventTime !== null &&
+                    this.currentTime * 1000 < dataProcessor.earliestEventTime
+                ) {
+                    this.currentTime = dataProcessor.earliestEventTime / 1000;
+                }
+
+                if (
                     dataProcessor.isAvailableAt(this.currentTime * 1000) &&
                     this.src
                 ) {
