@@ -23,7 +23,7 @@ export class DrawableCircle extends DrawableHitObject {
             this.object.startTime + this.object.hitWindow.mehWindow;
 
         const dt = time - this.object.startTime;
-        let opacity = 1;
+        let opacity = 0;
 
         if (dt < 0) {
             // We are in approach time.
