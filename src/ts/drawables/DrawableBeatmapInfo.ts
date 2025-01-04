@@ -1,4 +1,11 @@
-import { BeatmapDifficulty, Modes, ModUtil } from "@rian8337/osu-base";
+import {
+    BeatmapDifficulty,
+    DroidHitWindow,
+    Modes,
+    ModPrecise,
+    ModUtil,
+    PreciseDroidHitWindow,
+} from "@rian8337/osu-base";
 import {
     droidStarRating,
     mostCommonBPM,
@@ -103,6 +110,15 @@ export class DrawableBeatmapInfo {
             true,
         );
 
+        if (mods.some((m) => m instanceof ModPrecise)) {
+            // Special case for OD. The Precise mod changes the hit window and not the OD itself, but we must
+            // map the hit window back to the original hit window for the user to understand the difficulty
+            // increase of the mod.
+            const { greatWindow } = new PreciseDroidHitWindow(difficulty.od);
+
+            difficulty.od = DroidHitWindow.greatWindowToOD(greatWindow);
+        }
+
         // CS, AR, OD
         this.write("CS", difficulty.cs.toFixed(2).replace(/\.?0+$/, ""), " / ");
         this.write("AR", difficulty.ar.toFixed(2).replace(/\.?0+$/, ""), " / ");
@@ -157,11 +173,19 @@ export class DrawableBeatmapInfo {
         this.setFont(true);
 
         if (trimIfTooLong) {
+            let wasTrimmed = false;
+
             while (
+                value.length > 3 &&
                 this.ctx.measureText(value).width >
-                this.screen.width / 4 - this.widthMargin
+                    this.screen.width / 4 - this.widthMargin * 2
             ) {
-                value = value.slice(0, -3) + "...";
+                wasTrimmed = true;
+                value = value.slice(0, -3);
+            }
+
+            if (wasTrimmed) {
+                value += "...";
             }
         }
 
@@ -176,9 +200,7 @@ export class DrawableBeatmapInfo {
     }
 
     private formatNullableDecimal(value: number | null) {
-        return value === null
-            ? "Unknown"
-            : value.toFixed(2).replace(/\.?0+$/, "");
+        return value?.toFixed(2).replace(/\.?0+$/, "") ?? "Unknown";
     }
 
     private translateTo(x: number, y: number) {
