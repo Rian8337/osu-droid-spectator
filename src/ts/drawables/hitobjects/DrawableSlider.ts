@@ -100,7 +100,7 @@ export class DrawableSlider extends DrawableCircle {
 
             const { calculatedPath } = this.object.path;
 
-            for (let i = 1; i < calculatedPath.length; ++i) {
+            for (let i = 0; i < calculatedPath.length; ++i) {
                 const path = calculatedPath[i];
                 const progress = i / calculatedPath.length;
 
