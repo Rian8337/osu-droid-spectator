@@ -21,5 +21,7 @@ $<HTMLInputElement>("#progress").on("change", function () {
         preview.beatmap?.refresh();
     }
 
-    audioState.audio.play();
+    if (dataProcessor.isAvailableAt(value)) {
+        audioState.audio.play();
+    }
 });
