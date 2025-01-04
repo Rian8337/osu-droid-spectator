@@ -55,6 +55,8 @@ export class DrawableCircle extends DrawableHitObject {
                 opacity = (time - fadeInStartTime) / this.object.timeFadeIn;
             }
         } else if (!this.isHidden) {
+            opacity = 1;
+
             const fadeOutStartTime = hitTime;
             const dt = time - fadeOutStartTime;
 
