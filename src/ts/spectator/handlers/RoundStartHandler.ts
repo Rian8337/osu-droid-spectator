@@ -1,11 +1,21 @@
+import {
+    DroidDifficultyCalculator,
+    OsuDifficultyCalculator,
+} from "@rian8337/osu-difficulty-calculator";
 import { audioState, resetAudio } from "../../elements/Audio";
-import { calculateMaxScore } from "../../settings/BeatmapSettings";
+import {
+    calculateMaxScore,
+    parsedBeatmap,
+    setDroidStarRating,
+    setStandardStarRating,
+} from "../../settings/BeatmapSettings";
 import {
     setIgnoredPlayersFromRoomName,
     setPlayers,
 } from "../../settings/PlayerSettings";
 import { previews, reloadPreviews } from "../../settings/PreviewSettings";
 import {
+    mods,
     setMods,
     setSpeedMultiplier,
     setTeamMode,
@@ -24,6 +34,10 @@ export abstract class RoundStartHandler {
      * @param room The room state when the round starts.
      */
     static handle(room: StartingRoundMultiplayerRoom): void {
+        if (!parsedBeatmap) {
+            return;
+        }
+
         console.log("Round started");
         console.log(room);
 
@@ -34,6 +48,17 @@ export abstract class RoundStartHandler {
         setTeamMode(room.teamMode);
         calculateMaxScore();
         reloadPreviews();
+
+        const droidDifficultyCalculator = new DroidDifficultyCalculator(
+            parsedBeatmap,
+        ).calculate({ mods: mods });
+
+        const standardDifficultyCalculator = new OsuDifficultyCalculator(
+            parsedBeatmap,
+        ).calculate({ mods: mods });
+
+        setDroidStarRating(droidDifficultyCalculator.total);
+        setStandardStarRating(standardDifficultyCalculator.total);
 
         dataProcessor.reset();
         dataProcessor.addPlayers();
