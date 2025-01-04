@@ -137,10 +137,11 @@ export class DrawableBeatmapInfo {
         // Length
         this.translateTo(this.screen.width / 4, 0);
 
+        const clockRate = ModUtil.calculateRateWithMods(mods);
         const duration =
             parsedBeatmap.hitObjects.objects[
                 parsedBeatmap.hitObjects.objects.length - 1
-            ].endTime / ModUtil.calculateRateWithMods(mods);
+            ].endTime / clockRate;
 
         const minutes = Math.floor(duration / 60000);
         const seconds = Math.floor((duration % 60000) / 1000);
@@ -155,7 +156,13 @@ export class DrawableBeatmapInfo {
         // BPM
         this.moveDown();
 
-        this.write("BPM", this.formatNullableDecimal(mostCommonBPM));
+        let bpm = mostCommonBPM;
+
+        if (bpm !== null) {
+            bpm *= clockRate;
+        }
+
+        this.write("BPM", this.formatNullableDecimal(bpm));
 
         this.ctx.restore();
     }
