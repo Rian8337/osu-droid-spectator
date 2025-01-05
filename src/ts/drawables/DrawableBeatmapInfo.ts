@@ -14,6 +14,7 @@ import {
 } from "../settings/BeatmapSettings";
 import { mods } from "../settings/RoomSettings";
 import { DrawableRollingCounter } from "./counters/DrawableRollingCounter";
+import { audioState } from "../elements/Audio";
 
 /**
  * A drawable used to display beatmap information.
@@ -153,14 +154,23 @@ export class DrawableBeatmapInfo {
                 parsedBeatmap.hitObjects.objects.length - 1
             ].endTime / clockRate;
 
-        const minutes = Math.floor(duration / 60000);
-        const seconds = Math.floor((duration % 60000) / 1000);
+        const lengthMinutes = Math.floor(duration / 60000);
+        const lengthSeconds = Math.floor((duration % 60000) / 1000);
+
+        const currentTime = audioState.audio.currentTime / clockRate;
+
+        const minutes = Math.floor(currentTime / 60);
+        const seconds = Math.floor(currentTime % 60);
 
         this.write(
             "Length",
             [minutes, seconds]
                 .map((v) => v.toString().padStart(2, "0"))
-                .join(":"),
+                .join(":") +
+                " / " +
+                [lengthMinutes, lengthSeconds]
+                    .map((v) => v.toString().padStart(2, "0"))
+                    .join(":"),
         );
 
         // BPM
