@@ -16,21 +16,26 @@ for (const element of elements) {
     b.add(join(elementsPath, element));
 }
 
-b.plugin(tsify)
-    .transform(
-        babelify.configure({
-            extensions: [".js", ".ts", ".cjs"],
-            presets: ["@babel/preset-env"],
-        }),
-    )
-    .bundle((err, data) => {
-        if (err) throw err;
+b.plugin(tsify).transform(
+    babelify.configure({
+        extensions: [".js", ".ts", ".cjs"],
+        presets: ["@babel/preset-env"],
+    }),
+);
 
-        const dir = join(__dirname, "js");
+// Minify when bundling for production.
+if (!process.argv.includes("--development")) {
+    b.transform("uglifyify", { global: true });
+}
 
-        if (!existsSync(dir)) {
-            mkdirSync(dir);
-        }
+b.bundle((err, data) => {
+    if (err) throw err;
 
-        writeFileSync(join(dir, "index.js"), data);
-    });
+    const dir = join(__dirname, "js");
+
+    if (!existsSync(dir)) {
+        mkdirSync(dir);
+    }
+
+    writeFileSync(join(dir, "index.js"), data);
+});

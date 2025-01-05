@@ -3,14 +3,24 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "build",
+			"script": "build-production",
+			"group": {
+				"kind": "build"
+			},
+			"problemMatcher": [],
+			"label": "Bundle for production",
+			"detail": "Bundles the application for production"
+		},
+		{
+			"type": "npm",
+			"script": "build-development",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
 			"problemMatcher": [],
-			"label": "npm: build",
-			"detail": "npm run build"
-		}
+			"label": "Bundle for development",
+			"detail": "Bundles the application for development"
+		},
 	]
 }

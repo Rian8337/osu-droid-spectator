@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "A web-based spectator client for osu!droid collaborating with multiplayer-based Discord bot",
   "scripts": {
-    "build": "node src/bundler.js",
+    "build-development": "node src/bundler.js --development",
+    "build-production": "node src/bundler.js",
     "format-code": "npx prettier -w --loglevel=silent \"src/ts/**\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -31,6 +32,7 @@
     "dotenv": "^16.3.1",
     "jszip": "^3.10.1",
     "lodash.clonedeep": "^4.5.0",
-    "socket.io-client": "^4.7.2"
+    "socket.io-client": "^4.7.2",
+    "uglifyify": "^5.0.2"
   }
 }
