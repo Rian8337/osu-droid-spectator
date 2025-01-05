@@ -86,7 +86,10 @@ export abstract class DrawableHitObject {
         this.mods = mods;
 
         this.lifetimeStart = object.startTime - object.timePreempt;
-        this.lifetimeEnd = object.endTime + (object.hitWindow?.mehWindow ?? 0);
+
+        // Add 800ms to ensure that all animations play properly when needed.
+        this.lifetimeEnd =
+            object.endTime + (object.hitWindow?.mehWindow ?? 0) + 800;
     }
 
     /**

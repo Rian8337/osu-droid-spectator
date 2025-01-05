@@ -92,11 +92,6 @@ export class DrawableCircle extends DrawableHitObject {
             hitTime,
             hitData?.result ?? HitResult.miss,
         );
-
-        // Temporary, used for lifetime optimization.
-        this.updateLifetimeEnd(
-            this.object.endTime + this.object.hitWindow.mehWindow + 800,
-        );
     }
 
     /**
