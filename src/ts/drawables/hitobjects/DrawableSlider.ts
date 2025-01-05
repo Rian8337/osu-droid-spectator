@@ -336,16 +336,15 @@ export class DrawableSlider extends DrawableCircle {
         ctx.globalAlpha = opacity;
         ctx.strokeStyle = "#fff";
         ctx.beginPath();
-        ctx.moveTo(position.x, position.y);
         ctx.arc(
             position.x,
             position.y,
-            (radius * scale) / 16,
+            (radius * scale) / 8,
             -Math.PI,
             Math.PI,
         );
         ctx.shadowBlur = 0;
-        ctx.lineWidth = (radius * scale) / 32;
+        ctx.lineWidth = (radius * scale) / 16;
         ctx.stroke();
         ctx.restore();
     }
