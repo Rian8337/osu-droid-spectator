@@ -101,7 +101,7 @@ export async function downloadBeatmapset(setId: number): Promise<Blob | null> {
     downloadAbortController = new AbortController();
 
     const downloadResponse = await fetch(
-        `https://txy1.sayobot.cn/beatmaps/download/novideo/${setId.toString()}`,
+        `https://osu.direct/api/d/${setId.toString()}?noVideo=1`,
         { signal: downloadAbortController.signal },
     ).catch(() => null);
 
