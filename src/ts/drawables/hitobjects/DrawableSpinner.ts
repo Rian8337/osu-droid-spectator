@@ -20,13 +20,13 @@ export class DrawableSpinner extends DrawableHitObject {
         ctx: CanvasRenderingContext2D,
         time: number,
         hitData: SpectatorObjectDataEvent | null,
-    ): void {
+    ) {
         const dt = time - this.object.startTime;
         let opacity = 1;
 
         if (dt < 0) {
             // We are in approach time.
-            opacity = -dt / this.object.timePreempt;
+            opacity = MathUtils.clamp(1 + dt / this.object.timePreempt, 0, 1);
         } else if (time > this.object.endTime) {
             const fadeOutDuration = 240;
 
