@@ -157,7 +157,10 @@ export class DrawableBeatmapInfo {
         const lengthMinutes = Math.floor(duration / 60000);
         const lengthSeconds = Math.floor((duration % 60000) / 1000);
 
-        const currentTime = audioState.audio.currentTime / clockRate;
+        const currentTime = Math.min(
+            audioState.audio.currentTime / clockRate,
+            duration,
+        );
 
         const minutes = Math.floor(currentTime / 60);
         const seconds = Math.floor(currentTime % 60);
