@@ -103,7 +103,7 @@ export abstract class BeatmapChangedHandler {
                 );
 
                 beatmapTitle
-                    .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
+                    .prop("href", `https://osu.ppy.sh/s/${newBeatmapsetId}`)
                     .text(notFoundText);
                 return;
             }
@@ -125,7 +125,7 @@ export abstract class BeatmapChangedHandler {
                 );
 
                 beatmapTitle
-                    .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
+                    .prop("href", `https://osu.ppy.sh/s/${newBeatmapsetId}`)
                     .text(notFoundText);
                 return;
             }
@@ -135,7 +135,7 @@ export abstract class BeatmapChangedHandler {
             const beatmapsetBlob = await downloadBeatmapset(newBeatmapsetId);
             if (!beatmapsetBlob) {
                 beatmapTitle
-                    .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
+                    .prop("href", `https://osu.ppy.sh/s/${newBeatmapsetId}`)
                     .text(notFoundText);
                 return;
             }
@@ -151,7 +151,7 @@ export abstract class BeatmapChangedHandler {
             console.error("Beatmap not found in beatmapset");
 
             beatmapTitle
-                .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
+                .prop("href", `https://osu.ppy.sh/s/${newBeatmapsetId}`)
                 .text(notFoundText);
             return;
         }
@@ -163,7 +163,7 @@ export abstract class BeatmapChangedHandler {
             console.error("Background or audio not found in beatmapset");
 
             beatmapTitle
-                .prop("href", `//osu.ppy.sh/s/${newBeatmapsetId}`)
+                .prop("href", `https://osu.ppy.sh/s/${newBeatmapsetId}`)
                 .text(`${beatmapText} (an error has occurred)`);
             return;
         }
@@ -195,7 +195,7 @@ export abstract class BeatmapChangedHandler {
         beatmapTitle
             .prop(
                 "href",
-                `//osu.ppy.sh/${newMetadata.beatmapId ? "b" : "s"}/${
+                `https://osu.ppy.sh/${newMetadata.beatmapId ? "b" : "s"}/${
                     newMetadata.beatmapId ??
                     newMetadata.beatmapSetId ??
                     newBeatmapsetId
