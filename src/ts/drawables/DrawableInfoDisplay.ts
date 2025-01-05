@@ -49,7 +49,7 @@ export class DrawableInfoDisplay {
             this.ctx.translate(0, this.screen.height / 2);
         }
 
-        this.beatmapInfo.draw();
+        this.beatmapInfo.draw(time);
 
         if (teamMode === MultiplayerTeamMode.teamVS) {
             this.ctx.restore();
