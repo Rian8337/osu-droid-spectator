@@ -29,11 +29,6 @@ export let droidStarRating: number | null = null;
 export let standardStarRating: number | null = null;
 
 /**
- * The most common BPM of the beatmap.
- */
-export let mostCommonBPM: number | null = null;
-
-/**
  * The beatmapset that's currently used.
  */
 export let beatmapset = new JSZip();
@@ -54,12 +49,6 @@ export function setPickedBeatmap(newPickedBeatmap: PickedBeatmap | null): void {
  */
 export function setParsedBeatmap(newParsedBeatmap: Beatmap | null): void {
     parsedBeatmap = newParsedBeatmap;
-
-    if (parsedBeatmap) {
-        mostCommonBPM = 60000 / parsedBeatmap.mostCommonBeatLength;
-    } else {
-        mostCommonBPM = null;
-    }
 }
 
 /**

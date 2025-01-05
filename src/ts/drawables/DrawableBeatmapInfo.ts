@@ -8,18 +8,19 @@ import {
 } from "@rian8337/osu-base";
 import {
     droidStarRating,
-    mostCommonBPM,
     parsedBeatmap,
     pickedBeatmap,
     standardStarRating,
 } from "../settings/BeatmapSettings";
 import { mods } from "../settings/RoomSettings";
+import { DrawableRollingCounter } from "./counters/DrawableRollingCounter";
 
 /**
  * A drawable used to display beatmap information.
  */
 export class DrawableBeatmapInfo {
     private readonly ctx: CanvasRenderingContext2D;
+    private readonly bpmCounter = new DrawableBPMCounter();
 
     private get screen(): HTMLCanvasElement {
         return this.ctx.canvas;
@@ -50,8 +51,10 @@ export class DrawableBeatmapInfo {
 
     /**
      * Draws this display to the screen.
+     *
+     * @param time The time at which this display is drawn.
      */
-    draw() {
+    draw(time: number) {
         if (!pickedBeatmap || !parsedBeatmap) {
             return;
         }
@@ -154,13 +157,11 @@ export class DrawableBeatmapInfo {
         );
 
         // BPM
+        // This won't actually draw the counter - just updating the value.
+        this.bpmCounter.draw(this.ctx, time);
         this.moveDown();
 
-        let bpm = mostCommonBPM;
-
-        if (bpm !== null) {
-            bpm *= clockRate;
-        }
+        const bpm = this.bpmCounter.currentValue * clockRate;
 
         this.write("BPM", this.formatNullableDecimal(bpm));
 
@@ -230,5 +231,25 @@ export class DrawableBeatmapInfo {
         } catch {
             // Ignore error
         }
+    }
+}
+
+class DrawableBPMCounter extends DrawableRollingCounter {
+    protected override readonly rollingDuration = 500;
+    protected override readonly allowFractional = false;
+
+    override draw(_: CanvasRenderingContext2D, time: number) {
+        this.update(time);
+    }
+
+    protected override getTargetValue(time: number): number {
+        if (!parsedBeatmap) {
+            return 0;
+        }
+
+        const timingPoint =
+            parsedBeatmap.controlPoints.timing.controlPointAt(time);
+
+        return 60000 / timingPoint.msPerBeat;
     }
 }
