@@ -71,11 +71,18 @@ export class DrawableBeatmapInfo {
         let beatmapName = `${parsedBeatmap.metadata.artist}  -  ${parsedBeatmap.metadata.title}`;
 
         // Trim if too long
+        let wasTrimmed = false;
         while (
+            beatmapName.length > 3 &&
             this.ctx.measureText(beatmapName).width >
-            this.screen.width / 2 - this.widthMargin
+                this.screen.width / 2 - this.widthMargin
         ) {
-            beatmapName = beatmapName.slice(0, -3) + "...";
+            wasTrimmed = true;
+            beatmapName = beatmapName.slice(0, -3);
+        }
+
+        if (wasTrimmed) {
+            beatmapName += "...";
         }
 
         this.ctx.fillText(beatmapName, this.xPos, this.yPos);
