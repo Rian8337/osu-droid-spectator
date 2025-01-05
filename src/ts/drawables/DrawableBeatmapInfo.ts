@@ -255,7 +255,7 @@ export class DrawableBeatmapInfo {
 }
 
 class DrawableBPMCounter extends DrawableRollingCounter {
-    protected override readonly rollingDuration = 500;
+    protected override readonly rollingDuration = 250;
     protected override readonly allowFractional = false;
 
     override draw(_: CanvasRenderingContext2D, time: number) {
