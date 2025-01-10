@@ -203,6 +203,7 @@ export class DrawableCircle extends DrawableHitObject {
         ctx.translate(position.x, position.y);
         ctx.rotate(rotation);
         ctx.fillText(text, 0, 0);
+        ctx.strokeText(text, 0, 0);
         ctx.restore();
     }
 
