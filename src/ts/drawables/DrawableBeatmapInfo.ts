@@ -174,7 +174,7 @@ export class DrawableBeatmapInfo {
                 [lengthMinutes, lengthSeconds]
                     .map((v) => v.toString().padStart(2, "0"))
                     .join(":") +
-                `(${Math.floor((currentTime / duration) * 100).toString()}%)`,
+                ` (${Math.floor((currentTime / duration) * 100).toString()}%)`,
         );
 
         // BPM
