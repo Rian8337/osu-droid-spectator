@@ -16,10 +16,12 @@ export abstract class ChatMessageHandler {
         message = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
         if (username !== null) {
+            const date = new Date();
+
             const usernameSpan = document.createElement("span");
             usernameSpan.style.fontWeight = "bold";
             usernameSpan.style.color = "#f299b7";
-            usernameSpan.textContent = username;
+            usernameSpan.textContent = `[${[date.getHours(), date.getMinutes(), date.getSeconds()].map((v) => v.toString().padStart(2, "0")).join(":")}] ${username}`;
 
             paragraph.appendChild(usernameSpan);
             paragraph.insertAdjacentText("beforeend", `: ${message}`);
