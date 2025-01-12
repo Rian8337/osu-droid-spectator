@@ -159,7 +159,7 @@ export class DrawableBeatmapInfo {
 
         const currentTime = Math.min(
             audioState.audio.currentTime / clockRate,
-            duration,
+            duration / 1000,
         );
 
         const minutes = Math.floor(currentTime / 60);
@@ -173,7 +173,8 @@ export class DrawableBeatmapInfo {
                 " / " +
                 [lengthMinutes, lengthSeconds]
                     .map((v) => v.toString().padStart(2, "0"))
-                    .join(":"),
+                    .join(":") +
+                `(${Math.floor((currentTime / duration) * 100).toString()}%)`,
         );
 
         // BPM
