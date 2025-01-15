@@ -205,6 +205,7 @@ export class Preview {
 
         if (!Number.isFinite(time)) {
             this.resultScreen?.draw(this.ctx);
+            this.playerInfo?.draw(this.ctx, time);
 
             return;
         }
