@@ -4,7 +4,7 @@ import {
     pickedBeatmap,
 } from "../settings/BeatmapSettings";
 import { storeBeatmapsetToDB } from "../settings/DatabaseSettings";
-import { BeatmapChangedHandler } from "../spectator/handlers/BeatmapChangedHandler";
+import onBeatmapChanged from "../spectator/handlers/BeatmapChangedHandler";
 
 $<HTMLButtonElement>("#addBeatmapset").on("click", (e) => {
     e.preventDefault();
@@ -12,6 +12,7 @@ $<HTMLButtonElement>("#addBeatmapset").on("click", (e) => {
     $("#addBeatmapsetInput").trigger("click");
 });
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 $<HTMLInputElement>("#addBeatmapsetInput").on("change", async (e) => {
     e.preventDefault();
 
@@ -21,13 +22,7 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", async (e) => {
 
     const finalMessages: string[] = [];
 
-    for (let i = 0; i < e.target.files.length; ++i) {
-        const file = e.target.files[i];
-
-        if (!file) {
-            return;
-        }
-
+    for (const file of e.target.files) {
         const beatmapsetId = parseInt(file.name);
 
         if (isNaN(beatmapsetId)) {
@@ -43,9 +38,11 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", async (e) => {
 
                 if (!content) {
                     finalMessages.push(
-                        `Cannot read contents of beatmapset ID ${beatmapsetId}.`,
+                        `Cannot read contents of beatmapset ID ${beatmapsetId.toString()}.`,
                     );
-                    return resolve();
+
+                    resolve();
+                    return;
                 }
 
                 await storeBeatmapsetToDB(
@@ -58,11 +55,11 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", async (e) => {
                     beatmapsetId === pickedBeatmap?.beatmapSetId
                 ) {
                     downloadAbortController?.abort();
-                    await BeatmapChangedHandler.handle(pickedBeatmap);
+                    await onBeatmapChanged(pickedBeatmap);
                 }
 
                 finalMessages.push(
-                    `Successfully added beatmapset ID ${beatmapsetId} to cache.`,
+                    `Successfully added beatmapset ID ${beatmapsetId.toString()} to cache.`,
                 );
                 resolve();
             };
@@ -71,7 +68,7 @@ $<HTMLInputElement>("#addBeatmapsetInput").on("change", async (e) => {
                 console.error(e.target?.error);
 
                 finalMessages.push(
-                    `An error was encountered when attempting to load beatmapset ID ${beatmapsetId}.`,
+                    `An error was encountered when attempting to load beatmapset ID ${beatmapsetId.toString()}.`,
                 );
                 resolve();
             };
