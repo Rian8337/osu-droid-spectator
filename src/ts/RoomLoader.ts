@@ -7,6 +7,7 @@ import { dataProcessor } from "./settings/SpectatorSettings";
 import { ChatMessageHandler } from "./spectator/handlers/ChatMessageHandler";
 import { RoundEndHandler } from "./spectator/handlers/RoundEndHandler";
 import { SkipPerformedHandler } from "./spectator/handlers/SkipPerformedHandler";
+import onScoreSubmission from "./spectator/handlers/ScoreSubmissionHandler";
 import {
     setMods,
     setSpeedMultiplier,
@@ -80,6 +81,7 @@ export function askRoomID(
             "skipPerformed",
             SkipPerformedHandler.handle.bind(SkipPerformedHandler),
         )
+        .on("scoreSubmission", onScoreSubmission)
         .once("initialConnection", async (room) => {
             console.log("Room info received:");
             console.log(room);

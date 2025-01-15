@@ -19,6 +19,7 @@ import { SpectatorCursorEventManager } from "./SpectatorCursorEventManager";
 import { SpectatorEventManagers } from "./SpectatorEventManagers";
 import { SpectatorObjectDataEventManager } from "./SpectatorObjectDataEventManager";
 import { SpectatorScoreEventManager } from "./SpectatorScoreEventManager";
+import { MultiplayerScore } from "../rawdata/MultiplayerScore";
 
 /**
  * Represents a manager for spectator data of a player.
@@ -72,11 +73,9 @@ export class SpectatorDataManager {
     latestDataTime = -1;
 
     /**
-     * The maximum hit window of this player.
+     * The resulting score of this player.
      */
-    get maxHitWindow(): number {
-        return this.hitWindow.mehWindow;
-    }
+    result?: MultiplayerScore;
 
     /**
      * Whether the presence of data in this manager should be ignored.

@@ -11,6 +11,7 @@ import { teamMode } from "./settings/RoomSettings";
 import { MultiplayerTeamMode } from "./spectator/structures/MultiplayerTeamMode";
 import { DrawableHitErrorBar } from "./drawables/DrawableHitErrorBar";
 import { DrawableClickCounter } from "./drawables/counters/DrawableClickCounter";
+import { DrawableResultScreen } from "./drawables/DrawableResultScreen";
 
 /**
  * Represents a beatmap preview.
@@ -60,6 +61,11 @@ export class Preview {
      * The hit error bar responsible for this preview.
      */
     hitErrorBar?: DrawableHitErrorBar;
+
+    /**
+     * The result screen responsible for this preview.
+     */
+    resultScreen?: DrawableResultScreen;
 
     /**
      * The uid of the player in this preview.
@@ -178,6 +184,7 @@ export class Preview {
             specDataManager.events.objectData,
             specDataManager.hitWindow,
         );
+        this.resultScreen = new DrawableResultScreen(specDataManager.uid);
 
         this.at(0);
     }
@@ -187,7 +194,7 @@ export class Preview {
      *
      * @param time The time.
      */
-    at(time: number): void {
+    at(time: number) {
         if (!this.beatmap || !this.specDataManager) {
             // The beatmap may not be loaded yet. In that case, do nothing.
             return;
@@ -195,6 +202,13 @@ export class Preview {
 
         this.applyCanvasPosition();
         this.ctx.clearRect(0, 0, this.screen.width, this.screen.height);
+
+        if (!Number.isFinite(time)) {
+            this.resultScreen?.draw(this.ctx);
+
+            return;
+        }
+
         this.clickCounter?.draw(this.ctx, time);
         this.accuracyCounter?.draw(this.ctx, time);
         this.comboCounter?.draw(this.ctx, time);

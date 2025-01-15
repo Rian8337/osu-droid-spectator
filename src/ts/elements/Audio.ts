@@ -91,6 +91,14 @@ $(audio)
     })
     .on("timeupdate", function () {
         $<HTMLInputElement>("#progress").val(this.currentTime);
+    })
+    .on("ended", () => {
+        // Ensure previews are in the latest state.
+        for (const preview of previews.values()) {
+            preview.at(Number.POSITIVE_INFINITY);
+        }
+
+        infoDisplay.draw(Number.POSITIVE_INFINITY);
     });
 
 export const audioState = {

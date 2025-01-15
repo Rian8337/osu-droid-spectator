@@ -1,6 +1,4 @@
 import { audioState } from "../../elements/Audio";
-import { previews } from "../../settings/PreviewSettings";
-import { infoDisplay } from "../../settings/SpectatorSettings";
 import { ChatMessageHandler } from "./ChatMessageHandler";
 
 /**
@@ -15,13 +13,6 @@ export abstract class RoundEndHandler {
             "ended",
             () => {
                 ChatMessageHandler.onRoundEnd();
-
-                // Ensure previews are in the latest state.
-                for (const preview of previews.values()) {
-                    preview.at(Number.POSITIVE_INFINITY);
-                }
-
-                infoDisplay.draw(Number.POSITIVE_INFINITY);
             },
             { once: true },
         );

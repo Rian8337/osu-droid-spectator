@@ -105,7 +105,6 @@ export abstract class DrawableHitObject {
         ctx: CanvasRenderingContext2D,
         time: number,
         hitData: SpectatorObjectDataEvent | null,
-        maxHitWindow: number,
     ): void;
 
     /**

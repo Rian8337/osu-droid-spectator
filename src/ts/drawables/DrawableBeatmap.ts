@@ -161,7 +161,7 @@ export class DrawableBeatmap {
                 break;
             }
 
-            object.draw(ctx, time, objectData, manager.maxHitWindow);
+            object.draw(ctx, time, objectData);
         }
 
         ctx.restore();
