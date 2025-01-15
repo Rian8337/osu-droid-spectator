@@ -210,7 +210,7 @@ export class DrawableResultScreen {
 
         ctx.save();
         ctx.textAlign = "right";
-        ctx.font = `bold ${(ctx.canvas.height / 4).toString()}px Torus, sans-serif`;
+        ctx.font = `bold ${(ctx.canvas.height / 1.25).toString()}px Torus, sans-serif`;
         ctx.fillStyle = "#ad1010";
 
         if (manager?.result && accuracy.value()) {
@@ -259,8 +259,6 @@ export class DrawableResultScreen {
                     break;
             }
         }
-
-        ctx.font = `bold ${(ctx.canvas.height / 1.25).toString()}px Torus, sans-serif`;
 
         ctx.fillText(
             rank,
