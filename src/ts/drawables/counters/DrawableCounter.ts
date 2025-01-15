@@ -34,7 +34,7 @@ export abstract class DrawableCounter {
         try {
             // This code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `bold ${fontSize.toString()}px Torus`;
+            ctx.font = `bold ${fontSize.toString()}px Torus, sans-serif`;
         } catch {
             // Ignore error
         }

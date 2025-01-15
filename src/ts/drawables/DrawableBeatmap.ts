@@ -206,7 +206,7 @@ export class DrawableBeatmap {
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `${this.drawableHitObjects[0].object.radius.toString()}px Torus`;
+            ctx.font = `${this.drawableHitObjects[0].object.radius.toString()}px Torus, sans-serif`;
         } catch {
             // Ignore error
         }

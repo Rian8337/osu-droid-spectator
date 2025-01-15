@@ -53,7 +53,7 @@ export class DrawableTeamScoreDifferenceCounter extends DrawableRollingCounter {
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `bold ${(canvas.height / 5).toString()}px Torus`;
+            ctx.font = `bold ${(canvas.height / 5).toString()}px Torus, sans-serif`;
         } catch {
             // Ignore error
         }

@@ -250,7 +250,7 @@ export class DrawableBeatmapInfo {
         try {
             // this code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            this.ctx.font = `${bold ? "bold " : ""}${this.fontHeight.toString()}px Torus`;
+            this.ctx.font = `${bold ? "bold " : ""}${this.fontHeight.toString()}px Torus, sans-serif`;
         } catch {
             // Ignore error
         }

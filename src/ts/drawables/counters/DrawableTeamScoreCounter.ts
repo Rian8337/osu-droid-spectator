@@ -108,7 +108,7 @@ export class DrawableTeamScoreCounter extends DrawableRollingCounter {
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
             ctx.font = `${this.bold ? "bold " : ""}${(
                 canvas.height / 5
-            ).toString()}px Torus`;
+            ).toString()}px Torus, sans-serif`;
         } catch {
             // Ignore error
         }

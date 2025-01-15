@@ -108,7 +108,7 @@ export class DrawablePlayerInfo
         try {
             // This code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `bold ${fontSize}px Torus`;
+            ctx.font = `bold ${fontSize}px Torus, sans-serif`;
         } catch (e) {
             // Ignore error
         }
