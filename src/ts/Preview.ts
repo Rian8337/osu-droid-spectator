@@ -12,6 +12,7 @@ import { MultiplayerTeamMode } from "./spectator/structures/MultiplayerTeamMode"
 import { DrawableHitErrorBar } from "./drawables/DrawableHitErrorBar";
 import { DrawableClickCounter } from "./drawables/counters/DrawableClickCounter";
 import { DrawableResultScreen } from "./drawables/DrawableResultScreen";
+import { audioState } from "./elements/Audio";
 
 /**
  * Represents a beatmap preview.
@@ -208,8 +209,8 @@ export class Preview {
                 this.beatmap.beatmap.hitObjects.objects.length - 1
             ].endTime;
 
-        // Draw the result screen 2 seconds after the beatmap has finished.
-        if (time >= finalObjectEndTime + 2000) {
+        // Draw the result screen 2 seconds after the beatmap has finished in real-time.
+        if (time >= finalObjectEndTime + 2000 * audioState.audio.playbackRate) {
             this.resultScreen?.draw(this.ctx);
             this.playerInfo?.draw(this.ctx, time);
 
