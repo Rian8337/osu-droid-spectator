@@ -1,16 +1,29 @@
-import { MathUtils } from "@rian8337/osu-base";
 import { previews } from "../settings/PreviewSettings";
 import { dataProcessor } from "../settings/SpectatorSettings";
 import { audioState } from "./Audio";
+import { parsedBeatmap } from "../settings/BeatmapSettings";
 
-$<HTMLInputElement>("#progress").on("change", function () {
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+$<HTMLInputElement>("#progress").on("change", async function () {
+    let value = parseInt(this.value) * 1000;
+
     // Don't go too behind or too far if spectator data is not available (yet).
-    // Cap at earliest and latest event time.
-    const value = MathUtils.clamp(
-        parseInt(this.value) * 1000,
-        dataProcessor.earliestEventTime ?? 0,
-        dataProcessor.latestEventTime ?? 0,
-    );
+    // Cap at earliest and latest event time when necessary.
+    if (parsedBeatmap) {
+        const finalObjectEndTime =
+            parsedBeatmap.hitObjects.objects[
+                parsedBeatmap.hitObjects.objects.length - 1
+            ].endTime;
+
+        // Do not cap if the user seeks to after the beatmap ends.
+        if (value < finalObjectEndTime) {
+            value = Math.min(value, dataProcessor.latestEventTime ?? 0);
+        }
+    } else {
+        value = Math.min(value, dataProcessor.latestEventTime ?? 0);
+    }
+
+    value = Math.max(value, dataProcessor.earliestEventTime ?? 0);
 
     audioState.audio.pause();
 
@@ -22,6 +35,6 @@ $<HTMLInputElement>("#progress").on("change", function () {
     }
 
     if (dataProcessor.isAvailableAt(value)) {
-        audioState.audio.play();
+        await audioState.audio.play();
     }
 });
