@@ -203,7 +203,13 @@ export class Preview {
         this.applyCanvasPosition();
         this.ctx.clearRect(0, 0, this.screen.width, this.screen.height);
 
-        if (!Number.isFinite(time)) {
+        const finalObjectEndTime =
+            this.beatmap.beatmap.hitObjects.objects[
+                this.beatmap.beatmap.hitObjects.objects.length - 1
+            ].endTime;
+
+        // Draw the result screen 2 seconds after the beatmap has finished.
+        if (time >= finalObjectEndTime + 2000) {
             this.resultScreen?.draw(this.ctx);
             this.playerInfo?.draw(this.ctx, time);
 
