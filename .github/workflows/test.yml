@@ -1,8 +1,8 @@
 name: Tests
 on: [push, pull_request]
 jobs:
-  lint:
-    name: Lint
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -16,5 +16,5 @@ jobs:
       - name: Install dependencies
         run: npm i
 
-      - name: Build
-        run: npm run build
+      - name: Build Production
+        run: npm run build-production
