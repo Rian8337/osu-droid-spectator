@@ -212,6 +212,7 @@ export class DrawableResultScreen {
         ctx.textAlign = "right";
         ctx.font = `bold ${(ctx.canvas.height / 1.25).toString()}px Torus, sans-serif`;
         ctx.fillStyle = "#ad1010";
+        ctx.lineWidth = 2;
         ctx.strokeStyle = "#FFFFFF";
 
         if (manager?.result && accuracy.value()) {
