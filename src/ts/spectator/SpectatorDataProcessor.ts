@@ -73,7 +73,7 @@ export class SpectatorDataProcessor {
     }
 
     /**
-     * Resets this processor to the current players.
+     * Resets this processor.
      */
     reset() {
         this.managers.clear();

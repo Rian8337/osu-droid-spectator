@@ -1,19 +1,20 @@
-import { setPickedBeatmap } from "./settings/BeatmapSettings";
-import onBeatmapChanged from "./spectator/handlers/BeatmapChangedHandler";
-import onRoundStart from "./spectator/handlers/RoundStartHandler";
 import { Socket, io } from "socket.io-client";
-import { SpectatorClientEvents } from "./spectator/SpectatorClientEvents";
-import { dataProcessor } from "./settings/SpectatorSettings";
-import onChatMessage from "./spectator/handlers/ChatMessageHandler";
-import onRoundEnd from "./spectator/handlers/RoundEndHandler";
-import onSkipPerformed from "./spectator/handlers/SkipPerformedHandler";
-import onScoreSubmission from "./spectator/handlers/ScoreSubmissionHandler";
+import { emptyChat } from "./elements/ChatContainer";
+import { setPickedBeatmap } from "./settings/BeatmapSettings";
 import {
     setMods,
     setSpeedMultiplier,
     setTeamMode,
 } from "./settings/RoomSettings";
-import { emptyChat } from "./elements/ChatContainer";
+import { dataProcessor } from "./settings/SpectatorSettings";
+import onBeatmapChanged from "./spectator/handlers/BeatmapChangedHandler";
+import onChatMessage from "./spectator/handlers/ChatMessageHandler";
+import onRoundAbort from "./spectator/handlers/RoundAbortHandler";
+import onRoundEnd from "./spectator/handlers/RoundEndHandler";
+import onRoundStart from "./spectator/handlers/RoundStartHandler";
+import onScoreSubmission from "./spectator/handlers/ScoreSubmissionHandler";
+import onSkipPerformed from "./spectator/handlers/SkipPerformedHandler";
+import { SpectatorClientEvents } from "./spectator/SpectatorClientEvents";
 
 let socket: Socket<SpectatorClientEvents> | null = null;
 let disconnectTimeout: NodeJS.Timeout | undefined;
@@ -73,6 +74,7 @@ export function askRoomID(
         .on("chatMessage", onChatMessage)
         .on("spectatorData", dataProcessor.process.bind(dataProcessor))
         .on("beatmapChanged", onBeatmapChanged)
+        .on("roundAborted", onRoundAbort)
         .on("roundStarted", onRoundStart)
         .on("roundEnded", onRoundEnd)
         .on("skipPerformed", onSkipPerformed)
