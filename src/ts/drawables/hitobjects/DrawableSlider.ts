@@ -1,8 +1,11 @@
 import {
     Easing,
+    IModApplicableToDroid,
     Interpolation,
     MathUtils,
+    Mod,
     Modes,
+    PathType,
     Slider,
     SliderTick,
     Vector2,
@@ -19,8 +22,15 @@ export class DrawableSlider extends DrawableCircle {
     private static readonly reverseArrow = String.fromCharCode(10132);
 
     private sliderPath = new Path2D();
-    private readonly sliderCurve: Vector2[] = [];
+    private readonly optimizedPath: Vector2[] = [];
+    private readonly currentPathCurve: Vector2[] = [];
     private lastSnakingInProgress = -1;
+
+    constructor(slider: Slider, mods: (Mod & IModApplicableToDroid)[]) {
+        super(slider, mods);
+
+        this.generateOptimizedPath();
+    }
 
     override draw(
         ctx: CanvasRenderingContext2D,
@@ -93,21 +103,27 @@ export class DrawableSlider extends DrawableCircle {
 
         if (snakingInProgress !== this.lastSnakingInProgress) {
             this.lastSnakingInProgress = snakingInProgress;
+
+            // Unfortunately, Path2D does not provide a way to "remove" points from the path,
+            // so we have to reconstruct the path every time the snaking progress changes.
             this.sliderPath = new Path2D();
+            const { currentPathCurve, optimizedPath } = this;
 
-            // TODO: optimize this (don't just outright remove all points)
-            this.sliderCurve.length = 0;
+            // Remove the interpolated point from the curve.
+            currentPathCurve.pop();
 
-            const { calculatedPath } = this.object.path;
-
-            for (let i = 0; i < calculatedPath.length; ++i) {
-                const path = calculatedPath[i];
-                const progress = i / calculatedPath.length;
+            for (
+                let i = currentPathCurve.length;
+                i < optimizedPath.length;
+                ++i
+            ) {
+                const path = optimizedPath[i];
+                const progress = i / optimizedPath.length;
 
                 if (progress > snakingInProgress) {
                     // Interpolate the current position of the path.
-                    const prevPath = calculatedPath[i - 1];
-                    const prevProgress = (i - 1) / calculatedPath.length;
+                    const prevPath = optimizedPath[i - 1];
+                    const prevProgress = (i - 1) / optimizedPath.length;
 
                     const pathProgress =
                         (snakingInProgress - prevProgress) /
@@ -121,7 +137,7 @@ export class DrawableSlider extends DrawableCircle {
 
                     const drawPosition = position.add(interpolatedPath);
 
-                    this.sliderCurve.push(interpolatedPath);
+                    currentPathCurve.push(interpolatedPath);
                     this.sliderPath.lineTo(drawPosition.x, drawPosition.y);
 
                     break;
@@ -129,7 +145,7 @@ export class DrawableSlider extends DrawableCircle {
 
                 const drawPosition = position.add(path);
 
-                this.sliderCurve.push(path);
+                currentPathCurve.push(path);
                 this.sliderPath.lineTo(drawPosition.x, drawPosition.y);
             }
         }
@@ -138,7 +154,7 @@ export class DrawableSlider extends DrawableCircle {
 
         const nestedObjects = this.object.nestedHitObjects;
         const pathEndPosition = this.stackedPosition.add(
-            this.sliderCurve[this.sliderCurve.length - 1],
+            this.currentPathCurve[this.currentPathCurve.length - 1],
         );
 
         // Slider tail
@@ -158,8 +174,10 @@ export class DrawableSlider extends DrawableCircle {
         const repetitions = this.object.spanCount;
         const repeat = (dt * repetitions) / this.object.duration;
         if (repetitions > 1 && repeat + 1 <= (repetitions & ~1)) {
-            const lastPoint = this.sliderCurve[this.sliderCurve.length - 1];
-            const secondLastPoint = this.sliderCurve.at(-2) ?? position;
+            const { currentPathCurve } = this;
+
+            const lastPoint = currentPathCurve[currentPathCurve.length - 1];
+            const secondLastPoint = currentPathCurve.at(-2) ?? position;
 
             this.drawText(
                 ctx,
@@ -390,5 +408,46 @@ export class DrawableSlider extends DrawableCircle {
         ctx.lineWidth = this.circleBorder;
         ctx.stroke();
         ctx.restore();
+    }
+
+    private generateOptimizedPath() {
+        if (!(this.object instanceof Slider)) {
+            return;
+        }
+
+        const { path } = this.object;
+
+        // osu!stable optimizes gameplay path rendering by only including points that are 6 osu!pixels apart.
+        // In linear paths, the distance threshold is further extended to 32 osu!pixels.
+        const distanceThreshold = path.pathType == PathType.Linear ? 32 : 6;
+
+        // Additional consideration for Catmull sliders that form "bulbs" around points with identical positions.
+        const isCatmull = path.pathType == PathType.Catmull;
+
+        // See PathApproximator.catmullDetail.
+        const catmullSegmentLength = 100;
+
+        let lastStart: Vector2 | null = null;
+
+        for (let i = 0; i < path.calculatedPath.length; ++i) {
+            const p = path.calculatedPath[i];
+
+            if (lastStart === null) {
+                lastStart = p;
+                this.optimizedPath.push(p);
+                continue;
+            }
+
+            const distanceFromStart = p.getDistance(lastStart);
+
+            if (
+                distanceFromStart > distanceThreshold ||
+                i === path.calculatedPath.length - 1 ||
+                (isCatmull && (i + 1) % catmullSegmentLength === 0)
+            ) {
+                this.optimizedPath.push(p);
+                lastStart = null;
+            }
+        }
     }
 }
