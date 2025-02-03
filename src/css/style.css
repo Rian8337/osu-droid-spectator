@@ -209,7 +209,7 @@ a:hover {
     font-family: Torus;
     position: absolute;
     z-index: 9;
-    background-color: rgba(47, 47, 47, 0.5);
+    background-color: rgba(47, 47, 47, 0.75);
     border: 1px solid #d3d3d3;
     width: 30%;
     max-height: 60%;
