@@ -103,10 +103,6 @@ export class DrawableSlider extends DrawableCircle {
 
         if (snakingInProgress !== this.lastSnakingInProgress) {
             this.lastSnakingInProgress = snakingInProgress;
-
-            // Unfortunately, Path2D does not provide a way to "remove" points from the path,
-            // so we have to reconstruct the path every time the snaking progress changes.
-            this.sliderPath = new Path2D();
             const { currentPathCurve, optimizedPath } = this;
 
             // Remove the interpolated point from the curve.
@@ -135,17 +131,21 @@ export class DrawableSlider extends DrawableCircle {
                         pathProgress,
                     );
 
-                    const drawPosition = position.add(interpolatedPath);
-
                     currentPathCurve.push(interpolatedPath);
-                    this.sliderPath.lineTo(drawPosition.x, drawPosition.y);
 
                     break;
                 }
 
+                currentPathCurve.push(path);
+            }
+
+            // Unfortunately, Path2D does not provide a way to "remove" points from the path,
+            // so we have to reconstruct the path every time the snaking progress changes.
+            this.sliderPath = new Path2D();
+
+            for (const path of currentPathCurve) {
                 const drawPosition = position.add(path);
 
-                currentPathCurve.push(path);
                 this.sliderPath.lineTo(drawPosition.x, drawPosition.y);
             }
         }
