@@ -12,7 +12,8 @@ export let db: IDBDatabase | null = null;
 export function openDatabase(): Promise<void> {
     return new Promise((resolve) => {
         if (db) {
-            return resolve();
+            resolve();
+            return;
         }
 
         const request = indexedDB.open("beatmaps");
@@ -49,7 +50,8 @@ export function getBeatmapsetFromDB(
 ): Promise<Blob | null> {
     return new Promise((resolve, reject) => {
         if (!db) {
-            return reject("The database has not been opened.");
+            reject(new Error("The database has not been opened."));
+            return;
         }
 
         const transaction = db.transaction("beatmaps", "readonly");
@@ -64,22 +66,24 @@ export function getBeatmapsetFromDB(
             resolve(null);
         };
 
-        const objectStoreRequest: IDBRequest<Blob> = transaction
+        const objectStoreRequest = transaction
             .objectStore("beatmaps")
-            .get(beatmapsetId);
+            .get(beatmapsetId) as IDBRequest<Blob | undefined>;
+
         objectStoreRequest.onsuccess = () => {
             if (objectStoreRequest.result) {
                 console.log(
-                    `Beatmapset with ID ${beatmapsetId} retrieved from database`,
+                    `Beatmapset with ID ${beatmapsetId.toString()} retrieved from database`,
                 );
             } else {
                 console.log(
-                    `Beatmapset with ID ${beatmapsetId} not found in database`,
+                    `Beatmapset with ID ${beatmapsetId.toString()} not found in database`,
                 );
             }
 
             resolve(objectStoreRequest.result ?? null);
         };
+
         objectStoreRequest.onerror = () => {
             console.error(objectStoreRequest.error);
 
@@ -100,20 +104,22 @@ export function storeBeatmapsetToDB(
 ): Promise<void> {
     return new Promise((resolve, reject) => {
         if (!db) {
-            return reject("The database has not been opened.");
+            reject(new Error("The database has not been opened."));
+            return;
         }
 
         const transaction = db.transaction("beatmaps", "readwrite");
+
         transaction.oncomplete = () => {
             console.log(
-                `Beatmapset with ID ${beatmapsetId} stored into database`,
+                `Beatmapset with ID ${beatmapsetId.toString()} stored into database`,
             );
 
             resolve();
         };
         transaction.onabort = () => {
             console.log(
-                `Beatmapset storing transaction aborted, was storing ID ${beatmapsetId}`,
+                `Beatmapset storing transaction aborted, was storing ID ${beatmapsetId.toString()}`,
             );
 
             resolve();

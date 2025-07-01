@@ -12,7 +12,7 @@ $(document.body).on("mousemove", function (e) {
 export function toggleControlBar() {
     const body = $(document.body);
 
-    clearTimeout(body.data("h"));
+    clearTimeout(body.data("h") as number);
 
     body.addClass("h").data(
         "h",

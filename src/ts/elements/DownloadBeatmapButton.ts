@@ -2,7 +2,7 @@ import { SayobotAPIResponse } from "../sayobot/SayobotAPIResponse";
 import { downloadBeatmapset } from "../settings/BeatmapSettings";
 import { storeBeatmapsetToDB } from "../settings/DatabaseSettings";
 
-$<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
+$<HTMLButtonElement>("#downloadBeatmapset").on("click", (e) => {
     e.preventDefault();
 
     const beatmapsetLinkOrId = prompt(
@@ -20,9 +20,11 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
             !beatmapsetLinkOrId.startsWith("https://osu.ppy.sh/") &&
             !beatmapsetLinkOrId.startsWith("https://dev.ppy.sh/")
         ) {
-            return alert(
+            alert(
                 "The provided beatmapset link must be from https://osu.ppy.sh or https://dev.ppy.sh.",
             );
+
+            return;
         }
 
         if (
@@ -31,9 +33,9 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
                 beatmapsetLinkOrId.indexOf("/s/"),
             ].every((v) => v === -1)
         ) {
-            return alert(
-                "Could not parse a beatmapset ID from the given link.",
-            );
+            alert("Could not parse a beatmapset ID from the given link.");
+
+            return;
         }
 
         const split = beatmapsetLinkOrId.split("/");
@@ -43,44 +45,55 @@ $<HTMLButtonElement>("#downloadBeatmapset").on("click", async (e) => {
     }
 
     if (isNaN(beatmapsetId)) {
-        return alert("Could not parse a beatmapset ID from the given input.");
-    }
+        alert("Could not parse a beatmapset ID from the given input.");
 
-    let apiResponse: Response;
-
-    try {
-        apiResponse = await fetch(
-            `https://api.sayobot.cn/beatmapinfo?1=${beatmapsetId}`,
-        );
-    } catch {
-        return alert("Contact with Sayobot failed.");
-    }
-
-    if (apiResponse.status >= 400 && apiResponse.status < 200) {
-        return alert("Contact with Sayobot failed.");
-    }
-
-    const json: SayobotAPIResponse = await apiResponse.json();
-
-    if (json.status === -1) {
-        return alert("Could not find a beatmap with the given link or ID.");
-    }
-
-    const { artist, title, creator } = json.data[0];
-    const beatmapText = `"${artist} - ${title}" by ${creator}`;
-    const confirmation = confirm(
-        `Downloading ${beatmapText}.\n\nPress OK to start the pre-download process.`,
-    );
-
-    if (!confirmation) {
         return;
     }
 
-    const blob = await downloadBeatmapset(beatmapsetId);
-    if (!blob) {
-        return alert(`Failed to pre-download ${beatmapText}. Aborting.`);
-    }
+    fetch(`https://api.sayobot.cn/beatmapinfo?1=${beatmapsetId.toString()}`)
+        .then((res) => {
+            if (!res.ok) {
+                throw new Error("Failed to fetch beatmap info from Sayobot.");
+            }
 
-    await storeBeatmapsetToDB(beatmapsetId, blob);
-    alert(`Successfully pre-downloaded ${beatmapText}.`);
+            return res.json() as Promise<SayobotAPIResponse>;
+        })
+        .then((json) => {
+            if (json.status === -1) {
+                throw new Error(
+                    "Could not find a beatmap with the given link or ID.",
+                );
+            }
+
+            const { artist, title, creator } = json.data[0];
+            const beatmapText = `"${artist} - ${title}" by ${creator}`;
+            const confirmation = confirm(
+                `Downloading ${beatmapText}.\n\nPress OK to start the pre-download process.`,
+            );
+
+            if (!confirmation) {
+                return;
+            }
+
+            return downloadBeatmapset(beatmapsetId);
+        })
+        .then((blob) => {
+            if (!blob) {
+                throw new Error(
+                    `Failed to pre-download beatmapset ID ${beatmapsetId.toString()}.`,
+                );
+            }
+
+            return storeBeatmapsetToDB(beatmapsetId, blob);
+        })
+        .then(() => {
+            alert(
+                `Successfully pre-downloaded beatmapset ID ${beatmapsetId.toString()}.`,
+            );
+        })
+        .catch((e: unknown) => {
+            console.error(e);
+
+            alert("Failed to fetch beatmap info from Sayobot.");
+        });
 });

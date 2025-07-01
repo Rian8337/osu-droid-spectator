@@ -2,8 +2,8 @@ $<HTMLButtonElement>("#fullscreen").on("click", (e) => {
     e.preventDefault();
 
     if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
+        void document.documentElement.requestFullscreen();
     } else {
-        document.exitFullscreen();
+        void document.exitFullscreen();
     }
 });
