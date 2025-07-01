@@ -1,11 +1,7 @@
 import { Socket, io } from "socket.io-client";
 import { emptyChat } from "./elements/ChatContainer";
 import { setPickedBeatmap } from "./settings/BeatmapSettings";
-import {
-    setMods,
-    setSpeedMultiplier,
-    setTeamMode,
-} from "./settings/RoomSettings";
+import { setMods, setTeamMode } from "./settings/RoomSettings";
 import { dataProcessor } from "./settings/SpectatorSettings";
 import onBeatmapChanged from "./spectator/handlers/BeatmapChangedHandler";
 import onChatMessage from "./spectator/handlers/ChatMessageHandler";
@@ -37,9 +33,7 @@ export function askRoomID(
 
     socket = io(`https://droidpp.osudroid.moe/api/tournament/${roomId}`, {
         path: "/api/tournament/socket.io",
-        auth: {
-            type: "1",
-        },
+        auth: { type: "1" },
         reconnectionAttempts: 8,
     });
 
@@ -86,8 +80,7 @@ export function askRoomID(
             emptyChat();
 
             setPickedBeatmap(room.beatmap);
-            setMods(room.mods.mods ?? "");
-            setSpeedMultiplier(room.mods.speedMultiplier);
+            setMods(room.mods);
             setTeamMode(room.teamMode);
 
             if (room.beatmap) {

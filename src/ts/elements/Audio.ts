@@ -1,9 +1,9 @@
 import { ModUtil } from "@rian8337/osu-base";
 import { previews } from "../settings/PreviewSettings";
-import { speedMultiplier, mods } from "../settings/RoomSettings";
+import { mods } from "../settings/RoomSettings";
 import {
-    getBackgroundDim,
     dataProcessor,
+    getBackgroundDim,
     infoDisplay,
 } from "../settings/SpectatorSettings";
 
@@ -134,5 +134,8 @@ export function resetAudio(resetSrc: boolean): void {
  * Sets the audio playback rate based on currently set required mods and speed multiplier.
  */
 export function setAudioPlaybackRate(): void {
-    audio.playbackRate = speedMultiplier * ModUtil.calculateRateWithMods(mods);
+    audio.playbackRate = ModUtil.calculateRateWithMods(
+        mods.values(),
+        audio.currentTime * 1000,
+    );
 }

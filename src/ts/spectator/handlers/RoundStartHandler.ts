@@ -7,22 +7,20 @@ import {
     calculateMaxScore,
     parsedBeatmap,
     setDroidStarRating,
-    setStandardStarRating,
+    setOsuStarRating,
 } from "../../settings/BeatmapSettings";
 import {
     setIgnoredPlayersFromRoomName,
     setPlayers,
 } from "../../settings/PlayerSettings";
 import { previews, reloadPreviews } from "../../settings/PreviewSettings";
-import {
-    mods,
-    setMods,
-    setSpeedMultiplier,
-    setTeamMode,
-} from "../../settings/RoomSettings";
+import { mods, setMods, setTeamMode } from "../../settings/RoomSettings";
 import { dataProcessor, infoDisplay } from "../../settings/SpectatorSettings";
 import { StartingRoundMultiplayerRoom } from "../rawdata/StartingRoundMultiplayerRoom";
 import { onRoundStart } from "./ChatMessageHandler";
+
+const droidDifficultyCalculator = new DroidDifficultyCalculator();
+const osuDifficultyCalculator = new OsuDifficultyCalculator();
 
 export default function (room: StartingRoundMultiplayerRoom) {
     if (!parsedBeatmap) {
@@ -34,22 +32,23 @@ export default function (room: StartingRoundMultiplayerRoom) {
 
     setIgnoredPlayersFromRoomName(room.name);
     setPlayers(room.playingPlayers);
-    setMods(room.mods.mods ?? "");
-    setSpeedMultiplier(room.mods.speedMultiplier);
+    setMods(room.mods);
     setTeamMode(room.teamMode);
     calculateMaxScore();
     reloadPreviews();
 
-    const droidDifficultyCalculator = new DroidDifficultyCalculator(
+    const droidDifficultyAttributes = droidDifficultyCalculator.calculate(
         parsedBeatmap,
-    ).calculate({ mods: mods });
+        mods,
+    );
 
-    const standardDifficultyCalculator = new OsuDifficultyCalculator(
+    const osuDifficultyAttributes = osuDifficultyCalculator.calculate(
         parsedBeatmap,
-    ).calculate({ mods: mods });
+        mods,
+    );
 
-    setDroidStarRating(droidDifficultyCalculator.total);
-    setStandardStarRating(standardDifficultyCalculator.total);
+    setDroidStarRating(droidDifficultyAttributes.starRating);
+    setOsuStarRating(osuDifficultyAttributes.starRating);
 
     dataProcessor.reset();
     dataProcessor.addPlayers();

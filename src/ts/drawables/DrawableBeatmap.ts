@@ -1,30 +1,30 @@
 import {
     Beatmap,
+    DroidPlayableBeatmap,
     HitObject,
-    IModApplicableToDroid,
-    Mod,
-    ModDifficultyAdjust,
-    Modes,
+    ModMap,
     Playfield,
     RGBColor,
     Slider,
     Spinner,
     Vector2,
 } from "@rian8337/osu-base";
+import { SpectatorDataManager } from "../spectator/managers/SpectatorDataManager";
 import { DrawableCircle } from "./hitobjects/DrawableCircle";
 import { DrawableHitObject } from "./hitobjects/DrawableHitObject";
 import { DrawableSlider } from "./hitobjects/DrawableSlider";
 import { DrawableSpinner } from "./hitobjects/DrawableSpinner";
-import { SpectatorDataManager } from "../spectator/managers/SpectatorDataManager";
 
 /**
  * Represents a beatmap that can be used to draw objects.
  */
 export class DrawableBeatmap {
+    private readonly originalBeatmap: Beatmap;
+
     /**
      * The underlying beatmap.
      */
-    readonly beatmap: Beatmap;
+    readonly beatmap: DroidPlayableBeatmap;
 
     /**
      * The hit objects to be drawn.
@@ -39,10 +39,7 @@ export class DrawableBeatmap {
             : DrawableBeatmap.defaultComboColors;
     }
 
-    private readonly objectDrawIndexes = {
-        first: 0,
-        last: -1,
-    };
+    private readonly objectDrawIndexes = { first: 0, last: -1 };
 
     static readonly defaultComboColors = [
         new RGBColor(0, 202, 0),
@@ -59,7 +56,7 @@ export class DrawableBeatmap {
      */
     static convertHitObjectToDrawable(
         object: HitObject,
-        mods: (Mod & IModApplicableToDroid)[],
+        mods: ModMap,
     ): DrawableHitObject {
         if (object instanceof Slider) {
             return new DrawableSlider(object, mods);
@@ -70,29 +67,13 @@ export class DrawableBeatmap {
         }
     }
 
-    constructor(
-        beatmap: Beatmap,
-        mods: (Mod & IModApplicableToDroid)[],
-        sizeScale: Vector2,
-        forceCS?: number,
-        forceAR?: number,
-    ) {
+    constructor(beatmap: Beatmap, mods: ModMap, sizeScale: Vector2) {
         if (beatmap.hitObjects.objects.length === 0) {
             throw new Error("This beatmap does not have any hitobjects.");
         }
 
-        // Don't share the same reference as the other array.
-        mods = mods.slice();
-
-        if ([forceCS, forceAR].some((v) => v !== undefined)) {
-            mods.push(new ModDifficultyAdjust({ cs: forceCS, ar: forceAR }));
-        }
-
-        this.beatmap = beatmap.createPlayableBeatmap({
-            mode: Modes.droid,
-            mods: mods,
-        });
-
+        this.originalBeatmap = beatmap;
+        this.beatmap = beatmap.createDroidPlayableBeatmap(mods);
         this.sizeScale = sizeScale;
 
         this.convertHitObjects(mods);
@@ -122,7 +103,7 @@ export class DrawableBeatmap {
 
         this.applyCanvasConfig(ctx);
 
-        time = this.beatmap.getOffsetTime(time);
+        time = this.originalBeatmap.getOffsetTime(time);
 
         while (this.objectDrawIndexes.first < this.drawableHitObjects.length) {
             const object =
@@ -170,7 +151,7 @@ export class DrawableBeatmap {
     /**
      * Converts hitobjects to drawable hitobjects.
      */
-    private convertHitObjects(mods: (Mod & IModApplicableToDroid)[]): void {
+    private convertHitObjects(mods: ModMap): void {
         let comboNumber = 1;
         let comboColorIndex = -1;
         let setComboIndex = true;

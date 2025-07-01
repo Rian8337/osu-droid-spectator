@@ -1,7 +1,7 @@
 import JSZip from "jszip";
 import { Beatmap } from "@rian8337/osu-base";
 import { PickedBeatmap } from "../spectator/rawdata/PickedBeatmap";
-import { mods, speedMultiplier } from "./RoomSettings";
+import { mods } from "./RoomSettings";
 
 /**
  * The parsed beatmap from beatmap decoder.
@@ -26,7 +26,7 @@ export let droidStarRating: number | null = null;
 /**
  * The osu!standard star rating of the beatmap.
  */
-export let standardStarRating: number | null = null;
+export let osuStarRating: number | null = null;
 
 /**
  * The beatmapset that's currently used.
@@ -63,19 +63,17 @@ export function setDroidStarRating(newDroidStarRating: number | null): void {
 /**
  * Sets the osu!standard star rating.
  *
- * @param newStandardStarRating The osu!standard star rating.
+ * @param newOsuStarRating The osu!standard star rating.
  */
-export function setStandardStarRating(
-    newStandardStarRating: number | null,
-): void {
-    standardStarRating = newStandardStarRating;
+export function setOsuStarRating(newOsuStarRating: number | null): void {
+    osuStarRating = newOsuStarRating;
 }
 
 /**
  * Calculates the maximum osu!droid score of the currently picked beatmap.
  */
 export function calculateMaxScore(): void {
-    maxScore = parsedBeatmap?.maxDroidScore(mods, speedMultiplier) ?? 0;
+    maxScore = parsedBeatmap?.maxDroidScore(mods) ?? 0;
 }
 
 /**

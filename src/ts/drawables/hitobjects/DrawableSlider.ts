@@ -1,19 +1,17 @@
 import {
     Easing,
-    IModApplicableToDroid,
     Interpolation,
     MathUtils,
-    Mod,
-    Modes,
+    ModMap,
     PathType,
     Slider,
     SliderTick,
     Vector2,
 } from "@rian8337/osu-base";
-import { DrawableCircle } from "./DrawableCircle";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/structures/HitResult";
 import { interpolateEasing } from "../../utils/EasingInterpolator";
+import { DrawableCircle } from "./DrawableCircle";
 
 /**
  * Represents a slider that can be drawn.
@@ -26,7 +24,7 @@ export class DrawableSlider extends DrawableCircle {
     private readonly currentPathCurve: Vector2[] = [];
     private lastSnakingInProgress = -1;
 
-    constructor(slider: Slider, mods: (Mod & IModApplicableToDroid)[]) {
+    constructor(slider: Slider, mods: ModMap) {
         super(slider, mods);
 
         this.generateOptimizedPath();
@@ -296,7 +294,7 @@ export class DrawableSlider extends DrawableCircle {
             return;
         }
 
-        const position = tick.getStackedPosition(Modes.droid);
+        const position = tick.stackedPosition;
         const { radius } = this.object;
 
         let opacity = 0;

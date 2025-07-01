@@ -1,4 +1,4 @@
-import { MultiplayerRoomMods } from "./MultiplayerRoomMods";
+import { SerializedMod } from "@rian8337/osu-base";
 import { MultiplayerTeam } from "./MultiplayerTeam";
 
 export interface MultiplayerPlayer {
@@ -15,7 +15,7 @@ export interface MultiplayerPlayer {
     /**
      * The mods used by the player.
      */
-    readonly mods: MultiplayerRoomMods;
+    readonly mods: SerializedMod[];
 
     /**
      * The team this player is at, if in Team VS team mode.

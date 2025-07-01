@@ -1,4 +1,4 @@
-import { askRoomID } from "./RoomLoader";
+import { askRoomID } from "./roomLoader";
 import { openDatabase } from "./settings/DatabaseSettings";
 
 (async () => {
@@ -17,9 +17,7 @@ import { openDatabase } from "./settings/DatabaseSettings";
             const face = new FontFace(
                 "Torus",
                 `url(./assets/${fontFile}.otf)`,
-                {
-                    weight: weight.toString(),
-                },
+                { weight: weight.toString() },
             );
 
             await face.load();

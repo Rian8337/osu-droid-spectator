@@ -1,10 +1,8 @@
 import {
     HitObject,
-    IModApplicableToDroid,
     Interpolation,
     MathUtils,
-    Mod,
-    Modes,
+    ModMap,
     RGBColor,
     Vector2,
 } from "@rian8337/osu-base";
@@ -24,7 +22,7 @@ export abstract class DrawableHitObject {
     /**
      * The mods used by the player.
      */
-    readonly mods: (Mod & IModApplicableToDroid)[];
+    readonly mods: ModMap;
 
     /**
      * The start time of the object's lifetime.
@@ -50,14 +48,14 @@ export abstract class DrawableHitObject {
      * The stacked position of the object.
      */
     get stackedPosition(): Vector2 {
-        return this.object.getStackedPosition(Modes.droid);
+        return this.object.stackedPosition;
     }
 
     /**
      * The stacked end position of the object.
      */
     get stackedEndPosition(): Vector2 {
-        return this.object.getStackedEndPosition(Modes.droid);
+        return this.object.stackedEndPosition;
     }
 
     /**
@@ -81,10 +79,9 @@ export abstract class DrawableHitObject {
         return `rgb(${this.color.toString()})`;
     }
 
-    constructor(object: HitObject, mods: (Mod & IModApplicableToDroid)[]) {
+    constructor(object: HitObject, mods: ModMap) {
         this.object = object;
         this.mods = mods;
-
         this.lifetimeStart = object.startTime - object.timePreempt;
 
         // Add 800ms to ensure that all animations play properly when needed.

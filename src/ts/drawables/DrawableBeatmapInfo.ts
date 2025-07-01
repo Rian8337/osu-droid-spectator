@@ -10,7 +10,7 @@ import {
     droidStarRating,
     parsedBeatmap,
     pickedBeatmap,
-    standardStarRating,
+    osuStarRating,
 } from "../settings/BeatmapSettings";
 import { mods } from "../settings/RoomSettings";
 import { DrawableRollingCounter } from "./counters/DrawableRollingCounter";
@@ -117,11 +117,10 @@ export class DrawableBeatmapInfo {
             difficulty,
             Modes.droid,
             mods,
-            undefined,
             true,
         );
 
-        if (mods.some((m) => m instanceof ModPrecise)) {
+        if (mods.has(ModPrecise)) {
             // Special case for OD. The Precise mod changes the hit window and not the OD itself, but we must
             // map the hit window back to the original hit window for the user to understand the difficulty
             // increase of the mod.
@@ -142,13 +141,13 @@ export class DrawableBeatmapInfo {
             "Star Rating",
             this.formatNullableDecimal(droidStarRating) +
                 " / " +
-                this.formatNullableDecimal(standardStarRating),
+                this.formatNullableDecimal(osuStarRating),
         );
 
         // Length
         this.translateTo(this.screen.width / 4, 0);
 
-        const clockRate = ModUtil.calculateRateWithMods(mods);
+        const clockRate = ModUtil.calculateRateWithMods(mods.values());
         const duration =
             parsedBeatmap.hitObjects.objects[
                 parsedBeatmap.hitObjects.objects.length - 1

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { readdirSync, existsSync, writeFileSync, mkdirSync } = require("fs");
 const { join } = require("path");
 const browserify = require("browserify");

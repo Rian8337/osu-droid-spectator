@@ -1,5 +1,5 @@
+import { SerializedMod } from "@rian8337/osu-base";
 import { MultiplayerPlayer } from "../structures/MultiplayerPlayer";
-import { MultiplayerRoomMods } from "../structures/MultiplayerRoomMods";
 import { MultiplayerTeamMode } from "../structures/MultiplayerTeamMode";
 
 /**
@@ -14,7 +14,7 @@ export interface StartingRoundMultiplayerRoom {
     /**
      * The mods that must be played.
      */
-    readonly mods: MultiplayerRoomMods;
+    readonly mods: SerializedMod[];
 
     /**
      * The players who are playing in the room.

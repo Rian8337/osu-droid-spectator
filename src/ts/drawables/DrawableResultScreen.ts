@@ -219,9 +219,8 @@ export class DrawableResultScreen {
             const totalHits =
                 accuracy.n300 + accuracy.n100 + accuracy.n50 + accuracy.nmiss;
 
-            const isHidden = manager.mods.some(
-                (m) => m instanceof ModHidden || m instanceof ModFlashlight,
-            );
+            const isHidden =
+                manager.mods.has(ModHidden) || manager.mods.has(ModFlashlight);
 
             const hit300Ratio = accuracy.n300 / totalHits;
 

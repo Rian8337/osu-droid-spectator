@@ -141,8 +141,6 @@ export class Preview {
             parsedBeatmap,
             specDataManager.mods,
             this.sizeScale,
-            specDataManager.forceCS,
-            specDataManager.forceAR,
         );
 
         this.specDataManager = specDataManager;

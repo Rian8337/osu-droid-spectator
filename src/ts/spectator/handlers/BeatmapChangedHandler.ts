@@ -13,7 +13,7 @@ import {
     parsedBeatmap,
     cancelBeatmapsetDownload,
     setDroidStarRating,
-    setStandardStarRating,
+    setOsuStarRating,
 } from "../../settings/BeatmapSettings";
 import {
     getBeatmapsetFromDB,
@@ -35,6 +35,9 @@ import { mods } from "../../settings/RoomSettings";
 
 // eslint-disable-next-line no-control-regex
 const fileNameCleanerRegex = /[^\x00-\x7F]/g;
+
+const droidDifficultyCalculator = new DroidDifficultyCalculator();
+const osuDifficultyCalculator = new OsuDifficultyCalculator();
 
 export default async function (
     newBeatmap?: PickedBeatmap | null,
@@ -105,7 +108,7 @@ export default async function (
 
     setParsedBeatmap(null);
     setDroidStarRating(null);
-    setStandardStarRating(null);
+    setOsuStarRating(null);
 
     let entries = Object.values(beatmapset.files);
     let osuFile = await getOsuFile(entries, newBeatmap.md5);
@@ -158,18 +161,20 @@ export default async function (
     ).result;
     const { metadata: newMetadata } = newParsedBeatmap;
 
-    const droidDifficultyCalculator = new DroidDifficultyCalculator(
+    const droidDifficultyAttributes = droidDifficultyCalculator.calculate(
         newParsedBeatmap,
-    ).calculate({ mods: mods });
+        mods,
+    );
 
-    const standardDifficultyCalculator = new OsuDifficultyCalculator(
+    const osuDifficultyAttributes = osuDifficultyCalculator.calculate(
         newParsedBeatmap,
-    ).calculate({ mods: mods });
+        mods,
+    );
 
     setPickedBeatmap(newBeatmap);
     setParsedBeatmap(newParsedBeatmap);
-    setDroidStarRating(droidDifficultyCalculator.total);
-    setStandardStarRating(standardDifficultyCalculator.total);
+    setDroidStarRating(droidDifficultyAttributes.starRating);
+    setOsuStarRating(osuDifficultyAttributes.starRating);
 
     background.src = backgroundBlob;
     audioState.audio.src = audioBlob;

@@ -1,6 +1,7 @@
 import {
     Interpolation,
     MathUtils,
+    ModUtil,
     RGBColor,
     Vector2,
 } from "@rian8337/osu-base";
@@ -108,12 +109,12 @@ export class DrawablePlayerInfo
         try {
             // This code will fail in Firefox(<~ 44)
             // https://bugzilla.mozilla.org/show_bug.cgi?id=941146
-            ctx.font = `bold ${fontSize}px Torus, sans-serif`;
-        } catch (e) {
+            ctx.font = `bold ${fontSize.toString()}px Torus, sans-serif`;
+        } catch {
             // Ignore error
         }
 
-        ctx.fillStyle = `rgb(${color})`;
+        ctx.fillStyle = `rgb(${color.toString()})`;
         ctx.globalAlpha = 1;
         ctx.textAlign = "right";
         ctx.translate(ctx.canvas.width, ctx.canvas.height);
@@ -122,11 +123,10 @@ export class DrawablePlayerInfo
         ctx.scale(this.sizeScale.y, this.sizeScale.y);
 
         ctx.fillText(
-            `${this.username}${
-                manager.mods.length > 0
-                    ? ` (${manager.mods.reduce((a, m) => a + m.acronym, "")})`
-                    : ""
-            }`,
+            `${this.username}${ModUtil.modsToOrderedString(
+                manager.mods,
+                false,
+            )}`,
             -DrawablePlayerInfo.paddingX,
             -DrawablePlayerInfo.paddingY,
         );

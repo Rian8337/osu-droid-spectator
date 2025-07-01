@@ -1,14 +1,13 @@
 import {
-    IModApplicableToDroid,
     MathUtils,
-    Mod,
     ModHardRock,
+    ModMap,
     Playfield,
     Vector2,
 } from "@rian8337/osu-base";
 import { SpectatorCursorEvent } from "../spectator/events/SpectatorCursorEvent";
-import { MovementType } from "../spectator/structures/MovementType";
 import { SpectatorEventManager } from "../spectator/managers/SpectatorEventManager";
+import { MovementType } from "../spectator/structures/MovementType";
 
 /**
  * Represents a cursor that can be drawn.
@@ -25,11 +24,11 @@ export class DrawableCursor {
     constructor(
         manager: SpectatorEventManager<SpectatorCursorEvent>,
         sizeScale: Vector2,
-        mods: (Mod & IModApplicableToDroid)[],
+        mods: ModMap,
     ) {
         this.manager = manager;
         this.sizeScale = sizeScale;
-        this.isHardRock = mods.some((m) => m instanceof ModHardRock);
+        this.isHardRock = mods.has(ModHardRock);
     }
 
     /**

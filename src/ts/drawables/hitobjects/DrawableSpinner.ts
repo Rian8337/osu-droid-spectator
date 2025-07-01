@@ -12,7 +12,7 @@ import { DrawableHitObject } from "./DrawableHitObject";
  * Represents a spinner that can be drawn.
  */
 export class DrawableSpinner extends DrawableHitObject {
-    private readonly isHidden = this.mods.some((m) => m instanceof ModHidden);
+    private readonly isHidden = this.mods.has(ModHidden);
     private static readonly radius = Playfield.baseSize.y / 2;
     private static readonly borderWidth = this.radius / 20;
 
