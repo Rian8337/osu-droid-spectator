@@ -14,6 +14,6 @@ Please see the [wiki](https://github.com/Rian8337/osu-droid-spectator/wiki) for 
 
 ## Building from source
 
-You may also build the client from source. To do so, you need [Node.js](https://nodejs.org) version 16 or later. The latest LTS release is recommended.
+You may also build the client from source. To do so, you need [Node.js](https://nodejs.org) version 18 or later. The latest LTS release is recommended.
 
 Install all dependencies with `npm i` and run `npm run build`. After that, open `index.html` in your browser of choice.
