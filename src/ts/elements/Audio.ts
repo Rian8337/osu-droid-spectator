@@ -91,6 +91,7 @@ $(audio)
     })
     .on("timeupdate", function () {
         $<HTMLInputElement>("#progress").val(this.currentTime);
+        setAudioPlaybackRate();
     })
     .on("ended", () => {
         // Ensure previews are in the latest state.
