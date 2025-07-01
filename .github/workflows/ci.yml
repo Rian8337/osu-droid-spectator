@@ -1,20 +1,25 @@
-name: Tests
+name: Continuous Integration
 on: [push, pull_request]
+
+concurrency:
+  group: "CI"
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install Node.js v18
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Install dependencies
-        run: npm i
+        run: npm ci
 
       - name: Build Production
         run: npm run build-production
