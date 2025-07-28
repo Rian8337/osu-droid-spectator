@@ -45,9 +45,7 @@ b.bundle((err, data) => {
     if (isDevelopment) {
         writeFileSync(path, data);
     } else {
-        const minified = uglify.minify(data.toString(), {
-            compress: {},
-        });
+        const minified = uglify.minify(data.toString());
 
         if (minified.error) {
             throw minified.error;
