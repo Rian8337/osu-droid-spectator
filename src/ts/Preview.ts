@@ -185,7 +185,10 @@ export class Preview {
             specDataManager.events.score,
             this.sizeScale,
         );
-        this.modsIndicator = new DrawableModsIndicator(specDataManager.mods);
+        this.modsIndicator = new DrawableModsIndicator(
+            specDataManager.mods,
+            this.sizeScale,
+        );
         this.hitErrorBar = new DrawableHitErrorBar(
             specDataManager.events.objectData,
             specDataManager.hitWindow,

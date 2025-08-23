@@ -1,4 +1,4 @@
-import { ModMap, ModUtil } from "@rian8337/osu-base";
+import { ModMap, ModUtil, Vector2 } from "@rian8337/osu-base";
 import { modIcons } from "../settings/SpectatorSettings";
 import { DrawableAccuracyCounter } from "./counters/DrawableAccuracyCounter";
 
@@ -6,11 +6,14 @@ import { DrawableAccuracyCounter } from "./counters/DrawableAccuracyCounter";
  * Represents mods indicator.
  */
 export class DrawableModsIndicator {
-    private static readonly paddingX = 75;
-    private static readonly paddingY = DrawableAccuracyCounter.paddingY - 25;
+    private static readonly paddingX = 125;
+    private static readonly paddingY = DrawableAccuracyCounter.paddingY + 50;
     private static readonly allMods = [...ModUtil.allMods.entries()].reverse();
 
-    constructor(private readonly mods: ModMap) {}
+    constructor(
+        private readonly mods: ModMap,
+        private readonly sizeScale: Vector2,
+    ) {}
 
     /**
      * Draws this mods indicator into the screen.
@@ -23,9 +26,12 @@ export class DrawableModsIndicator {
         ctx.globalAlpha = 1;
 
         ctx.translate(
-            ctx.canvas.width - DrawableModsIndicator.paddingX,
-            DrawableModsIndicator.paddingY,
+            ctx.canvas.width -
+                DrawableModsIndicator.paddingX * this.sizeScale.x,
+            DrawableModsIndicator.paddingY * this.sizeScale.y,
         );
+
+        ctx.scale(this.sizeScale.x, this.sizeScale.y);
 
         let extraPadding = 0;
 
@@ -40,16 +46,8 @@ export class DrawableModsIndicator {
                 continue;
             }
 
-            // Draw image at half the size
-            ctx.drawImage(
-                icon,
-                extraPadding,
-                0,
-                icon.width * 0.5,
-                icon.height * 0.5,
-            );
-
-            extraPadding -= 25;
+            ctx.drawImage(icon, extraPadding, 0, icon.width, icon.height);
+            extraPadding -= 50 * this.sizeScale.x;
         }
 
         ctx.restore();
