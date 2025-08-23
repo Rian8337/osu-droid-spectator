@@ -10,6 +10,11 @@ import { DrawableInfoDisplay } from "../drawables/DrawableInfoDisplay";
 export let userHasInteracted = false;
 
 /**
+ * A map of mod icons, with the acronym as the key and the image as the value.
+ */
+export const modIcons = new Map<string, HTMLImageElement>();
+
+/**
  * The spectator data processor.
  */
 export const dataProcessor = new SpectatorDataProcessor();

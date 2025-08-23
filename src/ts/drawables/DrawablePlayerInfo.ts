@@ -1,15 +1,14 @@
 import {
     Interpolation,
     MathUtils,
-    ModUtil,
     RGBColor,
     Vector2,
 } from "@rian8337/osu-base";
-import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
+import { parsedBeatmap } from "../settings/BeatmapSettings";
 import { players } from "../settings/PlayerSettings";
 import { dataProcessor, teamColors } from "../settings/SpectatorSettings";
-import { parsedBeatmap } from "../settings/BeatmapSettings";
 import { MultiplayerPlayer } from "../spectator/structures/MultiplayerPlayer";
+import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
 
 /**
  * Represents player information to be drawn.
@@ -123,13 +122,11 @@ export class DrawablePlayerInfo
         ctx.scale(this.sizeScale.y, this.sizeScale.y);
 
         ctx.fillText(
-            `${this.username} (${ModUtil.modsToOrderedString(
-                manager.mods,
-                false,
-            )})`,
+            this.username,
             -DrawablePlayerInfo.paddingX,
             -DrawablePlayerInfo.paddingY,
         );
+
         ctx.restore();
     }
 }

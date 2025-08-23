@@ -13,6 +13,7 @@ import { DrawableHitErrorBar } from "./drawables/DrawableHitErrorBar";
 import { DrawableClickCounter } from "./drawables/counters/DrawableClickCounter";
 import { DrawableResultScreen } from "./drawables/DrawableResultScreen";
 import { audioState } from "./elements/Audio";
+import { DrawableModsIndicator } from "./drawables/DrawableModsIndicator";
 
 /**
  * Represents a beatmap preview.
@@ -57,6 +58,11 @@ export class Preview {
      * The score counter responsible for this preview.
      */
     scoreCounter?: DrawableScoreCounter;
+
+    /**
+     * The mods indicator responsible for this preview.
+     */
+    modsIndicator?: DrawableModsIndicator;
 
     /**
      * The hit error bar responsible for this preview.
@@ -179,6 +185,7 @@ export class Preview {
             specDataManager.events.score,
             this.sizeScale,
         );
+        this.modsIndicator = new DrawableModsIndicator(specDataManager.mods);
         this.hitErrorBar = new DrawableHitErrorBar(
             specDataManager.events.objectData,
             specDataManager.hitWindow,
@@ -217,6 +224,7 @@ export class Preview {
 
         this.clickCounter?.draw(this.ctx, time);
         this.accuracyCounter?.draw(this.ctx, time);
+        this.modsIndicator?.draw(this.ctx);
         this.comboCounter?.draw(this.ctx, time);
         this.scoreCounter?.draw(this.ctx, time);
         this.hitErrorBar?.draw(this.ctx, time);

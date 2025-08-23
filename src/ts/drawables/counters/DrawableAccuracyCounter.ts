@@ -9,7 +9,7 @@ import { DrawableStatisticsCounter } from "./DrawableStatisticsCounter";
 export class DrawableAccuracyCounter extends DrawableStatisticsCounter<SpectatorAccuracyEvent> {
     private static readonly fontSize = 40;
     private static readonly paddingX = DrawableScoreCounter.paddingX;
-    private static readonly paddingY =
+    static readonly paddingY =
         DrawableScoreCounter.paddingY + this.fontSize + 5;
 
     protected override readonly allowFractional = true;
