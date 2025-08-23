@@ -2,23 +2,27 @@ import {
     Accuracy,
     ModFlashlight,
     ModHidden,
+    ModUtil,
     ScoreRank,
+    Vector2,
 } from "@rian8337/osu-base";
-import { dataProcessor, hitResultColors } from "../settings/SpectatorSettings";
+import {
+    dataProcessor,
+    hitResultColors,
+    modIcons,
+} from "../settings/SpectatorSettings";
 import { HitResult } from "../spectator/structures/HitResult";
 
 /**
  * Represents the result screen of a player.
  */
 export class DrawableResultScreen {
-    /**
-     * The uid of the player this screen is for.
-     */
-    readonly uid: number;
+    private static readonly allMods = [...ModUtil.allMods.entries()].reverse();
 
-    constructor(uid: number) {
-        this.uid = uid;
-    }
+    constructor(
+        private readonly uid: number,
+        private readonly sizeScale: Vector2,
+    ) {}
 
     /**
      * Draws this screen to the canvas.
@@ -38,6 +42,7 @@ export class DrawableResultScreen {
         this.drawMaxCombo(ctx);
         this.drawAccuracy(ctx);
         this.drawRank(ctx);
+        this.drawMods(ctx);
     }
 
     private drawBackgroundDim(ctx: CanvasRenderingContext2D) {
@@ -272,6 +277,46 @@ export class DrawableResultScreen {
             (ctx.canvas.width * 9) / 10,
             (ctx.canvas.height * 6) / 10,
         );
+
+        ctx.restore();
+    }
+
+    private drawMods(ctx: CanvasRenderingContext2D) {
+        const manager = dataProcessor.managers.get(this.uid);
+
+        if (!manager) {
+            return;
+        }
+
+        ctx.save();
+
+        ctx.globalAlpha = 1;
+
+        ctx.translate(ctx.canvas.width * 0.9, ctx.canvas.height * 0.75);
+
+        let extraPadding = 0;
+
+        for (const [acronym, mod] of DrawableResultScreen.allMods) {
+            if (!manager.mods.has(mod)) {
+                continue;
+            }
+
+            const icon = modIcons.get(acronym);
+
+            if (!icon) {
+                continue;
+            }
+
+            ctx.drawImage(
+                icon,
+                extraPadding,
+                0,
+                icon.width * this.sizeScale.x,
+                icon.height * this.sizeScale.y,
+            );
+
+            extraPadding -= ctx.canvas.width * 0.04;
+        }
 
         ctx.restore();
     }

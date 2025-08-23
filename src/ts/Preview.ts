@@ -193,7 +193,10 @@ export class Preview {
             specDataManager.events.objectData,
             specDataManager.hitWindow,
         );
-        this.resultScreen = new DrawableResultScreen(specDataManager.uid);
+        this.resultScreen = new DrawableResultScreen(
+            specDataManager.uid,
+            this.sizeScale,
+        );
 
         this.at(0);
     }
