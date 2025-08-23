@@ -1,4 +1,4 @@
-import { ModMap } from "@rian8337/osu-base";
+import { ModMap, ModUtil } from "@rian8337/osu-base";
 import { modIcons } from "../settings/SpectatorSettings";
 import { DrawableAccuracyCounter } from "./counters/DrawableAccuracyCounter";
 
@@ -28,8 +28,12 @@ export class DrawableModsIndicator {
 
         let extraPadding = 0;
 
-        for (const mod of this.mods.values()) {
-            const icon = modIcons.get(mod.acronym);
+        for (const [acronym, mod] of ModUtil.allMods) {
+            if (!this.mods.has(mod)) {
+                continue;
+            }
+
+            const icon = modIcons.get(acronym);
 
             if (!icon) {
                 continue;
