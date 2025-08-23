@@ -47,7 +47,7 @@ export class DrawableModsIndicator {
             }
 
             ctx.drawImage(icon, extraPadding, 0, icon.width, icon.height);
-            extraPadding -= 50 * this.sizeScale.x;
+            extraPadding -= 50;
         }
 
         ctx.restore();
