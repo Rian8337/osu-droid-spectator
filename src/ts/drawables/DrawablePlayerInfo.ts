@@ -123,10 +123,10 @@ export class DrawablePlayerInfo
         ctx.scale(this.sizeScale.y, this.sizeScale.y);
 
         ctx.fillText(
-            `${this.username}${ModUtil.modsToOrderedString(
+            `${this.username} (${ModUtil.modsToOrderedString(
                 manager.mods,
                 false,
-            )}`,
+            )})`,
             -DrawablePlayerInfo.paddingX,
             -DrawablePlayerInfo.paddingY,
         );
