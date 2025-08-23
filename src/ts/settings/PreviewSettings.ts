@@ -108,6 +108,7 @@ export function reloadPreviews(): void {
     };
 
     const playersArray = [...players.values()];
+    playersArray.sort((a, b) => a.uid - b.uid);
 
     if (teamMode === MultiplayerTeamMode.headToHead) {
         addPlayers(playersArray);
