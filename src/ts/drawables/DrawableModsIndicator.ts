@@ -8,6 +8,7 @@ import { DrawableAccuracyCounter } from "./counters/DrawableAccuracyCounter";
 export class DrawableModsIndicator {
     private static readonly paddingX = 75;
     private static readonly paddingY = DrawableAccuracyCounter.paddingY - 25;
+    private static readonly allMods = [...ModUtil.allMods.entries()].reverse();
 
     constructor(private readonly mods: ModMap) {}
 
@@ -28,7 +29,7 @@ export class DrawableModsIndicator {
 
         let extraPadding = 0;
 
-        for (const [acronym, mod] of ModUtil.allMods) {
+        for (const [acronym, mod] of DrawableModsIndicator.allMods) {
             if (!this.mods.has(mod)) {
                 continue;
             }
