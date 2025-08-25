@@ -1,6 +1,5 @@
 import { Easing, Interpolation } from "@rian8337/osu-base";
 import { DrawableCounter } from "./DrawableCounter";
-import { interpolateEasing } from "../../utils/EasingInterpolator";
 
 /**
  * A counter that supports rolling.
@@ -69,7 +68,7 @@ export abstract class DrawableRollingCounter extends DrawableCounter {
                 this._currentValue = Interpolation.lerp(
                     this.initialAnimationValue,
                     this.targetAnimationValue,
-                    interpolateEasing(this.rollingEasing, progress),
+                    Interpolation.easing(this.rollingEasing, progress),
                 );
 
                 if (!this.allowFractional) {

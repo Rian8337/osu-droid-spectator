@@ -10,7 +10,6 @@ import {
 } from "@rian8337/osu-base";
 import { SpectatorObjectDataEvent } from "../../spectator/events/SpectatorObjectDataEvent";
 import { HitResult } from "../../spectator/structures/HitResult";
-import { interpolateEasing } from "../../utils/EasingInterpolator";
 import { DrawableCircle } from "./DrawableCircle";
 
 /**
@@ -72,7 +71,7 @@ export class DrawableSlider extends DrawableCircle {
                     opacity = Interpolation.lerp(
                         1,
                         0,
-                        interpolateEasing(Easing.out, t),
+                        Interpolation.easing(Easing.out, t),
                     );
                 }
             } else {
@@ -318,7 +317,7 @@ export class DrawableSlider extends DrawableCircle {
             scale = Interpolation.lerp(
                 0.5,
                 1,
-                interpolateEasing(Easing.outElasticHalf, scaleProgress),
+                Interpolation.easing(Easing.outElasticHalf, scaleProgress),
             );
 
             this.updateLifetimeEnd(fadeInStartTime + animationDuration * 4);
@@ -329,14 +328,14 @@ export class DrawableSlider extends DrawableCircle {
             opacity = Interpolation.lerp(
                 1,
                 0,
-                interpolateEasing(Easing.outQuint, progress),
+                Interpolation.easing(Easing.outQuint, progress),
             );
 
             if (isHit) {
                 scale = Interpolation.lerp(
                     1,
                     1.5,
-                    interpolateEasing(Easing.out, progress),
+                    Interpolation.easing(Easing.out, progress),
                 );
             }
 
