@@ -7,7 +7,11 @@ import { DrawableAccuracyCounter } from "./counters/DrawableAccuracyCounter";
  */
 export class DrawableModsIndicator {
     private static readonly paddingX = 125;
-    private static readonly paddingY = DrawableAccuracyCounter.paddingY + 50;
+
+    private static get paddingY() {
+        return DrawableAccuracyCounter.paddingY + (50 * innerHeight) / 1080;
+    }
+
     private static readonly allMods = [...ModUtil.allMods.entries()].reverse();
 
     constructor(

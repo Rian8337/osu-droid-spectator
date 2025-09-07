@@ -8,7 +8,10 @@ import { DrawableStatisticsCounter } from "./DrawableStatisticsCounter";
 export class DrawableScoreCounter extends DrawableStatisticsCounter<SpectatorScoreEvent> {
     private static readonly fontSize = 60;
     static readonly paddingX = 5;
-    static readonly paddingY = this.fontSize;
+
+    static get paddingY() {
+        return this.fontSize * (innerHeight / 1080);
+    }
 
     protected override readonly rollingDuration = 1000;
 

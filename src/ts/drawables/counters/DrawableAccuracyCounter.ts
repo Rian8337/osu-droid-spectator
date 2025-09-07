@@ -9,8 +9,13 @@ import { DrawableStatisticsCounter } from "./DrawableStatisticsCounter";
 export class DrawableAccuracyCounter extends DrawableStatisticsCounter<SpectatorAccuracyEvent> {
     private static readonly fontSize = 40;
     private static readonly paddingX = DrawableScoreCounter.paddingX;
-    static readonly paddingY =
-        DrawableScoreCounter.paddingY + this.fontSize + 5;
+
+    static get paddingY() {
+        return (
+            DrawableScoreCounter.paddingY +
+            (this.fontSize + 5) * (innerHeight / 1080)
+        );
+    }
 
     protected override readonly allowFractional = true;
     protected override readonly rollingDuration = 375;
