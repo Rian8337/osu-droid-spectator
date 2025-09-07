@@ -1,4 +1,4 @@
-import { RGBColor } from "@rian8337/osu-base";
+import { RGBColor, Vector2 } from "@rian8337/osu-base";
 import { SpectatorDataProcessor } from "../spectator/SpectatorDataProcessor";
 import { HitResult } from "../spectator/structures/HitResult";
 import { MultiplayerTeam } from "../spectator/structures/MultiplayerTeam";
@@ -8,6 +8,16 @@ import { DrawableInfoDisplay } from "../drawables/DrawableInfoDisplay";
  * Whether the user has interacted with the play button.
  */
 export let userHasInteracted = false;
+
+/**
+ * The scaling of the window with respect to a 1920x1080 resolution.
+ */
+export const windowScale = new Vector2(innerWidth / 1920, innerHeight / 1080);
+
+addEventListener("resize", () => {
+    windowScale.x = innerWidth / 1920;
+    windowScale.y = innerHeight / 1080;
+});
 
 /**
  * A map of mod icons, with the acronym as the key and the image as the value.

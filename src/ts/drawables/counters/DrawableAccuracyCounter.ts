@@ -2,6 +2,7 @@ import { Vector2 } from "@rian8337/osu-base";
 import { SpectatorAccuracyEvent } from "../../spectator/events/SpectatorAccuracyEvent";
 import { DrawableScoreCounter } from "./DrawableScoreCounter";
 import { DrawableStatisticsCounter } from "./DrawableStatisticsCounter";
+import { windowScale } from "../../settings/SpectatorSettings";
 
 /**
  * Represents an accuracy counter.
@@ -12,8 +13,7 @@ export class DrawableAccuracyCounter extends DrawableStatisticsCounter<Spectator
 
     static get paddingY() {
         return (
-            DrawableScoreCounter.paddingY +
-            (this.fontSize + 5) * (innerHeight / 1080)
+            DrawableScoreCounter.paddingY + (this.fontSize + 5) * windowScale.y
         );
     }
 

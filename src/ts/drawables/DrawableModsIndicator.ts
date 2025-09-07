@@ -1,5 +1,5 @@
 import { ModMap, ModUtil, Vector2 } from "@rian8337/osu-base";
-import { modIcons } from "../settings/SpectatorSettings";
+import { modIcons, windowScale } from "../settings/SpectatorSettings";
 import { DrawableAccuracyCounter } from "./counters/DrawableAccuracyCounter";
 
 /**
@@ -9,7 +9,7 @@ export class DrawableModsIndicator {
     private static readonly paddingX = 125;
 
     private static get paddingY() {
-        return DrawableAccuracyCounter.paddingY + (50 * innerHeight) / 1080;
+        return DrawableAccuracyCounter.paddingY + 50 * windowScale.y;
     }
 
     private static readonly allMods = [...ModUtil.allMods.entries()].reverse();
